@@ -1,33 +1,74 @@
 # Author: Dr. Mazharuddin Mohammed
-from .geometry import PyGeometryManager, PyWafer
-from .oxidation import PyOxidationModel
-from .doping import PyDopingManager
-from .photolithography import PyLithographyModel
-from .deposition import PyDepositionModel
-from .etching import PyEtchingModel
-from .metallization import PyMetallizationModel
-from .packaging import PyPackagingModel
-from .thermal import PyThermalSimulationModel
-from .reliability import PyReliabilityModel
-from .renderer import PyVulkanRenderer
-from .multi_die import PyMultiDieModel, PyDie, PyInterconnect
-from .drc import PyDRCModel, PyDRCRule
-from .advanced_visualization import PyAdvancedVisualizationModel
+import os
+import sys
 
-# Import orchestration components
-try:
-    from .simulation_orchestrator import (
-        PySimulationOrchestrator, PyProcessStepDefinition,
-        create_process_step, get_orchestrator,
-        STEP_TYPE_OXIDATION, STEP_TYPE_DOPING, STEP_TYPE_LITHOGRAPHY,
-        STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING, STEP_TYPE_METALLIZATION,
-        STEP_TYPE_ANNEALING, STEP_TYPE_CMP, STEP_TYPE_INSPECTION,
-        EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+# Check if building documentation
+BUILDING_DOCS = os.environ.get('READTHEDOCS') == 'True' or 'sphinx' in sys.modules
+
+if BUILDING_DOCS:
+    # Use mock extensions for documentation
+    from .api.mock_extensions import (
+        PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
+        PyLithographyModel, PyDepositionModel, PyEtchingModel,
+        PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
+        PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
+        PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
+        PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
+        get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
+        STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
+        STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
+        STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
     )
     ORCHESTRATION_AVAILABLE = True
-except ImportError:
-    ORCHESTRATION_AVAILABLE = False
-    print("Warning: Simulation orchestration not available")
+else:
+    # Use real extensions
+    try:
+        from .geometry import PyGeometryManager, PyWafer
+        from .oxidation import PyOxidationModel
+        from .doping import PyDopingManager
+        from .photolithography import PyLithographyModel
+        from .deposition import PyDepositionModel
+        from .etching import PyEtchingModel
+        from .metallization import PyMetallizationModel
+        from .packaging import PyPackagingModel
+        from .thermal import PyThermalSimulationModel
+        from .reliability import PyReliabilityModel
+        from .renderer import PyVulkanRenderer
+        from .multi_die import PyMultiDieModel, PyDie, PyInterconnect
+        from .drc import PyDRCModel, PyDRCRule
+        from .advanced_visualization import PyAdvancedVisualizationModel
+
+        # Import orchestration components
+        try:
+            from .simulation_orchestrator import (
+                PySimulationOrchestrator, PyProcessStepDefinition,
+                create_process_step, get_orchestrator,
+                STEP_TYPE_OXIDATION, STEP_TYPE_DOPING, STEP_TYPE_LITHOGRAPHY,
+                STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING, STEP_TYPE_METALLIZATION,
+                STEP_TYPE_ANNEALING, STEP_TYPE_CMP, STEP_TYPE_INSPECTION,
+                EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+            )
+            ORCHESTRATION_AVAILABLE = True
+        except ImportError:
+            ORCHESTRATION_AVAILABLE = False
+            print("Warning: Simulation orchestration not available")
+
+    except ImportError as e:
+        print(f"Warning: Could not import extensions: {e}")
+        # Fallback to mock extensions
+        from .api.mock_extensions import (
+            PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
+            PyLithographyModel, PyDepositionModel, PyEtchingModel,
+            PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
+            PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
+            PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
+            PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
+            get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
+            STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
+            STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
+            STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+        )
+        ORCHESTRATION_AVAILABLE = False
 
 import numpy as np
 import matplotlib.pyplot as plt

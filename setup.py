@@ -130,68 +130,74 @@ MODULE_SOURCES = {
     "defect_inspection": get_cpp_sources("defect_inspection"),
 }
 
+# Check if we're building for documentation
+BUILDING_DOCS = os.environ.get('READTHEDOCS') == 'True' or 'sphinx' in sys.argv
+
 # Create extensions
 extensions = []
 
-# Core extension
-core_sources = CORE_SOURCES + RENDERER_SOURCES
-for module_name, sources in MODULE_SOURCES.items():
-    core_sources.extend(sources)
+if not BUILDING_DOCS:
+    # Core extension
+    core_sources = CORE_SOURCES + RENDERER_SOURCES
+    for module_name, sources in MODULE_SOURCES.items():
+        core_sources.extend(sources)
 
-# Main SemiPRO extension
-semipro_ext = Pybind11Extension(
-    "semipro_core",
-    sources=core_sources,
-    include_dirs=INCLUDE_DIRS,
-    library_dirs=LIBRARY_DIRS,
-    libraries=LIBRARIES,
-    language="c++",
-    cxx_std=17,
-)
+    # Main SemiPRO extension
+    semipro_ext = Pybind11Extension(
+        "semipro_core",
+        sources=core_sources,
+        include_dirs=INCLUDE_DIRS,
+        library_dirs=LIBRARY_DIRS,
+        libraries=LIBRARIES,
+        language="c++",
+        cxx_std=17,
+    )
 
-extensions.append(semipro_ext)
+    extensions.append(semipro_ext)
 
-# Individual module extensions for Cython
-cython_extensions = []
+    # Individual module extensions for Cython
+    cython_extensions = []
 
-try:
-    from Cython.Build import cythonize
-    from Cython.Distutils import build_ext as cython_build_ext
-    
-    # Cython extensions
-    cython_files = list(CYTHON_SRC_DIR.glob("*.pyx"))
-    
-    for pyx_file in cython_files:
-        module_name = pyx_file.stem
-        
-        ext = Extension(
-            f"semipro.{module_name}",
-            sources=[str(pyx_file)],
-            include_dirs=INCLUDE_DIRS,
-            library_dirs=LIBRARY_DIRS,
-            libraries=LIBRARIES,
-            extra_compile_args=COMPILE_ARGS,
-            extra_link_args=LINK_ARGS,
-            language="c++"
-        )
-        cython_extensions.append(ext)
-    
-    # Cythonize extensions
-    if cython_extensions:
-        cython_extensions = cythonize(
-            cython_extensions,
-            compiler_directives={
-                "language_level": 3,
-                "embedsignature": True,
-                "boundscheck": False,
-                "wraparound": False,
-                "cdivision": True,
-            }
-        )
-        extensions.extend(cython_extensions)
+    try:
+        from Cython.Build import cythonize
+        from Cython.Distutils import build_ext as cython_build_ext
 
-except ImportError:
-    print("Warning: Cython not available. Skipping Cython extensions.")
+        # Cython extensions
+        cython_files = list(CYTHON_SRC_DIR.glob("*.pyx"))
+
+        for pyx_file in cython_files:
+            module_name = pyx_file.stem
+
+            ext = Extension(
+                f"semipro.{module_name}",
+                sources=[str(pyx_file)],
+                include_dirs=INCLUDE_DIRS,
+                library_dirs=LIBRARY_DIRS,
+                libraries=LIBRARIES,
+                extra_compile_args=COMPILE_ARGS,
+                extra_link_args=LINK_ARGS,
+                language="c++"
+            )
+            cython_extensions.append(ext)
+
+        # Cythonize extensions
+        if cython_extensions:
+            cython_extensions = cythonize(
+                cython_extensions,
+                compiler_directives={
+                    "language_level": 3,
+                    "embedsignature": True,
+                    "boundscheck": False,
+                    "wraparound": False,
+                    "cdivision": True,
+                }
+            )
+            extensions.extend(cython_extensions)
+
+    except ImportError:
+        print("Warning: Cython not available. Skipping Cython extensions.")
+else:
+    print("Building for documentation - skipping C++ extensions")
 
 # Read long description from README
 long_description = ""

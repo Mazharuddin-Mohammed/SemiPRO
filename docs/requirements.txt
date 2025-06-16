@@ -1,2 +1,14 @@
-sphinx>=4.0
-sphinx-rtd-theme>=1.0
+# Author: Dr. Mazharuddin Mohammed
+# Documentation requirements for ReadTheDocs
+
+# Core documentation tools
+sphinx>=4.0.0
+sphinx-rtd-theme>=1.0.0
+myst-parser>=0.17.0
+
+# Basic dependencies needed for imports
+pyyaml>=5.4.0
+jsonschema>=3.2.0
+
+# Minimal dependencies for mock modules
+setuptools>=45.0.0
