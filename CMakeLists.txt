@@ -41,6 +41,12 @@ set(SOURCES
     src/cpp/modules/packaging/packaging_model.cpp
     src/cpp/modules/thermal/thermal_model.cpp
     src/cpp/modules/reliability/reliability_model.cpp
+    src/cpp/modules/metrology/metrology_model.cpp
+    src/cpp/modules/interconnect/damascene_model.cpp
+    src/cpp/modules/defect_inspection/defect_inspection_model.cpp
+    src/cpp/modules/multi_die/multi_die_model.cpp
+    src/cpp/modules/design_rule_check/drc_model.cpp
+    src/cpp/modules/advanced_visualization/advanced_visualization_model.cpp
     src/cpp/renderer/vulkan_renderer.cpp
 )
 
