@@ -1,3 +1,4 @@
+# Author: Dr. Mazharuddin Mohammed
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton
 from PySide6.QtCore import Signal
 from ..simulator import Simulator
