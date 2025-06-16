@@ -1,4 +1,5 @@
-from setuptools import setup, setup
+# Author: Dr. Mazharuddin Mohammed
+from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy
 
@@ -78,6 +79,28 @@ extensions = [
         ["renderer.pyx"],
         language="c++",
         include_dirs=[numpy.get_include(), "../cpp/core", "../cpp/renderer"],
+        extra_compile_args=["-std=c++17"],
+        libraries=["vulkan", "glfw"],
+    ),
+    Extension(
+        "multi_die",
+        ["multi_die.pyx"],
+        language="c++",
+        include_dirs=[numpy.get_include(), "../cpp/core", "../cpp/modules/multi_die"],
+        extra_compile_args=["-std=c++17"],
+    ),
+    Extension(
+        "drc",
+        ["drc.pyx"],
+        language="c++",
+        include_dirs=[numpy.get_include(), "../cpp/core", "../cpp/modules/design_rule_check"],
+        extra_compile_args=["-std=c++17"],
+    ),
+    Extension(
+        "advanced_visualization",
+        ["advanced_visualization.pyx"],
+        language="c++",
+        include_dirs=[numpy.get_include(), "../cpp/core", "../cpp/modules/advanced_visualization"],
         extra_compile_args=["-std=c++17"],
         libraries=["vulkan", "glfw"],
     ),
