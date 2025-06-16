@@ -81,8 +81,8 @@ CMakeLists.txt.user*
 logs/
 *.log
 *.log.*
-core
 core.*
+!src/cpp/core/
 vgcore.*
 
 # Configuration files (keep templates)
@@ -211,6 +211,10 @@ data/
 sim_temp_*
 wafer_*.tmp
 process_*.cache
+
+# But keep source code
+!src/
+!src/**/*
 
 # Generated documentation
 doxygen/
