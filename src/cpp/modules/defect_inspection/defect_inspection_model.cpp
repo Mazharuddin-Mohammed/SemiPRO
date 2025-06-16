@@ -1,3 +1,4 @@
+// Author: Dr. Mazharuddin Mohammed
 #include "defect_inspection_model.hpp"
 #include <algorithm>
 #include <cmath>
