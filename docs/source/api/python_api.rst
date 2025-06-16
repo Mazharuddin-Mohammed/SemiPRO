@@ -8,220 +8,105 @@ This section provides comprehensive documentation for the SemiPRO Python API.
 Core Simulator
 --------------
 
-.. automodule:: src.python.simulator
+The main simulator class that coordinates all semiconductor process simulations.
+
+.. autoclass:: simulator.Simulator
    :members:
    :undoc-members:
    :show-inheritance:
 
-Simulation Orchestrator
-----------------------
+API Layer
+---------
 
-.. automodule:: src.cython.simulation_orchestrator
+REST API
+~~~~~~~~
+
+.. automodule:: api.rest_api
    :members:
    :undoc-members:
    :show-inheritance:
 
-PySimulationOrchestrator Class
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+API Client
+~~~~~~~~~~
 
-.. autoclass:: src.cython.simulation_orchestrator.PySimulationOrchestrator
+.. automodule:: api.client
    :members:
    :undoc-members:
    :show-inheritance:
 
-   The main orchestrator class that coordinates all simulation processes.
+Data Serializers
+~~~~~~~~~~~~~~~~
 
-   **Key Features:**
-
-   - **Process Flow Management**: Define, load, and execute complex process flows
-   - **Asynchronous Execution**: Non-blocking simulation execution with progress monitoring
-   - **Batch Processing**: Execute multiple wafers with different flows
-   - **Configuration Management**: Centralized parameter and settings management
-   - **Input/Output Handling**: Automated file parsing and result generation
-   - **Checkpointing**: Save and restore simulation state for long-running processes
-
-   **Example Usage:**
-
-   .. code-block:: python
-
-      from src.cython.simulation_orchestrator import get_orchestrator, create_process_step
-
-      # Get orchestrator instance
-      orchestrator = get_orchestrator()
-
-      # Configure directories
-      orchestrator.set_input_directory("input")
-      orchestrator.set_output_directory("output")
-
-      # Create process steps
-      oxidation_step = create_process_step(
-          "oxidation", "gate_oxide",
-          parameters={"temperature": 1000.0, "time": 0.5, "atmosphere": "dry"}
-      )
-
-      doping_step = create_process_step(
-          "doping", "source_drain",
-          parameters={"dopant": "phosphorus", "concentration": 1e20, "energy": 80.0}
-      )
-
-      # Add steps to flow
-      orchestrator.add_process_step(oxidation_step)
-      orchestrator.add_process_step(doping_step)
-
-      # Execute simulation
-      import asyncio
-      result = await orchestrator.execute_simulation("test_wafer")
-
-   **Configuration Management:**
-
-   .. code-block:: python
-
-      # Load configuration from file
-      orchestrator.load_configuration("config/simulation.yaml")
-
-      # Set individual parameters
-      orchestrator.set_parameter("solver.tolerance", "1e-8")
-      orchestrator.set_parameter("execution.parallel_steps", "4")
-
-      # Save configuration
-      orchestrator.save_configuration("config/my_config.yaml")
-
-   **Flow Management:**
-
-   .. code-block:: python
-
-      # Load predefined flow
-      orchestrator.load_simulation_flow("flows/cmos_process.yaml")
-
-      # Get available flows
-      flows = orchestrator.get_available_flows()
-      print(f"Available flows: {flows}")
-
-      # Execute specific flow
-      result = await orchestrator.execute_simulation_flow("cmos_process", "wafer1")
-
-   **Batch Processing:**
-
-   .. code-block:: python
-
-      # Add wafers to batch
-      orchestrator.add_wafer_to_batch("wafer1", "cmos_flow")
-      orchestrator.add_wafer_to_batch("wafer2", "bicmos_flow")
-      orchestrator.add_wafer_to_batch("wafer3", "memory_flow")
-
-      # Execute batch
-      results = await orchestrator.execute_batch()
-      print(f"Batch results: {results}")
-
-   **Progress Monitoring:**
-
-   .. code-block:: python
-
-      # Get current progress
-      progress = orchestrator.get_progress()
-      print(f"Progress: {progress.progress_percentage:.1f}%")
-      print(f"Current step: {progress.current_operation}")
-      print(f"Completed steps: {progress.completed_steps}")
-
-      # Check execution status
-      if orchestrator.is_running():
-          print("Simulation is running")
-      elif orchestrator.is_paused():
-          print("Simulation is paused")
-
-   **Execution Control:**
-
-   .. code-block:: python
-
-      # Pause simulation
-      orchestrator.pause_simulation()
-
-      # Resume simulation
-      orchestrator.resume_simulation()
-
-      # Cancel simulation
-      orchestrator.cancel_simulation()
-
-PyProcessStepDefinition Class
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: src.cython.simulation_orchestrator.PyProcessStepDefinition
+.. automodule:: api.serializers
    :members:
    :undoc-members:
    :show-inheritance:
 
-   Represents a single process step in a simulation flow.
+Validators
+~~~~~~~~~~
 
-   **Step Types:**
-
-   - ``oxidation``: Thermal oxidation processes
-   - ``doping``: Ion implantation and diffusion
-   - ``lithography``: Photolithography and patterning
-   - ``deposition``: Material deposition (CVD, PVD, ALD)
-   - ``etching``: Material removal (wet, dry, plasma)
-   - ``metallization``: Metal layer formation
-   - ``annealing``: Thermal treatment processes
-   - ``cmp``: Chemical mechanical polishing
-   - ``inspection``: Metrology and inspection
-   - ``custom``: User-defined processes
-
-   **Example Usage:**
-
-   .. code-block:: python
-
-      from src.cython.simulation_orchestrator import create_process_step
-
-      # Create oxidation step
-      step = create_process_step(
-          step_type="oxidation",
-          name="gate_oxidation",
-          parameters={
-              "temperature": 1000.0,
-              "time": 0.5,
-              "atmosphere": "dry"
-          },
-          input_files=["mask_gate.gds"],
-          output_files=["oxide_profile.csv"],
-          dependencies=["substrate_preparation"],
-          estimated_duration=30.0,  # minutes
-          priority=1,
-          parallel_compatible=False
-      )
-
-      # Access properties
-      print(f"Step name: {step.name}")
-      print(f"Parameters: {step.parameters}")
-      print(f"Duration: {step.estimated_duration} minutes")
-
-PySimulationProgress Class
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: src.cython.simulation_orchestrator.PySimulationProgress
+.. automodule:: api.validators
    :members:
    :undoc-members:
    :show-inheritance:
 
-   Provides real-time information about simulation progress.
+Simulation Orchestration
+~~~~~~~~~~~~~~~~~~~~~~~
 
-   **States:**
+The SemiPRO platform includes a comprehensive simulation orchestration system that coordinates
+complex semiconductor fabrication processes. The orchestration system provides:
 
-   - ``idle``: No simulation running
-   - ``initializing``: Setting up simulation
-   - ``running``: Simulation in progress
-   - ``paused``: Simulation temporarily paused
-   - ``completed``: Simulation finished successfully
-   - ``error``: Simulation failed with error
-   - ``cancelled``: Simulation was cancelled by user
+**Key Features:**
 
-PyExecutionStatistics Class
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+- **Process Flow Management**: Define, load, and execute complex process flows
+- **Asynchronous Execution**: Non-blocking simulation execution with progress monitoring
+- **Batch Processing**: Execute multiple wafers with different flows
+- **Configuration Management**: Centralized parameter and settings management
+- **Input/Output Handling**: Automated file parsing and result generation
+- **Checkpointing**: Save and restore simulation state for long-running processes
 
-.. autoclass:: src.cython.simulation_orchestrator.PyExecutionStatistics
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**Process Step Types:**
 
-   Provides detailed statistics about simulation execution performance.
+- ``oxidation``: Thermal oxidation processes
+- ``doping``: Ion implantation and diffusion
+- ``lithography``: Photolithography and patterning
+- ``deposition``: Material deposition (CVD, PVD, ALD)
+- ``etching``: Material removal (wet, dry, plasma)
+- ``metallization``: Metal layer formation
+- ``annealing``: Thermal treatment processes
+- ``cmp``: Chemical mechanical polishing
+- ``inspection``: Metrology and inspection
+- ``custom``: User-defined processes
+
+**Example Usage:**
+
+.. code-block:: python
+
+   from api.client import SemiPROClient
+
+   # Create client and run MOSFET simulation
+   client = SemiPROClient()
+   results = client.run_mosfet_simulation(
+       gate_length=0.25,
+       gate_oxide_thickness=0.005,
+       source_drain_depth=0.2
+   )
+
+**Batch Processing:**
+
+.. code-block:: python
+
+   # Define multiple configurations
+   wafer_configs = [
+       {"diameter": 200, "material": "silicon"},
+       {"diameter": 300, "material": "gaas"}
+   ]
+
+   # Run batch simulation
+   for config in wafer_configs:
+       results = client.run_simple_simulation(config, process_steps)
+
+For detailed API documentation, see the :doc:`rest_api_guide`.
 
 Simulator Class
 ~~~~~~~~~~~~~~~

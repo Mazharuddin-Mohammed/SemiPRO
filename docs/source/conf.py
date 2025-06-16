@@ -14,8 +14,45 @@ os.environ['READTHEDOCS'] = 'True'
 try:
     from api.mock_extensions import install_mock_modules
     install_mock_modules()
-except ImportError:
+    print("Mock modules installed for documentation")
+except ImportError as e:
+    print(f"Could not import mock modules: {e}")
     pass
+
+# Add mock modules to sys.modules manually if needed
+import sys
+from unittest.mock import MagicMock
+
+# Mock the main semipro modules
+mock_modules = [
+    'semipro',
+    'semipro.api',
+    'semipro.api.rest_api',
+    'semipro.api.client',
+    'semipro.api.serializers',
+    'semipro.api.validators',
+    'semipro.api.websocket_api',
+    'semipro.simulator',
+    'semipro.geometry',
+    'semipro.oxidation',
+    'semipro.doping',
+    'semipro.lithography',
+    'semipro.deposition',
+    'semipro.etching',
+    'semipro.metallization',
+    'semipro.packaging',
+    'semipro.thermal',
+    'semipro.reliability',
+    'semipro.renderer',
+    'semipro.multi_die',
+    'semipro.drc',
+    'semipro.advanced_visualization',
+    'semipro.simulation_orchestrator',
+]
+
+for module_name in mock_modules:
+    if module_name not in sys.modules:
+        sys.modules[module_name] = MagicMock()
 
 # -- Project information -----------------------------------------------------
 project = 'SemiPRO'
