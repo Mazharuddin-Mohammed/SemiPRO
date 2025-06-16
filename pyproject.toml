@@ -1,0 +1,297 @@
+# Author: Dr. Mazharuddin Mohammed
+[build-system]
+requires = [
+    "setuptools>=45",
+    "wheel",
+    "pybind11>=2.6.0",
+    "cython>=0.29.0",
+    "numpy>=1.19.0",
+    "cmake>=3.16",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "semipro"
+version = "1.0.0"
+description = "Advanced Semiconductor Process Simulator"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Dr. Mazharuddin Mohammed", email = "mazhar@example.com"}
+]
+maintainers = [
+    {name = "Dr. Mazharuddin Mohammed", email = "mazhar@example.com"}
+]
+keywords = [
+    "semiconductor",
+    "simulation",
+    "fabrication",
+    "process",
+    "modeling",
+    "physics",
+    "TCAD",
+    "EDA"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.19.0",
+    "matplotlib>=3.3.0",
+    "pandas>=1.3.0",
+    "pyyaml>=5.4.0",
+    "pyside6>=6.0.0",
+    "scipy>=1.7.0",
+    "h5py>=3.0.0",
+    "pillow>=8.0.0",
+    "tqdm>=4.60.0",
+    "click>=8.0.0",
+    "jinja2>=3.0.0",
+    "jsonschema>=3.2.0",
+    "networkx>=2.6.0",
+    "scikit-image>=0.18.0",
+    "vtk>=9.0.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0.0",
+    "pytest-cov>=2.0.0",
+    "pytest-xdist>=2.0.0",
+    "black>=21.0.0",
+    "flake8>=3.8.0",
+    "mypy>=0.800",
+    "isort>=5.0.0",
+    "pre-commit>=2.15.0",
+    "cython>=0.29.0",
+    "pybind11>=2.6.0",
+    "cmake>=3.16.0",
+]
+docs = [
+    "sphinx>=4.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "sphinx-copybutton>=0.4.0",
+    "sphinx-tabs>=3.2.0",
+    "myst-parser>=0.17.0",
+    "sphinx-autodoc-typehints>=1.12.0",
+    "sphinx-design>=0.1.0",
+    "sphinxcontrib-bibtex>=2.4.0",
+    "nbsphinx>=0.8.0",
+    "jupyter>=1.0.0",
+]
+gpu = [
+    "cupy>=9.0.0",
+    "pycuda>=2021.1",
+]
+visualization = [
+    "mayavi>=4.7.0",
+    "plotly>=5.0.0",
+    "bokeh>=2.4.0",
+    "pyvista>=0.32.0",
+]
+all = [
+    "semipro[dev,docs,gpu,visualization]"
+]
+
+[project.urls]
+Homepage = "https://github.com/your-repo/SemiPRO"
+Documentation = "https://semipro.readthedocs.io"
+Repository = "https://github.com/your-repo/SemiPRO.git"
+"Bug Tracker" = "https://github.com/your-repo/SemiPRO/issues"
+Changelog = "https://github.com/your-repo/SemiPRO/blob/main/CHANGELOG.md"
+
+[project.scripts]
+semipro = "semipro.cli:main"
+semipro-gui = "semipro.gui.main_window:main"
+semipro-orchestrator = "semipro.orchestrator:main"
+
+[tool.setuptools]
+package-dir = {"" = "src/python"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src/python"]
+
+[tool.setuptools.package-data]
+semipro = [
+    "data/*.yaml",
+    "data/*.json",
+    "shaders/*.vert",
+    "shaders/*.frag",
+    "shaders/*.comp",
+    "templates/*.html",
+    "templates/*.tex",
+    "config/*.yaml",
+    "examples/*.py",
+    "examples/*.yaml",
+]
+
+# Black configuration
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["semipro"]
+known_third_party = [
+    "numpy",
+    "matplotlib",
+    "pandas",
+    "scipy",
+    "pyside6",
+    "yaml",
+    "h5py",
+    "pillow",
+    "tqdm",
+    "click",
+    "jinja2",
+    "jsonschema",
+    "networkx",
+    "skimage",
+    "vtk",
+]
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+    "pandas.*",
+    "scipy.*",
+    "h5py.*",
+    "PIL.*",
+    "vtk.*",
+    "mayavi.*",
+    "plotly.*",
+    "bokeh.*",
+    "pyvista.*",
+]
+ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=semipro",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "gpu: marks tests that require GPU",
+    "visualization: marks tests that require visualization libraries",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src/python/semipro"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/build/*",
+    "*/dist/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+# Flake8 configuration (in setup.cfg since flake8 doesn't support pyproject.toml yet)
+# [tool.flake8] - Not supported yet
+
+# Sphinx configuration
+[tool.sphinx]
+source-dir = "docs/source"
+build-dir = "docs/build"
+
+# Build configuration
+[tool.cibuildwheel]
+build = "cp38-* cp39-* cp310-* cp311-*"
+skip = "*-win32 *-manylinux_i686"
+test-requires = "pytest"
+test-command = "pytest {project}/tests"
+
+[tool.cibuildwheel.linux]
+before-all = [
+    "yum install -y cmake gcc-c++ eigen3-devel yaml-cpp-devel vulkan-devel glfw-devel",
+]
+
+[tool.cibuildwheel.macos]
+before-all = [
+    "brew install cmake eigen yaml-cpp vulkan-headers glfw",
+]
+
+[tool.cibuildwheel.windows]
+before-all = [
+    "vcpkg install eigen3 yaml-cpp vulkan glfw3",
+]

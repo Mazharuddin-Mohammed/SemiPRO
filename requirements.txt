@@ -1,4 +1,33 @@
-PySide6==6.7.2
-numpy==1.26.4
-cython==3.0.11
-pyyaml==6.0.2
+# Author: Dr. Mazharuddin Mohammed
+# Core dependencies for SemiPRO
+
+# Scientific computing
+numpy>=1.19.0
+scipy>=1.7.0
+matplotlib>=3.3.0
+pandas>=1.3.0
+
+# GUI framework
+pyside6>=6.0.0
+
+# Configuration and data formats
+pyyaml>=5.4.0
+h5py>=3.0.0
+jsonschema>=3.2.0
+
+# Image processing
+pillow>=8.0.0
+scikit-image>=0.18.0
+
+# Visualization
+vtk>=9.0.0
+
+# Utilities
+tqdm>=4.60.0
+click>=8.0.0
+jinja2>=3.0.0
+networkx>=2.6.0
+
+# Build dependencies (for development)
+cython>=0.29.0
+pybind11>=2.6.0

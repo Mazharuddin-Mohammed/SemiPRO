@@ -1,11 +1,17 @@
+// Author: Dr. Mazharuddin Mohammed
 #ifndef SIMULATION_ENGINE_HPP
 #define SIMULATION_ENGINE_HPP
 
 #include "wafer_enhanced.hpp"
 #include "profiler.hpp"
+#include "simulation_orchestrator.hpp"
+#include "input_parser.hpp"
+#include "output_generator.hpp"
 #include <future>
 #include <queue>
 #include <functional>
+#include <memory>
+#include <yaml-cpp/yaml.h>
 
 class SimulationEngine {
 public:
