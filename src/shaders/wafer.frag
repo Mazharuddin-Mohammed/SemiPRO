@@ -1,5 +1,6 @@
 #version 450
 
+// Author: Dr. Mazharuddin Mohammed
 // Fragment shader for wafer visualization
 // Supports advanced lighting, material properties, and visual effects
 

@@ -1,5 +1,6 @@
 #version 450
 
+// Author: Dr. Mazharuddin Mohammed
 // Vertex shader for wafer visualization
 // Supports 3D wafer rendering with layer information
 
