@@ -1,4 +1,5 @@
 """
+Author: Dr. Mazharuddin Mohammed
 Enhanced Python bindings for SemiPRO Semiconductor Simulator
 Provides high-level Python interface with additional features
 """
