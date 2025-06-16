@@ -1,3 +1,4 @@
+// Author: Dr. Mazharuddin Mohammed
 #include "wafer.hpp"
 
 Wafer::Wafer(double diameter, double thickness, const std::string& material_id)
