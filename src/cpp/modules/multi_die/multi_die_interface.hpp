@@ -1,3 +1,4 @@
+// Author: Dr. Mazharuddin Mohammed
 #ifndef MULTI_DIE_INTERFACE_HPP
 #define MULTI_DIE_INTERFACE_HPP
 
