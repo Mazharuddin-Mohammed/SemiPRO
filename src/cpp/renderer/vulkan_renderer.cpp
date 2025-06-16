@@ -1,3 +1,4 @@
+// Author: Dr. Mazharuddin Mohammed
 #include "vulkan_renderer.hpp"
 #include <stdexcept>
 #include <array>
