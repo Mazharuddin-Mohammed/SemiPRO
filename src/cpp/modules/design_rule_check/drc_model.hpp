@@ -22,12 +22,8 @@ enum class ViolationType {
     EXTENSION
 };
 
-enum class ViolationSeverity {
-    CRITICAL,
-    ERROR,
-    WARNING,
-    INFO
-};
+// Use ViolationSeverity from interface
+using ViolationSeverity = DRCInterface::ViolationSeverity;
 
 struct DRCRule {
     std::string name;
@@ -39,10 +35,10 @@ struct DRCRule {
     bool enabled;
     std::string description;
     
-    DRCRule(const std::string& rule_name, ViolationType rule_type, 
+    DRCRule(const std::string& rule_name, ViolationType rule_type,
             const std::string& target_layer, double min_val, double max_val = -1.0)
         : name(rule_name), type(rule_type), layer(target_layer),
-          min_value(min_val), max_value(max_val), severity(ViolationSeverity::ERROR),
+          min_value(min_val), max_value(max_val), severity(DRCInterface::ERROR),
           enabled(true) {}
 };
 

@@ -30,7 +30,8 @@ public:
         double uncertainty;
         std::string units;
         std::unordered_map<std::string, double> metadata;
-        
+        std::unordered_map<std::string, std::string> string_metadata;
+
         MeasurementResult(MeasurementType t, double v, double u, const std::string& unit)
             : type(t), value(v), uncertainty(u), units(unit) {}
     };

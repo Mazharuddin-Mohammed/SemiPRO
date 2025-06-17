@@ -48,7 +48,7 @@ int main() {
     // Visualize
     VulkanRenderer renderer(400, 400);
     renderer.initialize();
-    renderer.render(wafer, false, true);
+    renderer.render(wafer, false, "stress");
 
     return 0;
 }

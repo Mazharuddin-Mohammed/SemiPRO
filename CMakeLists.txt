@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Eigen3 REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(OpenMP REQUIRED)
 find_package(Catch2 QUIET)
 
 include_directories(
@@ -30,6 +31,8 @@ include_directories(
 set(SOURCES
     src/cpp/core/wafer.cpp
     src/cpp/core/utils.cpp
+    src/cpp/core/performance_utils.cpp
+    src/cpp/core/plugin_manager.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp
@@ -47,14 +50,14 @@ set(SOURCES
     src/cpp/modules/defect_inspection/defect_inspection_model.cpp
     src/cpp/modules/multi_die/multi_die_model.cpp
     src/cpp/modules/design_rule_check/drc_model.cpp
-    src/cpp/modules/advanced_visualization/advanced_visualization_model.cpp
+    # src/cpp/modules/advanced_visualization/advanced_visualization_model.cpp  # Temporarily disabled
     src/cpp/renderer/vulkan_renderer.cpp
 )
 
 add_library(simulator_lib ${SOURCES})
 
 add_executable(simulator src/cpp/main.cpp)
-target_link_libraries(simulator simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)
+target_link_libraries(simulator simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp OpenMP::OpenMP_CXX dl)
 
 # Tests
 enable_testing()
@@ -94,8 +97,8 @@ target_link_libraries(example_deposition simulator_lib yaml-cpp)
 target_link_libraries(example_etching simulator_lib yaml-cpp)
 target_link_libraries(example_metallization simulator_lib yaml-cpp)
 target_link_libraries(example_packaging simulator_lib yaml-cpp)
-target_link_libraries(example_thermal simulator_lib ${Vulkan_LIBRARIES} glfw)
-target_link_libraries(example_reliability simulator_lib ${Vulkan_LIBRARIES} glfw)
+target_link_libraries(example_thermal simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)
+target_link_libraries(example_reliability simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)
 
 # Tutorials
 add_executable(tutorial_geometry tutorials/cpp/tutorial_geometry.cpp)
@@ -116,5 +119,5 @@ target_link_libraries(tutorial_deposition simulator_lib yaml-cpp)
 target_link_libraries(tutorial_etching simulator_lib yaml-cpp)
 target_link_libraries(tutorial_metallization simulator_lib yaml-cpp)
 target_link_libraries(tutorial_packaging simulator_lib yaml-cpp)
-target_link_libraries(tutorial_thermal simulator_lib ${Vulkan_LIBRARIES} glfw)
-target_link_libraries(tutorial_reliability simulator_lib ${Vulkan_LIBRARIES} glfw)
+target_link_libraries(tutorial_thermal simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)
+target_link_libraries(tutorial_reliability simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)

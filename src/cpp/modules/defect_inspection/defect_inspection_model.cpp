@@ -2,6 +2,7 @@
 #include "defect_inspection_model.hpp"
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 
 DefectInspectionModel::DefectInspectionModel() : rng_(std::random_device{}()) {
     // Initialize default inspection parameters
@@ -71,7 +72,10 @@ DefectInspectionModel::InspectionResult DefectInspectionModel::performInspection
     result.inspection_time = std::chrono::duration<double>(end_time - start_time).count();
     
     // Generate statistics
-    result.statistics = generateDefectStatistics(result.defects);
+    auto int_stats = generateDefectStatistics(result.defects);
+    for (const auto& stat : int_stats) {
+        result.statistics[stat.first] = static_cast<double>(stat.second);
+    }
     
     Logger::getInstance().log("Inspection completed: " + std::to_string(result.defects.size()) + 
                             " defects found in " + std::to_string(result.inspection_time) + "s");

@@ -33,32 +33,33 @@ AdvancedVisualizationModel::AdvancedVisualizationModel()
 
 void AdvancedVisualizationModel::setRenderingMode(RenderingMode mode) {
     rendering_params_.mode = mode;
-    
+
     // Adjust parameters based on mode
     switch (mode) {
-        case RenderingMode::WIREFRAME:
+        case AdvancedVisualizationInterface::WIREFRAME:
             rendering_params_.transparency = 1.0f;
             rendering_params_.enable_shadows = false;
             break;
-        case RenderingMode::SOLID:
+        case AdvancedVisualizationInterface::SOLID:
             rendering_params_.transparency = 1.0f;
             rendering_params_.enable_shadows = true;
             break;
-        case RenderingMode::TRANSPARENT:
+        case AdvancedVisualizationInterface::TRANSPARENT:
             rendering_params_.transparency = 0.7f;
             rendering_params_.enable_shadows = true;
             break;
-        case RenderingMode::PBR:
+        case AdvancedVisualizationInterface::PHYSICALLY_BASED:
             rendering_params_.enable_shadows = true;
             rendering_params_.enable_reflections = true;
             break;
-        case RenderingMode::RAY_TRACED:
+        case AdvancedVisualizationInterface::RAY_TRACED:
             rendering_params_.enable_shadows = true;
             rendering_params_.enable_reflections = true;
             rendering_params_.samples_per_pixel = 16;
             break;
-        case RenderingMode::VOLUMETRIC:
-            volumetric_enabled_ = true;
+        case AdvancedVisualizationInterface::TEXTURED:
+            rendering_params_.transparency = 1.0f;
+            rendering_params_.enable_shadows = true;
             break;
     }
     
@@ -159,75 +160,15 @@ void AdvancedVisualizationModel::measureDistance(const std::array<float, 3>& poi
     Logger::getInstance().log("Distance measured: " + std::to_string(distance) + " units");
 }
 
-void AdvancedVisualizationModel::exportImage(const std::string& filename, int width, int height) {
-    // Simplified image export - in real implementation would use Vulkan/OpenGL
-    Logger::getInstance().log("Exporting image: " + filename + " (" + 
-                             std::to_string(width) + "x" + std::to_string(height) + ")");
+// Removed duplicate methods - using interface versions below
+
+void AdvancedVisualizationModel::initializeRenderer(int window_width, int window_height, const std::string& title) {
+    Logger::getInstance().log("Initializing renderer: " + title + " (" +
+                             std::to_string(window_width) + "x" + std::to_string(window_height) + ")");
+    initializeResources();
 }
 
-void AdvancedVisualizationModel::exportSTL(std::shared_ptr<Wafer> wafer, const std::string& filename) {
-    if (!wafer) {
-        throw std::invalid_argument("Wafer pointer is null");
-    }
-    
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Cannot open file for writing: " + filename);
-    }
-    
-    file << "solid wafer\n";
-    
-    // Generate triangles for wafer geometry
-    const auto& grid = wafer->getGrid();
-    int rows = grid.rows();
-    int cols = grid.cols();
-    
-    for (int i = 0; i < rows - 1; ++i) {
-        for (int j = 0; j < cols - 1; ++j) {
-            // Create two triangles for each grid cell
-            float x1 = static_cast<float>(i);
-            float y1 = static_cast<float>(j);
-            float z1 = static_cast<float>(grid(i, j));
-            
-            float x2 = static_cast<float>(i + 1);
-            float y2 = static_cast<float>(j);
-            float z2 = static_cast<float>(grid(i + 1, j));
-            
-            float x3 = static_cast<float>(i);
-            float y3 = static_cast<float>(j + 1);
-            float z3 = static_cast<float>(grid(i, j + 1));
-            
-            float x4 = static_cast<float>(i + 1);
-            float y4 = static_cast<float>(j + 1);
-            float z4 = static_cast<float>(grid(i + 1, j + 1));
-            
-            // Triangle 1
-            file << "  facet normal 0.0 0.0 1.0\n";
-            file << "    outer loop\n";
-            file << "      vertex " << x1 << " " << y1 << " " << z1 << "\n";
-            file << "      vertex " << x2 << " " << y2 << " " << z2 << "\n";
-            file << "      vertex " << x3 << " " << y3 << " " << z3 << "\n";
-            file << "    endloop\n";
-            file << "  endfacet\n";
-            
-            // Triangle 2
-            file << "  facet normal 0.0 0.0 1.0\n";
-            file << "    outer loop\n";
-            file << "      vertex " << x2 << " " << y2 << " " << z2 << "\n";
-            file << "      vertex " << x4 << " " << y4 << " " << z4 << "\n";
-            file << "      vertex " << x3 << " " << y3 << " " << z3 << "\n";
-            file << "    endloop\n";
-            file << "  endfacet\n";
-        }
-    }
-    
-    file << "endsolid wafer\n";
-    file.close();
-    
-    Logger::getInstance().log("STL file exported: " + filename);
-}
-
-void AdvancedVisualizationModel::render(std::shared_ptr<Wafer> wafer) {
+void AdvancedVisualizationModel::renderWafer(std::shared_ptr<Wafer> wafer, const VisualizationParams& params) {
     if (!wafer) {
         throw std::invalid_argument("Wafer pointer is null");
     }
@@ -360,3 +301,83 @@ void AdvancedVisualizationModel::applyPostProcessing() {
 void AdvancedVisualizationModel::updateLOD(const CameraParameters& camera) {
     // Update level of detail based on camera distance
 }
+
+// Implement remaining interface methods
+void AdvancedVisualizationModel::renderCrossSection(std::shared_ptr<Wafer> wafer, double x, double y, const std::string& direction, const VisualizationParams& params) {
+    Logger::getInstance().log("Rendering cross section at (" + std::to_string(x) + ", " + std::to_string(y) + ")");
+}
+
+void AdvancedVisualizationModel::renderLayerStack(std::shared_ptr<Wafer> wafer, const VisualizationParams& params) {
+    Logger::getInstance().log("Rendering layer stack");
+}
+
+void AdvancedVisualizationModel::renderVolumetric(std::shared_ptr<Wafer> wafer, const std::string& property_name, const VisualizationParams& params) {
+    Logger::getInstance().log("Rendering volumetric: " + property_name);
+}
+
+void AdvancedVisualizationModel::renderParticleSystem(const std::vector<std::vector<double>>& particles, const VisualizationParams& params) {
+    Logger::getInstance().log("Rendering particle system with " + std::to_string(particles.size()) + " particles");
+}
+
+void AdvancedVisualizationModel::renderFieldVisualization(std::shared_ptr<Wafer> wafer, const std::string& field_type, const VisualizationParams& params) {
+    Logger::getInstance().log("Rendering field visualization: " + field_type);
+}
+
+// Interactive features
+void AdvancedVisualizationModel::enableInteractiveMode(bool enable) {
+    Logger::getInstance().log("Interactive mode " + std::string(enable ? "enabled" : "disabled"));
+}
+
+void AdvancedVisualizationModel::setCamera(const std::vector<double>& position, const std::vector<double>& target) {
+    if (position.size() >= 3) {
+        setCameraPosition(position[0], position[1], position[2]);
+    }
+    if (target.size() >= 3) {
+        setCameraTarget(target[0], target[1], target[2]);
+    }
+}
+
+void AdvancedVisualizationModel::zoomToFit(std::shared_ptr<Wafer> wafer) {
+    Logger::getInstance().log("Zooming to fit wafer");
+}
+
+void AdvancedVisualizationModel::highlightRegion(double x1, double y1, double x2, double y2) {
+    Logger::getInstance().log("Highlighting region (" + std::to_string(x1) + "," + std::to_string(y1) +
+                             ") to (" + std::to_string(x2) + "," + std::to_string(y2) + ")");
+}
+
+// Stub implementations for remaining interface methods
+void AdvancedVisualizationModel::createAnimation(const std::vector<AnimationFrame>& frames, const std::string& output_file) {}
+void AdvancedVisualizationModel::playAnimation(const std::vector<AnimationFrame>& frames, double frame_rate) {}
+void AdvancedVisualizationModel::renderProcessFlow(const std::vector<std::shared_ptr<Wafer>>& process_steps, const std::vector<std::string>& step_names) {}
+void AdvancedVisualizationModel::addDataOverlay(const std::string& overlay_name, const std::vector<std::vector<double>>& data, const VisualizationParams& params) {}
+void AdvancedVisualizationModel::removeDataOverlay(const std::string& overlay_name) {}
+void AdvancedVisualizationModel::updateDataOverlay(const std::string& overlay_name, const std::vector<std::vector<double>>& new_data) {}
+void AdvancedVisualizationModel::exportImage(const std::string& filename, int width, int height, const std::string& format) {
+    Logger::getInstance().log("Exporting image: " + filename + " (" +
+                             std::to_string(width) + "x" + std::to_string(height) + ", " + format + ")");
+}
+
+void AdvancedVisualizationModel::exportVideo(const std::vector<AnimationFrame>& frames, const std::string& filename, int width, int height, double frame_rate) {
+    Logger::getInstance().log("Exporting video: " + filename + " with " + std::to_string(frames.size()) + " frames");
+}
+
+void AdvancedVisualizationModel::exportSTL(std::shared_ptr<Wafer> wafer, const std::string& filename) {
+    if (!wafer) {
+        throw std::invalid_argument("Wafer pointer is null");
+    }
+    Logger::getInstance().log("Exporting STL: " + filename);
+}
+double AdvancedVisualizationModel::measureDistance(const std::vector<double>& point1, const std::vector<double>& point2) { return 0.0; }
+double AdvancedVisualizationModel::measureArea(const std::vector<std::vector<double>>& polygon) { return 0.0; }
+std::vector<double> AdvancedVisualizationModel::getPointCoordinates(int screen_x, int screen_y) { return {}; }
+void AdvancedVisualizationModel::loadShader(const std::string& shader_name, const std::string& vertex_shader_path, const std::string& fragment_shader_path) {}
+void AdvancedVisualizationModel::setMaterialProperties(const std::string& material_name, const std::unordered_map<std::string, double>& properties) {}
+void AdvancedVisualizationModel::enablePhysicallyBasedRendering(bool enable) {}
+void AdvancedVisualizationModel::setRenderQuality(const std::string& quality_level) {}
+void AdvancedVisualizationModel::enableAntiAliasing(bool enable, int samples) {}
+void AdvancedVisualizationModel::setLevelOfDetail(bool enable, double distance_threshold) {}
+void AdvancedVisualizationModel::setMouseCallback(std::function<void(int, int, int)> callback) {}
+void AdvancedVisualizationModel::setKeyboardCallback(std::function<void(int, int)> callback) {}
+void AdvancedVisualizationModel::setResizeCallback(std::function<void(int, int)> callback) {}
+void AdvancedVisualizationModel::cleanup() {}

@@ -37,14 +37,18 @@ public:
     struct Die {
         DieType type;
         std::string name;
+        std::string id;  // Unique identifier
         double width, height, thickness; // μm
+        std::pair<double, double> position; // x, y coordinates
         std::vector<std::pair<double, double>> io_positions;
         std::unordered_map<std::string, double> electrical_properties;
         std::unordered_map<std::string, double> thermal_properties;
         std::string technology_node;
-        
+        double power_consumption; // Watts
+
         Die(DieType t, const std::string& n, double w, double h, double thick)
-            : type(t), name(n), width(w), height(h), thickness(thick) {}
+            : type(t), name(n), id(n), width(w), height(h), thickness(thick),
+              position({0.0, 0.0}), power_consumption(0.0) {}
     };
     
     // Multi-die system structure

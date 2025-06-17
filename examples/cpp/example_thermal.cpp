@@ -22,3 +22,4 @@ int main() {
     thermal.simulateThermal(wafer, 300.0, 0.001);
     std::cout << "Max temperature: " << wafer->getTemperatureProfile().maxCoeff() << " K\n";
     return 0;
+}

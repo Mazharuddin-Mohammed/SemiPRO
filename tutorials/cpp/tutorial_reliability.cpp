@@ -59,7 +59,7 @@ int main() {
     // Step 7: Visualize
     VulkanRenderer renderer(400, 400);
     renderer.initialize();
-    renderer.render(wafer, false, true);
+    renderer.render(wafer, false, "stress");
     std::cout << "Step 7: Visualizing reliability risks\n";
 
     return 0;

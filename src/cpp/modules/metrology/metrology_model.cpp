@@ -97,7 +97,7 @@ MetrologyModel::MeasurementResult MetrologyModel::measureThickness(
     MeasurementResult result(THICKNESS, measured_thickness, uncertainty, "μm");
     result.metadata["x_position"] = x;
     result.metadata["y_position"] = y;
-    result.metadata["layer_material"] = layer_material.empty() ? "total" : layer_material;
+    result.string_metadata["layer_material"] = layer_material.empty() ? "total" : layer_material;
     
     return result;
 }
@@ -128,7 +128,7 @@ MetrologyModel::MeasurementResult MetrologyModel::measureCriticalDimension(
     MeasurementResult result(CRITICAL_DIMENSION, measured_cd, 2.0, "nm");
     result.metadata["x_position"] = x;
     result.metadata["y_position"] = y;
-    result.metadata["feature_type"] = feature_type;
+    result.string_metadata["feature_type"] = feature_type;
     
     return result;
 }
@@ -149,8 +149,8 @@ MetrologyModel::MeasurementResult MetrologyModel::measureOverlay(
     MeasurementResult result(OVERLAY, total_overlay, 1.0, "nm");
     result.metadata["x_position"] = x;
     result.metadata["y_position"] = y;
-    result.metadata["layer1"] = layer1;
-    result.metadata["layer2"] = layer2;
+    result.string_metadata["layer1"] = layer1;
+    result.string_metadata["layer2"] = layer2;
     result.metadata["overlay_x"] = overlay_x;
     result.metadata["overlay_y"] = overlay_y;
     

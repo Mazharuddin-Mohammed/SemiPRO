@@ -342,8 +342,8 @@ void DRCModel::addViolation(const DRCViolation& violation) {
 
 size_t DRCModel::getCriticalViolationCount() const {
     return std::count_if(violations_.begin(), violations_.end(),
-                        [](const DRCViolation& v) { 
-                            return v.severity == ViolationSeverity::CRITICAL; 
+                        [](const DRCViolation& v) {
+                            return v.severity == DRCInterface::ERROR;
                         });
 }
 

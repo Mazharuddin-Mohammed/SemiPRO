@@ -9,14 +9,8 @@
 #include <string>
 #include <unordered_map>
 
-enum class RenderingMode {
-    WIREFRAME,
-    SOLID,
-    TRANSPARENT,
-    PBR,
-    RAY_TRACED,
-    VOLUMETRIC
-};
+// Use RenderingMode from interface
+using RenderingMode = AdvancedVisualizationInterface::RenderingMode;
 
 enum class VisualizationLayer {
     SUBSTRATE,
@@ -50,7 +44,7 @@ struct RenderingParameters {
     bool enable_subsurface_scattering;
     int samples_per_pixel;
     
-    RenderingParameters() : mode(RenderingMode::SOLID), transparency(1.0f),
+    RenderingParameters() : mode(AdvancedVisualizationInterface::SOLID), transparency(1.0f),
                            metallic(0.0f), roughness(0.5f), emission(0.0f),
                            enable_shadows(true), enable_reflections(false),
                            enable_subsurface_scattering(false), samples_per_pixel(1) {}
@@ -150,11 +144,7 @@ public:
     void measureVolume(const std::vector<std::array<float, 3>>& points);
     void highlightRegion(const std::array<float, 3>& center, float radius);
     
-    // Export capabilities
-    void exportImage(const std::string& filename, int width, int height);
-    void exportVideo(const std::string& filename, int width, int height,
-                    float duration, int fps);
-    void exportSTL(std::shared_ptr<Wafer> wafer, const std::string& filename);
+    // Export capabilities (non-interface methods)
     void export3DModel(std::shared_ptr<Wafer> wafer, const std::string& filename,
                       const std::string& format);
     
@@ -176,8 +166,58 @@ public:
     void setRenderingQuality(float quality); // 0.0 to 1.0
     void enableTemporalUpsampling(bool enabled);
     
-    // Render the wafer
-    void render(std::shared_ptr<Wafer> wafer) override;
+    // Implement interface methods
+    void initializeRenderer(int window_width, int window_height, const std::string& title) override;
+    void renderWafer(std::shared_ptr<Wafer> wafer, const VisualizationParams& params) override;
+    void renderCrossSection(std::shared_ptr<Wafer> wafer, double x, double y, const std::string& direction, const VisualizationParams& params) override;
+    void renderLayerStack(std::shared_ptr<Wafer> wafer, const VisualizationParams& params) override;
+    void renderVolumetric(std::shared_ptr<Wafer> wafer, const std::string& property_name, const VisualizationParams& params) override;
+    void renderParticleSystem(const std::vector<std::vector<double>>& particles, const VisualizationParams& params) override;
+    void renderFieldVisualization(std::shared_ptr<Wafer> wafer, const std::string& field_type, const VisualizationParams& params) override;
+
+    // Interactive features
+    void enableInteractiveMode(bool enable) override;
+    void setCamera(const std::vector<double>& position, const std::vector<double>& target) override;
+    void zoomToFit(std::shared_ptr<Wafer> wafer) override;
+    void highlightRegion(double x1, double y1, double x2, double y2) override;
+
+    // Animation and time-series
+    void createAnimation(const std::vector<AnimationFrame>& frames, const std::string& output_file) override;
+    void playAnimation(const std::vector<AnimationFrame>& frames, double frame_rate) override;
+    void renderProcessFlow(const std::vector<std::shared_ptr<Wafer>>& process_steps, const std::vector<std::string>& step_names) override;
+
+    // Data visualization overlays
+    void addDataOverlay(const std::string& overlay_name, const std::vector<std::vector<double>>& data, const VisualizationParams& params) override;
+    void removeDataOverlay(const std::string& overlay_name) override;
+    void updateDataOverlay(const std::string& overlay_name, const std::vector<std::vector<double>>& new_data) override;
+
+    // Export and output
+    void exportImage(const std::string& filename, int width, int height, const std::string& format) override;
+    void exportVideo(const std::vector<AnimationFrame>& frames, const std::string& filename, int width, int height, double frame_rate) override;
+    void exportSTL(std::shared_ptr<Wafer> wafer, const std::string& filename) override;
+
+    // Measurement and analysis tools
+    double measureDistance(const std::vector<double>& point1, const std::vector<double>& point2) override;
+    double measureArea(const std::vector<std::vector<double>>& polygon) override;
+    std::vector<double> getPointCoordinates(int screen_x, int screen_y) override;
+
+    // Shader and material management
+    void loadShader(const std::string& shader_name, const std::string& vertex_shader_path, const std::string& fragment_shader_path) override;
+    void setMaterialProperties(const std::string& material_name, const std::unordered_map<std::string, double>& properties) override;
+    void enablePhysicallyBasedRendering(bool enable) override;
+
+    // Performance and quality settings
+    void setRenderQuality(const std::string& quality_level) override;
+    void enableAntiAliasing(bool enable, int samples = 4) override;
+    void setLevelOfDetail(bool enable, double distance_threshold = 100.0) override;
+
+    // Event handling
+    void setMouseCallback(std::function<void(int, int, int)> callback) override;
+    void setKeyboardCallback(std::function<void(int, int)> callback) override;
+    void setResizeCallback(std::function<void(int, int)> callback) override;
+
+    // Cleanup
+    void cleanup() override;
     void renderLayer(std::shared_ptr<Wafer> wafer, VisualizationLayer layer);
     void renderCrossSection(std::shared_ptr<Wafer> wafer, 
                            const std::array<float, 3>& plane_normal,
