@@ -292,6 +292,60 @@ checkpoints/
 user_data/
 preferences.ini
 
+# Cython specific files
+*.c
+*.cpp
+*.html
+*.pyx.c
+*.pyx.cpp
+src/cython/*.c
+src/cython/*.cpp
+src/cython/*.so
+src/cython/*.pyd
+src/cython/*.html
+Cython-*/
+setup_*.py
+
+# Downloaded dependencies and build artifacts
+*.tar.gz
+*.whl
+pip-wheel-metadata/
+share/python-wheels/
+
+# Test artifacts
+test_results/
+coverage_reports/
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+nosetests.xml
+
+# Additional Python artifacts
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+.hypothesis/
+.cache/
+
+# Documentation artifacts
+docs/build/
+docs/_build/
+*.pdf
+*.epub
+site/
+
+# IDE specific
+.spyderproject
+.spyproject
+.ropeproject
+*.sublime-*
+
+# Package management
+__pypackages__/
+.pipenv/
+
 # OS specific
 .DS_Store
 .DS_Store?
