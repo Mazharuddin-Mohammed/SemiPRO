@@ -26,6 +26,8 @@ include_directories(
     src/cpp/modules/thermal
     src/cpp/modules/reliability
     src/cpp/renderer
+    src/cpp/api
+    src/cpp/integration
 )
 
 set(SOURCES
@@ -52,6 +54,7 @@ set(SOURCES
     src/cpp/modules/design_rule_check/drc_model.cpp
     # src/cpp/modules/advanced_visualization/advanced_visualization_model.cpp  # Temporarily disabled
     src/cpp/renderer/vulkan_renderer.cpp
+    src/cpp/integration/eda_integration.cpp
 )
 
 add_library(simulator_lib ${SOURCES})
