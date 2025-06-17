@@ -1,3 +1,4 @@
+# Author: Dr. Mazharuddin Mohammed
 # distutils: language = c++
 # distutils: sources = ../cpp/core/wafer.cpp ../cpp/core/utils.cpp
 
@@ -121,26 +122,35 @@ cdef class PyWafer:
         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)
         return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)
     def get_thermal_conductivity(self):
-        return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)
+        cdef int rows, cols
+        cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
+        return np.asarray(<np.float64_t[:rows, :cols]> conductivity_ptr)
     def get_electromigration_mttf(self):
-        return np.asarray(<np.f64_t[:rows, :cols]> mttf_ptr)
+        cdef int rows, cols
+        cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
+        return np.asarray(<np.float64_t[:rows, :cols]> mttf_ptr)
     def get_thermal_stress(self):
-        return np.asarray(<np.f64_t[:rows, :cols]> stress_ptr)
+        cdef int rows, cols
+        cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
+        return np.asarray(<np.float64_t[:rows, :cols]> stress_ptr)
     def get_dielectric_field(self):
-        return np.asarray(<np.f64_t[:rows, :cols]> field_ptr)
+        cdef int rows, cols
+        cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
+        return np.asarray(<np.float64_t[:rows, :cols]> field_ptr)
     def get_material_id(self):
-        return self.thisptr.get().getMaterialId().decode('utf-8'))
+        return self.thisptr.get().getMaterialId().decode('utf-8')
     def get_diameter(self):
         return self.thisptr.get().getDiameter()
     def get_thickness(self):
         return self.thisptr.get().getThickness()
 
 cdef class PyGeometryManager:
+    cdef GeometryManager* thisptr
     def __cinit__(self):
         self.thisptr = new GeometryManager()
     def __dealloc__(self):
         del self.thisptr
-    def initialize_grid(self, wafer: PyWaferGeometryManager, x_dim: int, y_dim: int):
-        self.thisptr.get().initializeGrid((wafer.thisptr, x_dim, y_dim))
-    def apply_layer(self, y: PyWafer, thickness: float, material_id: str):
-        self.materialmaterialize_layer(self.thisptr, wafer.thisptr, thickness, material_id.encode('float'))
+    def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):
+        self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)
+    def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):
+        self.thisptr.applyLayer(wafer.thisptr, thickness, material_id.encode('utf-8'))
