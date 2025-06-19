@@ -1,8 +1,10 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton, QComboBox, QLabel
-from PySide6.QtCore import QtCore.Signal
+from PySide6.QtCore import Signal
 from ..simulator import Simulator
 
 class MetallizationPanel(QWidget):
+    metallization_updated = Signal(object)
+
     def __init__(self):
         super().__init__()
         self.simulator = Simulator()

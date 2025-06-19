@@ -1,12 +1,25 @@
 # Author: Dr. Mazharuddin Mohammed
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, 
-                               QPushButton, QLabel, QComboBox, QSpinBox, 
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit,
+                               QPushButton, QLabel, QComboBox, QSpinBox,
                                QDoubleSpinBox, QTableWidget, QTableWidgetItem,
                                QGroupBox, QFormLayout, QTextEdit, QTabWidget)
 from PySide6.QtCore import Signal, Qt
 from ..simulator import Simulator
-from ..multi_die import DIE_TYPE_LOGIC, DIE_TYPE_MEMORY, DIE_TYPE_ANALOG, DIE_TYPE_RF, DIE_TYPE_SENSOR, DIE_TYPE_POWER
-from ..multi_die import INTEGRATION_WIRE_BONDING, INTEGRATION_FLIP_CHIP, INTEGRATION_TSV, INTEGRATION_WLP, INTEGRATION_CHIPLET
+
+# Die type constants
+DIE_TYPE_LOGIC = 0
+DIE_TYPE_MEMORY = 1
+DIE_TYPE_ANALOG = 2
+DIE_TYPE_RF = 3
+DIE_TYPE_SENSOR = 4
+DIE_TYPE_POWER = 5
+
+# Integration method constants
+INTEGRATION_WIRE_BONDING = 0
+INTEGRATION_FLIP_CHIP = 1
+INTEGRATION_TSV = 2
+INTEGRATION_WLP = 3
+INTEGRATION_CHIPLET = 4
 
 class MultiDiePanel(QWidget):
     multi_die_updated = Signal(object)

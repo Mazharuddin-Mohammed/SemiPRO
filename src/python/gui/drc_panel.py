@@ -4,17 +4,25 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit,
                                QDoubleSpinBox, QTableWidget, QTableWidgetItem,
                                QGroupBox, QFormLayout, QTextEdit, QTabWidget,
                                QCheckBox, QProgressBar, QFileDialog)
-from PySide6.QtCore import Signal, Qt, QThread, pyqtSignal
+from PySide6.QtCore import Signal, Qt, QThread
 from PySide6.QtGui import QColor
 from ..simulator import Simulator
-from ..drc import (VIOLATION_TYPE_WIDTH, VIOLATION_TYPE_SPACING, VIOLATION_TYPE_AREA,
-                   VIOLATION_TYPE_DENSITY, VIOLATION_TYPE_ANTENNA_RATIO,
-                   VIOLATION_SEVERITY_CRITICAL, VIOLATION_SEVERITY_ERROR,
-                   VIOLATION_SEVERITY_WARNING, VIOLATION_SEVERITY_INFO)
+
+# DRC constants
+VIOLATION_TYPE_WIDTH = 0
+VIOLATION_TYPE_SPACING = 1
+VIOLATION_TYPE_AREA = 2
+VIOLATION_TYPE_DENSITY = 3
+VIOLATION_TYPE_ANTENNA_RATIO = 4
+
+VIOLATION_SEVERITY_CRITICAL = 0
+VIOLATION_SEVERITY_ERROR = 1
+VIOLATION_SEVERITY_WARNING = 2
+VIOLATION_SEVERITY_INFO = 3
 
 class DRCWorker(QThread):
-    progress_updated = pyqtSignal(int)
-    drc_completed = pyqtSignal(dict)
+    progress_updated = Signal(int)
+    drc_completed = Signal(dict)
     
     def __init__(self, simulator, drc_type="full"):
         super().__init__()
