@@ -43,6 +43,11 @@ set(SOURCES
     src/cpp/core/utils.cpp
     src/cpp/core/performance_utils.cpp
     src/cpp/core/plugin_manager.cpp
+
+    # Advanced process modules
+    src/cpp/modules/advanced_processes/euv_lithography.cpp
+    src/cpp/modules/advanced_processes/advanced_ion_implantation.cpp
+    src/cpp/modules/advanced_processes/advanced_interconnects.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp
