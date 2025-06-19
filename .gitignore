@@ -29,6 +29,15 @@ Makefile
 *.a
 *.lib
 
+# Specific executables
+simulator
+tests
+example_*
+tutorial_*
+working_*
+*_example
+*_demo
+
 # Object files
 *.o
 *.obj
@@ -202,6 +211,14 @@ data/
 *.hdf5
 *.h5
 
+# Simulation artifacts
+dopant_profile.dat
+dopant_profile_visualization.png
+wafer_3d_visualization.png
+mosfet_final.png
+temperature_field.png
+stress_analysis.png
+
 # Large data files
 *.bin
 *.raw
@@ -305,6 +322,13 @@ src/cython/*.pyd
 src/cython/*.html
 Cython-*/
 setup_*.py
+
+# Large downloaded dependencies (should not be in repo)
+Cython-*/
+eigen-*/
+yaml-cpp-*/
+glfw-*/
+vulkan-*/
 
 # Downloaded dependencies and build artifacts
 *.tar.gz
