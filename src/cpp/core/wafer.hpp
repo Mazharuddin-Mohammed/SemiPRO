@@ -23,6 +23,7 @@ public:
   void setThermalStress(const Eigen::ArrayXXd& stress); // NEW
   void setDielectricField(const Eigen::ArrayXXd& field); // NEW
   void updateGrid(const Eigen::ArrayXXd& new_grid);
+  void setGrid(const Eigen::ArrayXXd& new_grid);
   Eigen::ArrayXXd& getGrid();
   const Eigen::ArrayXXd& getGrid() const;
   Eigen::ArrayXd& getDopantProfile();

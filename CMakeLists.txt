@@ -10,6 +10,8 @@ find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(Catch2 QUIET)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(TBB REQUIRED tbb)
 
 include_directories(
     ${EIGEN3_INCLUDE_DIR}
@@ -43,11 +45,6 @@ set(SOURCES
     src/cpp/core/utils.cpp
     src/cpp/core/performance_utils.cpp
     src/cpp/core/plugin_manager.cpp
-
-    # Advanced process modules
-    src/cpp/modules/advanced_processes/euv_lithography.cpp
-    src/cpp/modules/advanced_processes/advanced_ion_implantation.cpp
-    src/cpp/modules/advanced_processes/advanced_interconnects.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp
@@ -73,7 +70,7 @@ set(SOURCES
 add_library(simulator_lib ${SOURCES})
 
 add_executable(simulator src/cpp/main.cpp)
-target_link_libraries(simulator simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp OpenMP::OpenMP_CXX dl)
+target_link_libraries(simulator simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp OpenMP::OpenMP_CXX ${TBB_LIBRARIES} dl)
 
 # Tests
 enable_testing()

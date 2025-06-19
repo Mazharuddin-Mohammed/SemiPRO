@@ -71,6 +71,10 @@ void Wafer::updateGrid(const Eigen::ArrayXXd& new_grid) {
   grid_ = new_grid;
 }
 
+void Wafer::setGrid(const Eigen::ArrayXXd& new_grid) {
+  grid_ = new_grid;
+}
+
 Eigen::ArrayXXd& Wafer::getGrid() { return grid_; }
 const Eigen::ArrayXXd& Wafer::getGrid() const { return grid_; }
 Eigen::ArrayXd& Wafer::getDopantProfile() { return dopant_profile_; }
