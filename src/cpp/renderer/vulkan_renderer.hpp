@@ -6,6 +6,8 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <memory>
 
 struct Vertex {
     std::array<float, 2> position;
@@ -20,6 +22,28 @@ public:
     void render(const std::shared_ptr<Wafer>& wafer, bool show_temp_overlay = false,
                 const std::string& reliability_metric = ""); // MODIFIED
     GLFWwindow* getWindow() const;
+
+    // Enhanced visualization features
+    enum RenderingMode {
+        SURFACE_RENDERING,
+        VOLUMETRIC_RENDERING,
+        CROSS_SECTION,
+        TEMPERATURE_FIELD,
+        DOPANT_DISTRIBUTION,
+        STRESS_ANALYSIS
+    };
+
+    void setRenderingMode(RenderingMode mode) { rendering_mode_ = mode; }
+    void enableBloom(bool enable) { bloom_enabled_ = enable; }
+    void enableAntiAliasing(bool enable) { anti_aliasing_enabled_ = enable; }
+    void setQualityLevel(float quality) { quality_level_ = quality; }
+    void enableVolumetricRendering(bool enable) { volumetric_enabled_ = enable; }
+
+    // Performance monitoring
+    float getFrameRate() const { return frame_rate_; }
+    float getRenderTime() const { return last_render_time_; }
+    void exportImage(const std::string& filename, int width, int height);
+    void exportSTL(const std::shared_ptr<Wafer>& wafer, const std::string& filename);
 
 private:
     void createInstance();
@@ -68,4 +92,36 @@ private:
     vk::Semaphore image_available_semaphore_;
     vk::Semaphore render_finished_semaphore_;
     vk::Fence in_flight_fence_;
+
+    // Enhanced rendering features
+    RenderingMode rendering_mode_ = SURFACE_RENDERING;
+    bool bloom_enabled_ = false;
+    bool anti_aliasing_enabled_ = true;
+    bool volumetric_enabled_ = false;
+    float quality_level_ = 1.0f;
+
+    // Performance tracking
+    mutable float frame_rate_ = 0.0f;
+    mutable float last_render_time_ = 0.0f;
+    mutable uint32_t frame_count_ = 0;
+    mutable std::chrono::high_resolution_clock::time_point last_frame_time_;
+
+    // Vertex structure
+    struct Vertex {
+        float pos[2];
+        float color[3];
+    };
+
+    // Enhanced rendering methods
+    void updatePerformanceMetrics() const;
+    void beginFrame();
+    void endFrame();
+    void renderSurface(std::shared_ptr<Wafer> wafer);
+    void renderVolumetric(std::shared_ptr<Wafer> wafer);
+    void renderCrossSection(std::shared_ptr<Wafer> wafer);
+    void renderTemperatureField(std::shared_ptr<Wafer> wafer);
+    void renderDopantDistribution(std::shared_ptr<Wafer> wafer);
+    void applyBloomEffect();
+    void applyAntiAliasing();
+    void updateWaferData(std::shared_ptr<Wafer> wafer);
 };
