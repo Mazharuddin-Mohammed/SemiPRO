@@ -41,6 +41,9 @@ std::unordered_map<std::string, std::string> parseSimpleJSON(const std::string& 
 
 int main(int argc, char* argv[]) {
     try {
+        // Basic debug output
+        std::cout << "SemiPRO C++ Simulator starting..." << std::endl;
+
         // Initialize logging
         Logger::getInstance().log("SemiPRO C++ Simulator starting...");
 
@@ -60,10 +63,12 @@ int main(int argc, char* argv[]) {
         }
 
         if (config_file.empty()) {
+            std::cout << "No config file specified, running default simulation" << std::endl;
             Logger::getInstance().log("No config file specified, running default simulation");
 
             // Default simulation for testing
             auto& engine = SimulationEngine::getInstance();
+            engine.initialize(""); // Initialize with empty config
             auto wafer = engine.createWafer(300.0, 775.0, "silicon");
             wafer->initializeGrid(50, 50);
             engine.registerWafer(wafer, "test_wafer");
@@ -96,31 +101,64 @@ int main(int argc, char* argv[]) {
 
         // Create wafer and simulation engine
         auto& engine = SimulationEngine::getInstance();
+        engine.initialize(config_file); // Initialize with config file
         auto wafer = engine.createWafer(300.0, 775.0, "silicon");
         wafer->initializeGrid(50, 50);
         engine.registerWafer(wafer, "main_wafer");
 
-        // Set up process parameters
-        SimulationEngine::ProcessParameters params(process_type, 1.0);
+        // Handle different operation types
+        bool success = false;
 
-        // Parse parameters based on process type
-        if (process_type == "oxidation") {
+        if (process_type == "geometry_init") {
+            // Geometry initialization - already done above
+            success = true;
+            Logger::getInstance().log("Geometry initialization completed");
+
+        } else if (process_type == "grid_init") {
+            // Grid initialization - already done above
+            success = true;
+            Logger::getInstance().log("Grid initialization completed");
+
+        } else if (process_type == "oxidation") {
+            SimulationEngine::ProcessParameters params(process_type, 1.0);
             params.parameters["temperature"] = std::stod(config.count("temperature") ? config["temperature"] : "1000");
             params.parameters["time"] = std::stod(config.count("time") ? config["time"] : "1.0");
             params.parameters["ambient"] = config.count("atmosphere") && config["atmosphere"] == "wet" ? 1.0 : 0.0;
+
+            auto future = engine.simulateProcessAsync("main_wafer", params);
+            success = future.get();
+
         } else if (process_type == "doping") {
+            SimulationEngine::ProcessParameters params(process_type, 1.0);
             params.parameters["energy"] = std::stod(config.count("energy") ? config["energy"] : "50");
             params.parameters["dose"] = std::stod(config.count("concentration") ? config["concentration"] : "1e15");
             params.parameters["mass"] = 11.0; // Default: boron
             params.parameters["atomic_number"] = 5.0; // Default: boron
+
+            auto future = engine.simulateProcessAsync("main_wafer", params);
+            success = future.get();
+
         } else if (process_type == "deposition") {
+            SimulationEngine::ProcessParameters params(process_type, 1.0);
             params.parameters["thickness"] = std::stod(config.count("thickness") ? config["thickness"] : "0.5");
             params.parameters["temperature"] = std::stod(config.count("temperature") ? config["temperature"] : "400");
-        }
 
-        // Execute simulation
-        auto future = engine.simulateProcessAsync("main_wafer", params);
-        bool success = future.get();
+            auto future = engine.simulateProcessAsync("main_wafer", params);
+            success = future.get();
+
+        } else if (process_type == "etching") {
+            SimulationEngine::ProcessParameters params(process_type, 1.0);
+            params.parameters["depth"] = std::stod(config.count("rate") ? config["rate"] : "0.5");
+            params.parameters["type"] = config.count("etch_type") && config["etch_type"] == "isotropic" ? 0.0 : 1.0;
+            params.parameters["selectivity"] = std::stod(config.count("selectivity") ? config["selectivity"] : "10");
+
+            auto future = engine.simulateProcessAsync("main_wafer", params);
+            success = future.get();
+
+        } else {
+            Logger::getInstance().log("Unknown process type: " + process_type);
+            success = false;
+        }
 
         Logger::getInstance().log("Simulation completed: " + process_type + " - " +
                                  std::string(success ? "SUCCESS" : "FAILED"));
@@ -128,6 +166,7 @@ int main(int argc, char* argv[]) {
         return success ? 0 : 1;
 
     } catch (const std::exception& e) {
+        std::cerr << "Simulation failed with exception: " << e.what() << std::endl;
         Logger::getInstance().log("Simulation failed with exception: " + std::string(e.what()));
         return 1;
     }
