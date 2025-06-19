@@ -12,6 +12,8 @@ public:
 
 private:
   double calculateOxideThickness(double temperature, double time) const;
+  double calculateEnhancedOxideThickness(double temperature, double time, const std::string& atmosphere) const;
+  double calculateOxidationStress(double thickness, double temperature) const;
 };
 
 #endif // OXIDATION_MODEL_HPP
