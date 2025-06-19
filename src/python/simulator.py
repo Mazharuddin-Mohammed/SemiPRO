@@ -189,6 +189,15 @@ class Simulator:
         self.wafer = PyWafer(300.0, 775.0, "silicon")
         self.renderer = None
 
+        # Enhanced features
+        self.enhanced_mode = True
+        self.batch_operations = []
+        self.async_tasks = []
+        self.performance_metrics = {}
+        self.error_recovery_enabled = True
+        self.checkpoint_interval = 300  # 5 minutes
+        self.last_checkpoint = time.time()
+
         # Initialize orchestration
         if ORCHESTRATION_AVAILABLE:
             self.orchestrator = get_orchestrator()
@@ -380,6 +389,258 @@ class Simulator:
 
     def get_renderer_window(self):
         return self.renderer.get_window()
+
+    # ========== ENHANCED FEATURES ==========
+
+    def enable_enhanced_mode(self, enable: bool = True):
+        """Enable enhanced simulation features"""
+        self.enhanced_mode = enable
+        if enable:
+            self.logger.info("Enhanced simulation mode enabled")
+        else:
+            self.logger.info("Enhanced simulation mode disabled")
+
+    def add_batch_operation(self, operation_type: str, parameters: Dict[str, Any]):
+        """Add operation to batch queue for parallel execution"""
+        operation = {
+            'type': operation_type,
+            'parameters': parameters,
+            'timestamp': time.time(),
+            'id': len(self.batch_operations)
+        }
+        self.batch_operations.append(operation)
+        self.logger.info(f"Added batch operation: {operation_type}")
+        return operation['id']
+
+    async def execute_batch_operations(self) -> List[bool]:
+        """Execute all queued batch operations asynchronously"""
+        if not self.batch_operations:
+            self.logger.warning("No batch operations to execute")
+            return []
+
+        self.logger.info(f"Executing {len(self.batch_operations)} batch operations")
+
+        # Create async tasks for each operation
+        tasks = []
+        for operation in self.batch_operations:
+            task = asyncio.create_task(self._execute_operation_async(operation))
+            tasks.append(task)
+
+        # Execute all operations concurrently
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Process results
+        success_results = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                self.logger.error(f"Batch operation {i} failed: {result}")
+                success_results.append(False)
+            else:
+                success_results.append(result)
+
+        # Clear batch queue
+        self.batch_operations.clear()
+
+        success_count = sum(success_results)
+        self.logger.info(f"Batch execution completed: {success_count}/{len(results)} successful")
+
+        return success_results
+
+    async def _execute_operation_async(self, operation: Dict[str, Any]) -> bool:
+        """Execute a single operation asynchronously"""
+        try:
+            op_type = operation['type']
+            params = operation['parameters']
+
+            if op_type == 'oxidation':
+                return self.simulate_oxidation(
+                    params.get('temperature', 1000.0),
+                    params.get('time', 1.0),
+                    params.get('atmosphere', 'dry')
+                )
+            elif op_type == 'doping':
+                return self.simulate_doping(
+                    params.get('dopant_type', 'boron'),
+                    params.get('concentration', 1e16),
+                    params.get('energy', 50.0),
+                    params.get('temperature', 1000.0)
+                )
+            elif op_type == 'deposition':
+                return self.simulate_deposition(
+                    params.get('material', 'silicon'),
+                    params.get('thickness', 0.1),
+                    params.get('temperature', 300.0)
+                )
+            elif op_type == 'etching':
+                return self.simulate_etching(
+                    params.get('depth', 0.1),
+                    params.get('etch_type', 'anisotropic')
+                )
+            else:
+                self.logger.error(f"Unknown operation type: {op_type}")
+                return False
+
+        except Exception as e:
+            self.logger.error(f"Operation {operation['id']} failed: {e}")
+            return False
+
+    def enable_auto_checkpoint(self, enable: bool = True, interval: int = 300):
+        """Enable automatic checkpointing"""
+        self.auto_checkpoint_enabled = enable
+        self.checkpoint_interval = interval
+        if enable:
+            self.logger.info(f"Auto-checkpoint enabled (interval: {interval}s)")
+        else:
+            self.logger.info("Auto-checkpoint disabled")
+
+    def save_checkpoint(self, filename: Optional[str] = None) -> bool:
+        """Save simulation state to checkpoint file"""
+        try:
+            if filename is None:
+                timestamp = int(time.time())
+                filename = f"{self.output_directory}/checkpoint_{timestamp}.json"
+
+            checkpoint_data = {
+                'timestamp': time.time(),
+                'wafer_state': self._serialize_wafer_state(),
+                'process_history': self.process_history,
+                'simulation_results': self.simulation_results,
+                'configuration': getattr(self, '_local_config', {}),
+                'performance_metrics': self.performance_metrics
+            }
+
+            with open(filename, 'w') as f:
+                json.dump(checkpoint_data, f, indent=2, default=str)
+
+            self.last_checkpoint = time.time()
+            self.logger.info(f"Checkpoint saved: {filename}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Failed to save checkpoint: {e}")
+            return False
+
+    def load_checkpoint(self, filename: str) -> bool:
+        """Load simulation state from checkpoint file"""
+        try:
+            with open(filename, 'r') as f:
+                checkpoint_data = json.load(f)
+
+            # Restore state
+            self.process_history = checkpoint_data.get('process_history', [])
+            self.simulation_results = checkpoint_data.get('simulation_results', {})
+            self._local_config = checkpoint_data.get('configuration', {})
+            self.performance_metrics = checkpoint_data.get('performance_metrics', {})
+
+            # Restore wafer state
+            wafer_state = checkpoint_data.get('wafer_state', {})
+            self._restore_wafer_state(wafer_state)
+
+            self.logger.info(f"Checkpoint loaded: {filename}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Failed to load checkpoint: {e}")
+            return False
+
+    def _serialize_wafer_state(self) -> Dict[str, Any]:
+        """Serialize current wafer state for checkpointing"""
+        try:
+            return {
+                'diameter': self.wafer.getDiameter(),
+                'thickness': self.wafer.getThickness(),
+                'material': self.wafer.getMaterial(),
+                'grid_dimensions': [self.wafer.getGrid().rows(), self.wafer.getGrid().cols()],
+                # Add more state as needed
+            }
+        except Exception as e:
+            self.logger.warning(f"Could not serialize wafer state: {e}")
+            return {}
+
+    def _restore_wafer_state(self, wafer_state: Dict[str, Any]):
+        """Restore wafer state from checkpoint data"""
+        try:
+            if wafer_state:
+                # Restore basic properties
+                diameter = wafer_state.get('diameter', 300.0)
+                thickness = wafer_state.get('thickness', 775.0)
+                material = wafer_state.get('material', 'silicon')
+
+                # Recreate wafer if needed
+                self.wafer = PyWafer(diameter, thickness, material)
+
+                # Restore grid if dimensions available
+                grid_dims = wafer_state.get('grid_dimensions')
+                if grid_dims and len(grid_dims) == 2:
+                    self.initialize_geometry(grid_dims[0], grid_dims[1])
+
+                self.logger.info("Wafer state restored from checkpoint")
+        except Exception as e:
+            self.logger.warning(f"Could not restore wafer state: {e}")
+
+    def get_performance_metrics(self) -> Dict[str, Any]:
+        """Get current performance metrics"""
+        current_time = time.time()
+
+        # Update metrics
+        self.performance_metrics.update({
+            'total_simulation_time': current_time - getattr(self, '_start_time', current_time),
+            'total_processes': len(self.process_history),
+            'successful_processes': sum(1 for p in self.process_history if p.get('success', False)),
+            'batch_operations_queued': len(self.batch_operations),
+            'last_checkpoint_age': current_time - self.last_checkpoint,
+            'memory_usage_mb': self._get_memory_usage(),
+            'enhanced_mode': self.enhanced_mode
+        })
+
+        return self.performance_metrics.copy()
+
+    def _get_memory_usage(self) -> float:
+        """Get current memory usage in MB"""
+        try:
+            import psutil
+            process = psutil.Process()
+            return process.memory_info().rss / 1024 / 1024
+        except ImportError:
+            return 0.0
+
+    def optimize_performance(self):
+        """Optimize simulation performance"""
+        try:
+            # Clear old results to free memory
+            if len(self.simulation_results) > 100:
+                # Keep only last 50 results
+                keys = list(self.simulation_results.keys())
+                for key in keys[:-50]:
+                    del self.simulation_results[key]
+                self.logger.info("Cleared old simulation results to optimize memory")
+
+            # Clear old process history
+            if len(self.process_history) > 1000:
+                self.process_history = self.process_history[-500:]
+                self.logger.info("Trimmed process history to optimize memory")
+
+            # Force garbage collection
+            import gc
+            gc.collect()
+
+            self.logger.info("Performance optimization completed")
+
+        except Exception as e:
+            self.logger.warning(f"Performance optimization failed: {e}")
+
+    def get_simulation_status(self) -> Dict[str, Any]:
+        """Get comprehensive simulation status"""
+        return {
+            'enhanced_mode': self.enhanced_mode,
+            'batch_operations_queued': len(self.batch_operations),
+            'async_tasks_running': len([t for t in self.async_tasks if not t.done()]),
+            'total_processes': len(self.process_history),
+            'last_checkpoint': self.last_checkpoint,
+            'auto_checkpoint_enabled': getattr(self, 'auto_checkpoint_enabled', False),
+            'error_recovery_enabled': self.error_recovery_enabled,
+            'performance_metrics': self.get_performance_metrics()
+        }
 
     # Additional simulation methods for C++ bridge compatibility
     def simulate_oxidation(self, temperature: float, time: float, atmosphere: str = "dry"):
