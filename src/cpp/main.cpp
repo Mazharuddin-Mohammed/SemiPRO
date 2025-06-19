@@ -131,12 +131,17 @@ int main(int argc, char* argv[]) {
         } else if (process_type == "doping") {
             SimulationEngine::ProcessParameters params(process_type, 1.0);
             params.parameters["energy"] = std::stod(config.count("energy") ? config["energy"] : "50");
-            params.parameters["dose"] = std::stod(config.count("concentration") ? config["concentration"] : "1e15");
-            params.parameters["mass"] = 11.0; // Default: boron
-            params.parameters["atomic_number"] = 5.0; // Default: boron
+            params.parameters["dose"] = std::stod(config.count("dose") ? config["dose"] : "1e15");
+            params.parameters["mass"] = std::stod(config.count("mass") ? config["mass"] : "11.0");
+            params.parameters["atomic_number"] = std::stod(config.count("atomic_number") ? config["atomic_number"] : "5.0");
 
-            auto future = engine.simulateProcessAsync("main_wafer", params);
-            success = future.get();
+            // Use batch processing to avoid async deadlock
+            std::cout << "Starting ion implantation simulation..." << std::endl;
+            engine.addProcessToBatch("main_wafer", params);
+            auto batch_future = engine.executeBatch();
+            auto results = batch_future.get();
+            success = !results.empty() && results[0];
+            std::cout << "Ion implantation completed: " << (success ? "SUCCESS" : "FAILED") << std::endl;
 
         } else if (process_type == "deposition") {
             SimulationEngine::ProcessParameters params(process_type, 1.0);
