@@ -152,6 +152,12 @@ private:
     void workerThread();
     void checkpointThread();
     void updateStatistics();
+
+    // Physics simulation methods
+    bool simulateOxidation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params);
+    bool simulateIonImplantation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params);
+    bool simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params);
+    bool simulateEtching(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params);
 };
 
 // Convenience macros for simulation

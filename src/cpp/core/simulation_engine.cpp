@@ -188,17 +188,17 @@ bool SimulationEngine::executeProcess(const std::string& wafer_name, const Proce
         bool success = false;
         
         if (params.operation == "oxidation") {
-            // Implement oxidation process
-            success = true;
+            // Implement Deal-Grove oxidation kinetics
+            success = simulateOxidation(wafer, params);
         } else if (params.operation == "doping") {
-            // Implement doping process
-            success = true;
+            // Implement ion implantation with LSS theory
+            success = simulateIonImplantation(wafer, params);
         } else if (params.operation == "deposition") {
-            // Implement deposition process
-            success = true;
+            // Implement physical vapor deposition
+            success = simulateDeposition(wafer, params);
         } else if (params.operation == "etching") {
-            // Implement etching process
-            success = true;
+            // Implement plasma etching
+            success = simulateEtching(wafer, params);
         } else {
             throw std::runtime_error("Unknown process type: " + params.operation);
         }
@@ -307,6 +307,413 @@ bool SimulationEngine::loadCheckpoint(const std::string& filename) {
         
     } catch (const std::exception& e) {
         Logger::getInstance().log("Failed to load checkpoint: " + std::string(e.what()));
+        return false;
+    }
+}
+
+// Physics simulation implementations
+bool SimulationEngine::simulateOxidation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
+    try {
+        // Extract parameters
+        double temperature = 1000.0; // Default temperature in Celsius
+        double time = 1.0; // Default time in hours
+        std::string ambient = "dry"; // Default ambient
+
+        // Parse parameters from params.parameters map
+        auto temp_it = params.parameters.find("temperature");
+        if (temp_it != params.parameters.end()) {
+            temperature = temp_it->second;
+        }
+
+        auto time_it = params.parameters.find("time");
+        if (time_it != params.parameters.end()) {
+            time = time_it->second;
+        }
+
+        auto ambient_it = params.parameters.find("ambient");
+        if (ambient_it != params.parameters.end()) {
+            // ambient is stored as double, convert to string
+            ambient = (ambient_it->second > 0.5) ? "wet" : "dry";
+        }
+
+        // Deal-Grove oxidation kinetics
+        // x² + Ax = B(t + τ)
+        // where x is oxide thickness, t is time
+
+        double A, B; // Deal-Grove constants
+
+        if (ambient == "dry") {
+            // Dry oxidation constants for <100> silicon
+            if (temperature >= 1000) {
+                A = 0.165; // μm
+                B = 0.0117 * std::exp(-2.05 * 11600.0 / (8.314 * (temperature + 273.15))); // μm²/h
+            } else {
+                A = 0.165;
+                B = 0.0117 * std::exp(-2.05 * 11600.0 / (8.314 * (temperature + 273.15)));
+            }
+        } else {
+            // Wet oxidation constants
+            A = 0.226; // μm
+            B = 0.51 * std::exp(-0.78 * 11600.0 / (8.314 * (temperature + 273.15))); // μm²/h
+        }
+
+        // Solve quadratic equation: x² + Ax - Bt = 0
+        double discriminant = A * A + 4 * B * time;
+        if (discriminant < 0) {
+            Logger::getInstance().log("Invalid oxidation parameters - negative discriminant");
+            return false;
+        }
+
+        double oxide_thickness = (-A + std::sqrt(discriminant)) / 2.0; // μm
+
+        // Validate result
+        if (oxide_thickness < 0 || oxide_thickness > 10.0) { // Reasonable limits
+            Logger::getInstance().log("Oxidation result out of physical range: " + std::to_string(oxide_thickness) + " μm");
+            return false;
+        }
+
+        // Apply oxidation to wafer grid
+        auto grid = wafer->getGrid();
+        int rows = grid.rows();
+        int cols = grid.cols();
+
+        // Add oxide layer uniformly
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                grid(i, j) += oxide_thickness;
+            }
+        }
+
+        wafer->setGrid(grid);
+
+        Logger::getInstance().log("Oxidation completed: " + std::to_string(oxide_thickness) + " μm oxide grown");
+        Logger::getInstance().log("Conditions: " + std::to_string(temperature) + "°C, " +
+                                 std::to_string(time) + "h, " + ambient);
+
+        return true;
+
+    } catch (const std::exception& e) {
+        Logger::getInstance().log("Oxidation simulation failed: " + std::string(e.what()));
+        return false;
+    }
+}
+
+bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
+    try {
+        // Extract parameters
+        double energy = 50.0; // keV
+        double dose = 1e15; // ions/cm²
+        double mass = 11.0; // amu (default: boron)
+        int atomic_number = 5; // default: boron
+
+        // Parse parameters
+        auto energy_it = params.parameters.find("energy");
+        if (energy_it != params.parameters.end()) {
+            energy = energy_it->second;
+        }
+
+        auto dose_it = params.parameters.find("dose");
+        if (dose_it != params.parameters.end()) {
+            dose = dose_it->second;
+        }
+
+        auto mass_it = params.parameters.find("mass");
+        if (mass_it != params.parameters.end()) {
+            mass = mass_it->second;
+        }
+
+        auto z_it = params.parameters.find("atomic_number");
+        if (z_it != params.parameters.end()) {
+            atomic_number = static_cast<int>(z_it->second);
+        }
+
+        // LSS theory calculations
+        // Target: Silicon (Z=14, M=28.09 amu, density=2.33 g/cm³)
+        double target_z = 14.0;
+        double target_mass = 28.09;
+        double target_density = 2.33; // g/cm³
+
+        // Reduced energy calculation
+        double epsilon = 32.5 * target_mass * energy /
+                        (atomic_number * target_z * (mass + target_mass) *
+                         std::pow(atomic_number + target_z, 2.0/3.0));
+
+        // LSS range calculation (Biersack-Haggmark formula)
+        double reduced_range;
+        if (epsilon < 10.0) {
+            reduced_range = epsilon / (1.0 + 6.35 * std::sqrt(epsilon) + epsilon * (6.882 * std::sqrt(epsilon) - 1.708));
+        } else {
+            reduced_range = std::log(epsilon) / (2.0 * std::log(epsilon / 10.0));
+        }
+
+        // Convert to physical range in μm
+        double range = 8.74e-3 * reduced_range * (mass + target_mass) /
+                      (target_density * target_z * mass *
+                       std::pow(atomic_number + target_z, 1.0/3.0)); // μm
+
+        // Range straggling (Bohr straggling)
+        double straggling = 0.42 * range; // Simplified model
+
+        // Validate physical limits
+        if (range < 0.001 || range > 100.0) { // 1 nm to 100 μm
+            Logger::getInstance().log("Ion range out of physical limits: " + std::to_string(range) + " μm");
+            return false;
+        }
+
+        if (dose < 1e10 || dose > 1e18) { // Reasonable dose limits
+            Logger::getInstance().log("Ion dose out of reasonable range: " + std::to_string(dose) + " cm⁻²");
+            return false;
+        }
+
+        // Apply Gaussian distribution to wafer
+        auto grid = wafer->getGrid();
+        int rows = grid.rows();
+        int cols = grid.cols();
+
+        // Assume wafer thickness is represented by row index
+        double wafer_thickness = 10.0; // μm (assumed)
+
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                double depth = (static_cast<double>(i) / rows) * wafer_thickness;
+
+                // Gaussian distribution: N(x) = (dose/√(2πσ²)) * exp(-(x-Rp)²/(2σ²))
+                double gaussian = (dose / (straggling * std::sqrt(2.0 * M_PI))) *
+                                 std::exp(-std::pow(depth - range, 2) / (2.0 * straggling * straggling));
+
+                // Convert from cm⁻² to concentration (assuming 1 μm depth per grid point)
+                double concentration = gaussian * 1e-4; // Convert cm⁻² to μm⁻²
+
+                grid(i, j) += concentration;
+            }
+        }
+
+        wafer->setGrid(grid);
+
+        Logger::getInstance().log("Ion implantation completed");
+        Logger::getInstance().log("Energy: " + std::to_string(energy) + " keV");
+        Logger::getInstance().log("Dose: " + std::to_string(dose) + " cm⁻²");
+        Logger::getInstance().log("Projected range: " + std::to_string(range) + " μm");
+        Logger::getInstance().log("Straggling: " + std::to_string(straggling) + " μm");
+
+        return true;
+
+    } catch (const std::exception& e) {
+        Logger::getInstance().log("Ion implantation simulation failed: " + std::string(e.what()));
+        return false;
+    }
+}
+
+bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
+    try {
+        // Extract parameters
+        double thickness = 0.5; // μm
+        double temperature = 400.0; // °C
+        std::string material = "aluminum"; // default material
+
+        // Parse parameters
+        auto thick_it = params.parameters.find("thickness");
+        if (thick_it != params.parameters.end()) {
+            thickness = thick_it->second;
+        }
+
+        auto temp_it = params.parameters.find("temperature");
+        if (temp_it != params.parameters.end()) {
+            temperature = temp_it->second;
+        }
+
+        // Material properties database
+        std::unordered_map<std::string, double> step_coverage = {
+            {"aluminum", 0.3},      // Poor step coverage
+            {"copper", 0.8},        // Good step coverage (electroplating)
+            {"tungsten", 0.95},     // Excellent step coverage (CVD)
+            {"polysilicon", 0.7},   // Good step coverage
+            {"silicon_nitride", 0.9}, // Excellent conformality
+            {"silicon_dioxide", 0.85}  // Good conformality
+        };
+
+        std::unordered_map<std::string, double> deposition_rate = {
+            {"aluminum", 0.1},      // μm/min (sputtering)
+            {"copper", 0.5},        // μm/min (electroplating)
+            {"tungsten", 0.05},     // μm/min (CVD)
+            {"polysilicon", 0.02},  // μm/min (LPCVD)
+            {"silicon_nitride", 0.01}, // μm/min (PECVD)
+            {"silicon_dioxide", 0.015}  // μm/min (PECVD)
+        };
+
+        // Validate parameters
+        if (thickness < 0.001 || thickness > 50.0) { // 1 nm to 50 μm
+            Logger::getInstance().log("Deposition thickness out of range: " + std::to_string(thickness) + " μm");
+            return false;
+        }
+
+        if (temperature < 25.0 || temperature > 1200.0) {
+            Logger::getInstance().log("Deposition temperature out of range: " + std::to_string(temperature) + "°C");
+            return false;
+        }
+
+        // Get material properties
+        double coverage = step_coverage.count(material) ? step_coverage[material] : 0.5;
+        double rate = deposition_rate.count(material) ? deposition_rate[material] : 0.1;
+
+        // Temperature dependence (Arrhenius)
+        double activation_energy = 0.5; // eV (typical)
+        double temp_factor = std::exp(-activation_energy * 11600.0 / (temperature + 273.15));
+        double effective_rate = rate * temp_factor;
+
+        // Calculate deposition time
+        double deposition_time = thickness / effective_rate; // minutes
+
+        if (deposition_time > 1000.0) { // More than 16 hours is unrealistic
+            Logger::getInstance().log("Deposition time too long: " + std::to_string(deposition_time) + " minutes");
+            return false;
+        }
+
+        // Apply deposition to wafer
+        auto grid = wafer->getGrid();
+        int rows = grid.rows();
+        int cols = grid.cols();
+
+        // Simple conformal deposition model
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                // Calculate local step coverage based on topology
+                double local_coverage = coverage;
+
+                // Check for steps/trenches (simplified)
+                if (i > 0 && i < rows - 1) {
+                    double height_diff = std::abs(grid(i+1, j) - grid(i-1, j));
+                    if (height_diff > 0.1) { // Significant topology
+                        local_coverage *= 0.7; // Reduced coverage at steps
+                    }
+                }
+
+                grid(i, j) += thickness * local_coverage;
+            }
+        }
+
+        wafer->setGrid(grid);
+
+        Logger::getInstance().log("Deposition completed");
+        Logger::getInstance().log("Material: " + material);
+        Logger::getInstance().log("Thickness: " + std::to_string(thickness) + " μm");
+        Logger::getInstance().log("Temperature: " + std::to_string(temperature) + "°C");
+        Logger::getInstance().log("Deposition time: " + std::to_string(deposition_time) + " minutes");
+        Logger::getInstance().log("Step coverage: " + std::to_string(coverage * 100) + "%");
+
+        return true;
+
+    } catch (const std::exception& e) {
+        Logger::getInstance().log("Deposition simulation failed: " + std::string(e.what()));
+        return false;
+    }
+}
+
+bool SimulationEngine::simulateEtching(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
+    try {
+        // Extract parameters
+        double etch_depth = 0.5; // μm
+        std::string etch_type = "anisotropic"; // anisotropic or isotropic
+        double selectivity = 10.0; // etch selectivity
+
+        // Parse parameters
+        auto depth_it = params.parameters.find("depth");
+        if (depth_it != params.parameters.end()) {
+            etch_depth = depth_it->second;
+        }
+
+        auto type_it = params.parameters.find("type");
+        if (type_it != params.parameters.end()) {
+            etch_type = (type_it->second > 0.5) ? "anisotropic" : "isotropic";
+        }
+
+        auto sel_it = params.parameters.find("selectivity");
+        if (sel_it != params.parameters.end()) {
+            selectivity = sel_it->second;
+        }
+
+        // Validate parameters
+        if (etch_depth < 0.001 || etch_depth > 100.0) { // 1 nm to 100 μm
+            Logger::getInstance().log("Etch depth out of range: " + std::to_string(etch_depth) + " μm");
+            return false;
+        }
+
+        if (selectivity < 1.0 || selectivity > 1000.0) {
+            Logger::getInstance().log("Etch selectivity out of range: " + std::to_string(selectivity));
+            return false;
+        }
+
+        // Apply etching to wafer
+        auto grid = wafer->getGrid();
+        int rows = grid.rows();
+        int cols = grid.cols();
+
+        if (etch_type == "anisotropic") {
+            // Anisotropic etching (RIE) - vertical etching with minimal lateral
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < cols; ++j) {
+                    // Check if there's material to etch
+                    if (grid(i, j) > etch_depth) {
+                        grid(i, j) -= etch_depth;
+                    } else {
+                        grid(i, j) = 0.0; // Etched completely
+                    }
+                }
+            }
+        } else {
+            // Isotropic etching - uniform etching in all directions
+            auto original_grid = grid;
+
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < cols; ++j) {
+                    if (original_grid(i, j) > 0) {
+                        // Calculate isotropic etch with neighbor averaging
+                        double etch_amount = etch_depth;
+
+                        // Consider neighboring cells for isotropic behavior
+                        int neighbor_count = 0;
+                        double neighbor_sum = 0.0;
+
+                        for (int di = -1; di <= 1; ++di) {
+                            for (int dj = -1; dj <= 1; ++dj) {
+                                int ni = i + di;
+                                int nj = j + dj;
+
+                                if (ni >= 0 && ni < rows && nj >= 0 && nj < cols) {
+                                    neighbor_sum += original_grid(ni, nj);
+                                    neighbor_count++;
+                                }
+                            }
+                        }
+
+                        double avg_neighbor = neighbor_sum / neighbor_count;
+
+                        // Modify etch rate based on local environment
+                        if (avg_neighbor < original_grid(i, j) * 0.5) {
+                            etch_amount *= 1.2; // Faster etching at edges
+                        }
+
+                        if (grid(i, j) > etch_amount) {
+                            grid(i, j) -= etch_amount;
+                        } else {
+                            grid(i, j) = 0.0;
+                        }
+                    }
+                }
+            }
+        }
+
+        wafer->setGrid(grid);
+
+        Logger::getInstance().log("Etching completed");
+        Logger::getInstance().log("Etch depth: " + std::to_string(etch_depth) + " μm");
+        Logger::getInstance().log("Etch type: " + etch_type);
+        Logger::getInstance().log("Selectivity: " + std::to_string(selectivity));
+
+        return true;
+
+    } catch (const std::exception& e) {
+        Logger::getInstance().log("Etching simulation failed: " + std::string(e.what()));
         return false;
     }
 }
