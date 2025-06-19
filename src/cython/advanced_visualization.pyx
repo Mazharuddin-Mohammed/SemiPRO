@@ -5,8 +5,14 @@
 from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
 from libcpp.vector cimport vector
-from libcpp.array cimport array
 from geometry cimport PyWafer
+
+# Define array type for compatibility
+ctypedef float[3] float3_array
+
+cdef extern from "../cpp/core/wafer.hpp":
+    cppclass Wafer:
+        pass
 
 cdef extern from "../cpp/modules/advanced_visualization/advanced_visualization_model.hpp":
     cdef enum RenderingMode:
@@ -50,24 +56,24 @@ cdef extern from "../cpp/modules/advanced_visualization/advanced_visualization_m
         RenderingParameters()
     
     cdef cppclass CameraParameters:
-        array[float, 3] position
-        array[float, 3] target
-        array[float, 3] up
+        float3_array position
+        float3_array target
+        float3_array up
         float fov
         float near_plane
         float far_plane
-        
+
         CameraParameters()
-    
+
     cdef cppclass LightingParameters:
-        array[float, 3] ambient_color
+        float3_array ambient_color
         float ambient_intensity
-        vector[array[float, 3]] light_positions
-        vector[array[float, 3]] light_colors
+        vector[float3_array] light_positions
+        vector[float3_array] light_colors
         vector[float] light_intensities
         bint enable_ibl
         string hdri_environment
-        
+
         LightingParameters()
     
     cdef cppclass AnimationParameters:
@@ -99,8 +105,8 @@ cdef extern from "../cpp/modules/advanced_visualization/advanced_visualization_m
         
         # Lighting control
         void setLightingParameters(const LightingParameters& params) except +
-        void addLight(const array[float, 3]& position, 
-                      const array[float, 3]& color, float intensity) except +
+        void addLight(const float3_array& position,
+                      const float3_array& color, float intensity) except +
         void removeLight(size_t light_index) except +
         void enableImageBasedLighting(const string& hdri_path) except +
         
@@ -122,11 +128,11 @@ cdef extern from "../cpp/modules/advanced_visualization/advanced_visualization_m
         
         # Interactive features
         void enableMeasurementTools(bint enabled) except +
-        void measureDistance(const array[float, 3]& point1,
-                            const array[float, 3]& point2) except +
-        void measureArea(const vector[array[float, 3]]& points) except +
-        void measureVolume(const vector[array[float, 3]]& points) except +
-        void highlightRegion(const array[float, 3]& center, float radius) except +
+        void measureDistance(const float3_array& point1,
+                            const float3_array& point2) except +
+        void measureArea(const vector[float3_array]& points) except +
+        void measureVolume(const vector[float3_array]& points) except +
+        void highlightRegion(const float3_array& center, float radius) except +
         
         # Export capabilities
         void exportImage(const string& filename, int width, int height) except +
@@ -152,8 +158,8 @@ cdef extern from "../cpp/modules/advanced_visualization/advanced_visualization_m
         # Render the wafer
         void render(shared_ptr[Wafer] wafer) except +
         void renderLayer(shared_ptr[Wafer] wafer, VisualizationLayer layer) except +
-        void renderCrossSection(shared_ptr[Wafer] wafer, 
-                               const array[float, 3]& plane_normal,
+        void renderCrossSection(shared_ptr[Wafer] wafer,
+                               const float3_array& plane_normal,
                                float plane_distance) except +
         
         # Getters
@@ -294,8 +300,8 @@ cdef class PyAdvancedVisualizationModel:
         self.thisptr.zoomCamera(factor)
     
     def add_light(self, list position, list color, float intensity):
-        cdef array[float, 3] pos
-        cdef array[float, 3] col
+        cdef float3_array pos
+        cdef float3_array col
         pos[0] = position[0]
         pos[1] = position[1]
         pos[2] = position[2]
@@ -332,7 +338,7 @@ cdef class PyAdvancedVisualizationModel:
         self.thisptr.enableMeasurementTools(enabled)
     
     def measure_distance(self, list point1, list point2):
-        cdef array[float, 3] p1, p2
+        cdef float3_array p1, p2
         p1[0] = point1[0]; p1[1] = point1[1]; p1[2] = point1[2]
         p2[0] = point2[0]; p2[1] = point2[1]; p2[2] = point2[2]
         self.thisptr.measureDistance(p1, p2)

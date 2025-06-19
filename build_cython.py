@@ -70,15 +70,16 @@ cpp_dir = os.path.abspath("src/cpp")
 
 extension = Extension(
     "{module_name}",
-    ["{pyx_file}"],
+    ["{pyx_file}", "src/cpp/core/wafer.cpp", "src/cpp/core/utils.cpp"],
     language="c++",
     include_dirs=[
         numpy.get_include(),
-        os.path.join(cpp_dir, "core"),
+        "src/cpp/core",
+        "src/cpp/modules/geometry",
         "/usr/include/eigen3",
     ],
     library_dirs=[build_dir],
-    libraries=["simulator_lib", "yaml-cpp"],
+    libraries=["yaml-cpp"],
     extra_compile_args=["-std=c++17", "-O3"],
     extra_link_args=["-std=c++17"],
 )
