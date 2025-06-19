@@ -25,6 +25,12 @@ include_directories(
     src/cpp/modules/packaging
     src/cpp/modules/thermal
     src/cpp/modules/reliability
+    src/cpp/modules/metrology
+    src/cpp/modules/interconnect
+    src/cpp/modules/defect_inspection
+    src/cpp/modules/multi_die
+    src/cpp/modules/design_rule_check
+    src/cpp/modules/advanced_visualization
     src/cpp/renderer
     src/cpp/api
     src/cpp/integration
@@ -52,7 +58,7 @@ set(SOURCES
     src/cpp/modules/defect_inspection/defect_inspection_model.cpp
     src/cpp/modules/multi_die/multi_die_model.cpp
     src/cpp/modules/design_rule_check/drc_model.cpp
-    # src/cpp/modules/advanced_visualization/advanced_visualization_model.cpp  # Temporarily disabled
+    src/cpp/modules/advanced_visualization/advanced_visualization_model.cpp
     src/cpp/renderer/vulkan_renderer.cpp
     src/cpp/integration/eda_integration.cpp
 )
@@ -92,6 +98,7 @@ add_executable(example_metallization examples/cpp/example_metallization.cpp)
 add_executable(example_packaging examples/cpp/example_packaging.cpp)
 add_executable(example_thermal examples/cpp/example_thermal.cpp)
 add_executable(example_reliability examples/cpp/example_reliability.cpp)
+add_executable(working_doping_example examples/cpp/working_doping_example.cpp)
 target_link_libraries(example_geometry simulator_lib yaml-cpp)
 target_link_libraries(example_oxidation simulator_lib yaml-cpp)
 target_link_libraries(example_doping simulator_lib yaml-cpp)
@@ -102,6 +109,7 @@ target_link_libraries(example_metallization simulator_lib yaml-cpp)
 target_link_libraries(example_packaging simulator_lib yaml-cpp)
 target_link_libraries(example_thermal simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)
 target_link_libraries(example_reliability simulator_lib ${Vulkan_LIBRARIES} glfw yaml-cpp)
+target_link_libraries(working_doping_example simulator_lib yaml-cpp)
 
 # Tutorials
 add_executable(tutorial_geometry tutorials/cpp/tutorial_geometry.cpp)
