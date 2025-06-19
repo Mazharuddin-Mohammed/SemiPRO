@@ -38,6 +38,8 @@ include_directories(
 
 set(SOURCES
     src/cpp/core/wafer.cpp
+    src/cpp/core/wafer_enhanced.cpp
+    src/cpp/core/simulation_engine.cpp
     src/cpp/core/utils.cpp
     src/cpp/core/performance_utils.cpp
     src/cpp/core/plugin_manager.cpp

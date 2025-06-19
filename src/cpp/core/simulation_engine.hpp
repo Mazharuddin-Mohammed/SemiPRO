@@ -84,22 +84,35 @@ public:
     int getThreadCount() const;
     void enableGPUAcceleration(bool enable);
     bool isGPUAccelerationEnabled() const;
+
+    // Simulation control
+    void pause();
+    void resume();
+    bool isPaused() const;
     
     // Checkpointing and recovery
-    void saveCheckpoint(const std::string& filename);
-    void loadCheckpoint(const std::string& filename);
+    bool saveCheckpoint(const std::string& filename);
+    bool loadCheckpoint(const std::string& filename);
     void enableAutoCheckpoint(bool enable, int interval_minutes = 10);
     
     // Statistics and reporting
     struct Statistics {
         size_t total_operations;
+        size_t total_processes;
+        size_t successful_processes;
+        size_t failed_processes;
         double total_simulation_time;
         double average_operation_time;
+        double average_process_time;
+        double success_rate;
         size_t memory_usage;
         size_t peak_memory_usage;
-        
-        Statistics() : total_operations(0), total_simulation_time(0.0), 
-                      average_operation_time(0.0), memory_usage(0), peak_memory_usage(0) {}
+        std::unordered_map<std::string, size_t> processes_by_type;
+
+        Statistics() : total_operations(0), total_processes(0), successful_processes(0),
+                      failed_processes(0), total_simulation_time(0.0),
+                      average_operation_time(0.0), average_process_time(0.0),
+                      success_rate(0.0), memory_usage(0), peak_memory_usage(0) {}
     };
     
     Statistics getStatistics() const;

@@ -12,10 +12,10 @@
 class WaferEnhanced : public Wafer {
 public:
     WaferEnhanced(double diameter, double thickness, const std::string& material);
-    ~WaferEnhanced() override = default;
-    
+    virtual ~WaferEnhanced() = default;
+
     // Enhanced grid operations with parallel processing
-    void initializeGridParallel(int rows, int cols) override;
+    void initializeGridParallel(int rows, int cols);
     void updateGridParallel(const Eigen::ArrayXXd& new_grid);
     
     // Multi-layer support

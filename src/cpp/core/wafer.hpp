@@ -45,7 +45,7 @@ public:
   double getDiameter() const;
   double getThickness() const;
 
-private:
+protected:
   double diameter_;
   double thickness_;
   std::string material_id_;
