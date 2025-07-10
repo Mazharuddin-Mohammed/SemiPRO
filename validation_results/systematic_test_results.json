@@ -1,31 +1,31 @@
 {
-  "timestamp": "2025-07-10 16:58:10",
+  "timestamp": "2025-07-10 17:09:19",
   "results": {
     "oxidation": {
       "success": true,
-      "execution_time": 0.0025794506072998047,
-      "stdout": "SemiPRO C++ Simulator starting...\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: oxidation\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: executeProcess returned: true\n",
+      "execution_time": 0.0029070377349853516,
+      "stdout": "SemiPRO C++ Simulator starting...\n\u001b[32m[2025-07-10 17:09:19.493] [INFO] [GEN] [T:130081] Advanced logging system initialized\u001b[0m\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: oxidation\nDEBUG: Inside async lambda, about to call executeProcess\n\u001b[32m[2025-07-10 17:09:19.493] [INFO] [SIM] [T:130081] [SimulationEngine] Starting process: oxidation on wafer: main_wafer (in executeProcess at simulation_engine.cpp:217)\u001b[0m\nDEBUG: executeProcess returned: true\n\u001b[32m[2025-07-10 17:09:19.493] [INFO] [SIM] [T:130081] Process completed successfully: oxidation (in executeProcess at simulation_engine.cpp:261)\u001b[0m\n",
       "stderr": "",
       "output_files": 3
     },
     "doping": {
       "success": true,
-      "execution_time": 0.0024285316467285156,
-      "stdout": "SemiPRO C++ Simulator starting...\nStarting ion implantation simulation...\nDEBUG: About to call simulateProcessAsync for doping\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: doping\nDEBUG: simulateProcessAsync returned, getting result...\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: simulateIonImplantation function entered\nDEBUG: Inside try block, extracting parameters\nDEBUG: Ion implantation calculations:\n  energy=50 keV\n  dose=1e+14 cm^-2\n  mass=11 amu\n  atomic_number=5\n  epsilon=2.34282\n  reduced_range=0.07462\n  range=2.66259e-05 \u03bcm\n  straggling=1.11829e-05 \u03bcm\nDEBUG: executeProcess returned: true\nDEBUG: Result obtained: true\nIon implantation completed: SUCCESS\n",
+      "execution_time": 0.003015756607055664,
+      "stdout": "SemiPRO C++ Simulator starting...\n\u001b[32m[2025-07-10 17:09:19.497] [INFO] [GEN] [T:127454] Advanced logging system initialized\u001b[0m\nStarting ion implantation simulation...\nDEBUG: About to call simulateProcessAsync for doping\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: doping\nDEBUG: simulateProcessAsync returned, getting result...\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: simulateIonImplantation function entered\nDEBUG: Inside try block, extracting parameters\nDEBUG: Ion implantation calculations:\n  energy=\u001b[32m[2025-07-10 17:09:19.497] [INFO] [SIM] [T:127454] [SimulationEngine] Starting process: doping on wafer: main_wafer (in executeProcess at simulation_engine.cpp:217)\u001b[0m\n50 keV\n  dose=1e+14 cm^-2\n  mass=11 amu\n  atomic_number=5\n  epsilon=2.34282\n  reduced_range=0.07462\n  range=2.66259e-05 \u03bcm\n  straggling=1.11829e-05 \u03bcm\nDEBUG: executeProcess returned: true\n\u001b[32m[2025-07-10 17:09:19.497] [INFO] [SIM] [T:127454] Process completed successfully: doping (in executeProcess at simulation_engine.cpp:261)\u001b[0m\nDEBUG: Result obtained: true\nIon implantation completed: SUCCESS\n",
       "stderr": "",
       "output_files": 3
     },
     "deposition": {
       "success": true,
-      "execution_time": 0.002799510955810547,
-      "stdout": "SemiPRO C++ Simulator starting...\nStarting deposition simulation...\n  Material: aluminum\n  Thickness: 0.1 \u03bcm\n  Temperature: 300\u00b0C\nDEBUG: About to call simulateProcessAsync for deposition\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: deposition\nDEBUG: simulateProcessAsync returned, getting result...\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: Deposition calculations:\n  material=aluminum\n  thickness=0.1 \u03bcm\n  temperature=300\u00b0C\n  rate=0.1 \u03bcm/min\n  temp_factor=0.222393\n  effective_rate=0.0222393 \u03bcm/min\n  deposition_time=4.49654 minutes\nDEBUG: executeProcess returned: true\nDEBUG: Result obtained: true\nDeposition completed: SUCCESS\n",
+      "execution_time": 0.0030639171600341797,
+      "stdout": "SemiPRO C++ Simulator starting...\n\u001b[32m[2025-07-10 17:09:19.500] [INFO] [GEN] [T:131762] Advanced logging system initialized\u001b[0m\nStarting deposition simulation...\n  Material: aluminum\n  Thickness: 0.1 \u03bcm\n  Temperature: 300\u00b0C\nDEBUG: About to call simulateProcessAsync for deposition\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: deposition\nDEBUG: simulateProcessAsync returned, getting result...\nDEBUG: Inside async lambda, about to call executeProcess\n\u001b[32m[2025-07-10 17:09:19.500] [INFO] [SIM] [T:131762] [SimulationEngine] Starting process: deposition on wafer: main_wafer (in executeProcess at simulation_engine.cpp:217)\u001b[0m\nDEBUG: Deposition calculations:\n  material=aluminum\n  thickness=0.1 \u03bcm\n  temperature=300\u00b0C\n  rate=0.1 \u03bcm/min\n  temp_factor=0.222393\n  effective_rate=0.0222393 \u03bcm/min\n  deposition_time=4.49654 minutes\nDEBUG: executeProcess returned: true\n\u001b[32m[2025-07-10 17:09:19.501] [INFO] [SIM] [T:131762] Process completed successfully: deposition (in executeProcess at simulation_engine.cpp:261)\u001b[0m\nDEBUG: Result obtained: true\nDeposition completed: SUCCESS\n",
       "stderr": "",
       "output_files": 3
     },
     "etching": {
       "success": true,
-      "execution_time": 0.0025200843811035156,
-      "stdout": "SemiPRO C++ Simulator starting...\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: etching\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: executeProcess returned: true\n",
+      "execution_time": 0.0028371810913085938,
+      "stdout": "SemiPRO C++ Simulator starting...\n\u001b[32m[2025-07-10 17:09:19.503] [INFO] [GEN] [T:138269] Advanced logging system initialized\u001b[0m\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: etching\nDEBUG: Inside async lambda, about to call executeProcess\n\u001b[32m[2025-07-10 17:09:19.504] [INFO] [SIM] [T:138269] [SimulationEngine] Starting process: etching on wafer: main_wafer (in executeProcess at simulation_engine.cpp:217)\u001b[0m\nDEBUG: executeProcess returned: true\n\u001b[32m[2025-07-10 17:09:19.504] [INFO] [SIM] [T:138269] Process completed successfully: etching (in executeProcess at simulation_engine.cpp:261)\u001b[0m\n",
       "stderr": "",
       "output_files": 3
     }

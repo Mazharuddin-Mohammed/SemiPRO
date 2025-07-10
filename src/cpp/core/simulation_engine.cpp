@@ -2,6 +2,7 @@
 #include "simulation_engine.hpp"
 #include "utils.hpp"
 #include "enhanced_error_handling.hpp"
+#include "advanced_logger.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -11,6 +12,25 @@
 
 SimulationEngine& SimulationEngine::getInstance() {
     static SimulationEngine instance;
+
+    // Initialize advanced logging on first access
+    static bool logging_initialized = false;
+    if (!logging_initialized) {
+        auto& logger = SemiPRO::AdvancedLogger::getInstance();
+
+        // Add console output
+        logger.addOutput(std::make_unique<SemiPRO::ConsoleOutput>(true, SemiPRO::LogLevel::INFO));
+
+        // Add file output
+        logger.addOutput(std::make_unique<SemiPRO::FileOutput>("logs/semipro.log"));
+
+        // Add JSON output for structured logging
+        logger.addOutput(std::make_unique<SemiPRO::JSONOutput>("logs/semipro.json"));
+
+        SEMIPRO_INFO("Advanced logging system initialized");
+        logging_initialized = true;
+    }
+
     return instance;
 }
 
@@ -187,13 +207,16 @@ void SimulationEngine::clearErrors() {
 bool SimulationEngine::executeProcess(const std::string& wafer_name, const ProcessParameters& params) {
     using namespace SemiPRO;
 
+    // Create performance timer for the entire process
+    auto process_timer = AdvancedLogger::getInstance().createTimer(
+        "process_" + params.operation, "SimulationEngine"
+    );
+
     try {
-        // Report process start
-        ErrorManager::getInstance().reportError(
-            ErrorSeverity::INFO, ErrorCategory::SIMULATION,
-            "Starting process: " + params.operation + " on wafer: " + wafer_name,
-            SEMIPRO_ERROR_CONTEXT()
-        );
+        // Log process start
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::SIMULATION,
+                          "Starting process: " + params.operation + " on wafer: " + wafer_name,
+                          "SimulationEngine");
 
         auto wafer = getWafer(wafer_name);
         if (!wafer) {
@@ -210,11 +233,9 @@ bool SimulationEngine::executeProcess(const std::string& wafer_name, const Proce
         // Execute the process based on type
         bool success = false;
 
-        ErrorManager::getInstance().reportError(
-            ErrorSeverity::DEBUG, ErrorCategory::SIMULATION,
-            "Dispatching process type: " + params.operation,
-            SEMIPRO_ERROR_CONTEXT()
-        );
+        SEMIPRO_LOG_MODULE(LogLevel::DEBUG, LogCategory::SIMULATION,
+                          "Dispatching process type: " + params.operation,
+                          "SimulationEngine");
 
         if (params.operation == "oxidation") {
             success = simulateOxidation(wafer, params);
