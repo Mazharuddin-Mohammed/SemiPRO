@@ -1,6 +1,7 @@
 // Author: Dr. Mazharuddin Mohammed
 #include "simulation_engine.hpp"
 #include "utils.hpp"
+#include "enhanced_error_handling.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -184,11 +185,20 @@ void SimulationEngine::clearErrors() {
 }
 
 bool SimulationEngine::executeProcess(const std::string& wafer_name, const ProcessParameters& params) {
-    std::cout << "DEBUG: executeProcess called with operation: " << params.operation << std::endl;
+    using namespace SemiPRO;
 
     try {
+        // Report process start
+        ErrorManager::getInstance().reportError(
+            ErrorSeverity::INFO, ErrorCategory::SIMULATION,
+            "Starting process: " + params.operation + " on wafer: " + wafer_name,
+            SEMIPRO_ERROR_CONTEXT()
+        );
+
         auto wafer = getWafer(wafer_name);
-        std::cout << "DEBUG: Wafer retrieved successfully" << std::endl;
+        if (!wafer) {
+            throw SystemException("Failed to retrieve wafer: " + wafer_name, SEMIPRO_ERROR_CONTEXT());
+        }
 
         // Update statistics
         {
@@ -199,48 +209,65 @@ bool SimulationEngine::executeProcess(const std::string& wafer_name, const Proce
         
         // Execute the process based on type
         bool success = false;
-        std::cout << "DEBUG: Dispatching process type: " << params.operation << std::endl;
+
+        ErrorManager::getInstance().reportError(
+            ErrorSeverity::DEBUG, ErrorCategory::SIMULATION,
+            "Dispatching process type: " + params.operation,
+            SEMIPRO_ERROR_CONTEXT()
+        );
 
         if (params.operation == "oxidation") {
-            std::cout << "DEBUG: Calling simulateOxidation" << std::endl;
-            // Implement Deal-Grove oxidation kinetics
             success = simulateOxidation(wafer, params);
         } else if (params.operation == "doping") {
-            std::cout << "DEBUG: Calling simulateIonImplantation" << std::endl;
-            // Implement ion implantation with LSS theory
             success = simulateIonImplantation(wafer, params);
         } else if (params.operation == "deposition") {
-            std::cout << "DEBUG: Calling simulateDeposition" << std::endl;
-            // Implement physical vapor deposition
             success = simulateDeposition(wafer, params);
-            std::cout << "DEBUG: simulateDeposition returned: " << (success ? "true" : "false") << std::endl;
         } else if (params.operation == "etching") {
-            std::cout << "DEBUG: Calling simulateEtching" << std::endl;
-            // Implement plasma etching
             success = simulateEtching(wafer, params);
         } else {
-            std::cout << "DEBUG: Unknown process type: " << params.operation << std::endl;
-            throw std::runtime_error("Unknown process type: " + params.operation);
+            throw ConfigurationException(
+                "Unknown process type: " + params.operation,
+                SEMIPRO_ERROR_CONTEXT()
+            );
         }
         
         if (success) {
             std::lock_guard<std::mutex> lock(state_mutex_);
             stats_.successful_processes++;
+            ErrorManager::getInstance().reportError(
+                ErrorSeverity::INFO, ErrorCategory::SIMULATION,
+                "Process completed successfully: " + params.operation,
+                SEMIPRO_ERROR_CONTEXT()
+            );
+        } else {
+            std::lock_guard<std::mutex> lock(state_mutex_);
+            stats_.failed_processes++;
+            ErrorManager::getInstance().reportError(
+                ErrorSeverity::ERROR, ErrorCategory::SIMULATION,
+                "Process failed: " + params.operation,
+                SEMIPRO_ERROR_CONTEXT()
+            );
         }
-        
+
         return success;
-        
-    } catch (const std::exception& e) {
-        // Record error
-        SimulationError error(ERROR, e.what(), "Process: " + params.operation + ", Wafer: " + wafer_name);
-        
+
+    } catch (const SemiPROException& e) {
         {
             std::lock_guard<std::mutex> lock(state_mutex_);
-            errors_.push_back(error);
             stats_.failed_processes++;
         }
-        
-        Logger::getInstance().log("Process failed: " + std::string(e.what()));
+        ErrorManager::getInstance().reportError(e.getError());
+        return false;
+    } catch (const std::exception& e) {
+        {
+            std::lock_guard<std::mutex> lock(state_mutex_);
+            stats_.failed_processes++;
+        }
+        ErrorManager::getInstance().reportError(
+            ErrorSeverity::ERROR, ErrorCategory::SYSTEM,
+            "Unexpected exception in process execution: " + std::string(e.what()),
+            SEMIPRO_ERROR_CONTEXT()
+        );
         return false;
     }
 }
@@ -539,30 +566,53 @@ bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wa
 }
 
 bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
-    std::cout << "DEBUG: simulateDeposition function entered" << std::endl;
+    using namespace SemiPRO;
 
     try {
-        std::cout << "DEBUG: Inside try block, extracting parameters" << std::endl;
-        // Extract parameters
+        ErrorManager::getInstance().reportError(
+            ErrorSeverity::DEBUG, ErrorCategory::PHYSICS,
+            "Starting deposition simulation",
+            SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
+        );
+
+        // Extract parameters with validation
         double thickness = 0.5; // μm
         double temperature = 400.0; // °C
         std::string material = "aluminum"; // default material
 
-        // Parse parameters
+        // Parse parameters with validation
         auto thick_it = params.parameters.find("thickness");
         if (thick_it != params.parameters.end()) {
             thickness = thick_it->second;
+            if (thickness <= 0.0 || thickness > 100.0) {
+                throw ValidationException(
+                    "Thickness out of range: " + std::to_string(thickness) + " μm (valid: 0-100 μm)",
+                    SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
+                );
+            }
         }
 
         auto temp_it = params.parameters.find("temperature");
         if (temp_it != params.parameters.end()) {
             temperature = temp_it->second;
+            if (temperature < 0.0 || temperature > 2000.0) {
+                throw ValidationException(
+                    "Temperature out of range: " + std::to_string(temperature) + "°C (valid: 0-2000°C)",
+                    SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
+                );
+            }
         }
 
         // Parse material parameter
         auto mat_it = params.string_parameters.find("material");
         if (mat_it != params.string_parameters.end()) {
             material = mat_it->second;
+            if (material.empty()) {
+                throw ValidationException(
+                    "Material name cannot be empty",
+                    SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
+                );
+            }
         }
 
         // Material properties database
