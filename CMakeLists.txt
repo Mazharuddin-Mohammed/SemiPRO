@@ -57,6 +57,7 @@ set(SOURCES
     src/cpp/advanced/temperature_controller.cpp
     src/cpp/advanced/process_optimizer.cpp
     src/cpp/advanced/process_integrator.cpp
+    src/cpp/ui/visualization_engine.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp
