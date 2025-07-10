@@ -6,6 +6,7 @@
 #include "memory_manager.hpp"
 #include "config_manager.hpp"
 #include "../physics/enhanced_oxidation.hpp"
+#include "../physics/enhanced_doping.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -487,121 +488,111 @@ bool SimulationEngine::simulateOxidation(std::shared_ptr<WaferEnhanced> wafer, c
 }
 
 bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
-    std::cout << "DEBUG: simulateIonImplantation function entered" << std::endl;
+    using namespace SemiPRO;
+
+    // Create memory scope for tracking
+    MEMORY_SCOPE("ion_implantation_simulation");
 
     try {
-        std::cout << "DEBUG: Inside try block, extracting parameters" << std::endl;
-        // Extract parameters
-        double energy = 50.0; // keV
-        double dose = 1e15; // ions/cm²
-        double mass = 11.0; // amu (default: boron)
-        int atomic_number = 5; // default: boron
+        // Initialize enhanced doping physics (singleton pattern)
+        static std::unique_ptr<EnhancedDopingPhysics> doping_engine_ptr;
+        if (!doping_engine_ptr) {
+            doping_engine_ptr = std::make_unique<EnhancedDopingPhysics>();
+        }
+        auto& doping_engine = *doping_engine_ptr;
 
-        // Parse parameters
+        // Extract and validate parameters
+        ImplantationConditions conditions;
+
+        // Energy
         auto energy_it = params.parameters.find("energy");
         if (energy_it != params.parameters.end()) {
-            energy = energy_it->second;
+            conditions.energy = energy_it->second;
+        } else {
+            conditions.energy = 50.0; // Default 50 keV
         }
 
+        // Dose
         auto dose_it = params.parameters.find("dose");
         if (dose_it != params.parameters.end()) {
-            dose = dose_it->second;
-        }
-
-        auto mass_it = params.parameters.find("mass");
-        if (mass_it != params.parameters.end()) {
-            mass = mass_it->second;
-        }
-
-        auto z_it = params.parameters.find("atomic_number");
-        if (z_it != params.parameters.end()) {
-            atomic_number = static_cast<int>(z_it->second);
-        }
-
-        // LSS theory calculations
-        // Target: Silicon (Z=14, M=28.09 amu, density=2.33 g/cm³)
-        double target_z = 14.0;
-        double target_mass = 28.09;
-        double target_density = 2.33; // g/cm³
-
-        // Reduced energy calculation
-        double epsilon = 32.5 * target_mass * energy /
-                        (atomic_number * target_z * (mass + target_mass) *
-                         std::pow(atomic_number + target_z, 2.0/3.0));
-
-        // LSS range calculation (Biersack-Haggmark formula)
-        double reduced_range;
-        if (epsilon < 10.0) {
-            reduced_range = epsilon / (1.0 + 6.35 * std::sqrt(epsilon) + epsilon * (6.882 * std::sqrt(epsilon) - 1.708));
+            conditions.dose = dose_it->second;
         } else {
-            reduced_range = std::log(epsilon) / (2.0 * std::log(epsilon / 10.0));
+            conditions.dose = 1e15; // Default 1e15 cm⁻²
         }
 
-        // Convert to physical range in μm
-        double range = 8.74e-3 * reduced_range * (mass + target_mass) /
-                      (target_density * target_z * mass *
-                       std::pow(atomic_number + target_z, 1.0/3.0)); // μm
-
-        // Range straggling (Bohr straggling)
-        double straggling = 0.42 * range; // Simplified model
-
-        // Debug logging
-        std::cout << "DEBUG: Ion implantation calculations:" << std::endl;
-        std::cout << "  energy=" << energy << " keV" << std::endl;
-        std::cout << "  dose=" << dose << " cm^-2" << std::endl;
-        std::cout << "  mass=" << mass << " amu" << std::endl;
-        std::cout << "  atomic_number=" << atomic_number << std::endl;
-        std::cout << "  epsilon=" << epsilon << std::endl;
-        std::cout << "  reduced_range=" << reduced_range << std::endl;
-        std::cout << "  range=" << range << " μm" << std::endl;
-        std::cout << "  straggling=" << straggling << " μm" << std::endl;
-
-        // Validate physical limits - FIXED: More realistic range limits
-        if (range < 0.00001 || range > 100.0) { // 0.01 nm to 100 μm (more realistic for low energy)
-            std::cout << "DEBUG: Ion range out of physical limits: " << range << " μm" << std::endl;
-            return false;
-        }
-
-        if (dose < 1e10 || dose > 1e18) { // Reasonable dose limits
-            Logger::getInstance().log("Ion dose out of reasonable range: " + std::to_string(dose) + " cm⁻²");
-            return false;
-        }
-
-        // Apply Gaussian distribution to wafer
-        auto grid = wafer->getGrid();
-        int rows = grid.rows();
-        int cols = grid.cols();
-
-        // Assume wafer thickness is represented by row index
-        double wafer_thickness = 10.0; // μm (assumed)
-
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                double depth = (static_cast<double>(i) / rows) * wafer_thickness;
-
-                // Gaussian distribution: N(x) = (dose/√(2πσ²)) * exp(-(x-Rp)²/(2σ²))
-                double gaussian = (dose / (straggling * std::sqrt(2.0 * M_PI))) *
-                                 std::exp(-std::pow(depth - range, 2) / (2.0 * straggling * straggling));
-
-                // Convert from cm⁻² to concentration (assuming 1 μm depth per grid point)
-                double concentration = gaussian * 1e-4; // Convert cm⁻² to μm⁻²
-
-                grid(i, j) += concentration;
+        // Ion species (default to boron)
+        auto species_it = params.parameters.find("species");
+        if (species_it != params.parameters.end()) {
+            int species_id = static_cast<int>(species_it->second);
+            switch (species_id) {
+                case 5: conditions.species = IonSpecies::BORON_11; break;
+                case 15: conditions.species = IonSpecies::PHOSPHORUS_31; break;
+                case 33: conditions.species = IonSpecies::ARSENIC_75; break;
+                default: conditions.species = IonSpecies::BORON_11; break;
             }
+        } else {
+            conditions.species = IonSpecies::BORON_11;
         }
 
-        wafer->setGrid(grid);
+        // Tilt angle
+        auto tilt_it = params.parameters.find("tilt");
+        if (tilt_it != params.parameters.end()) {
+            conditions.tilt_angle = tilt_it->second;
+        } else {
+            conditions.tilt_angle = 7.0; // Default 7° tilt
+        }
 
-        Logger::getInstance().log("Ion implantation completed");
-        Logger::getInstance().log("Energy: " + std::to_string(energy) + " keV");
-        Logger::getInstance().log("Dose: " + std::to_string(dose) + " cm⁻²");
-        Logger::getInstance().log("Projected range: " + std::to_string(range) + " μm");
-        Logger::getInstance().log("Straggling: " + std::to_string(straggling) + " μm");
+        // Temperature
+        auto temp_it = params.parameters.find("temperature");
+        if (temp_it != params.parameters.end()) {
+            conditions.temperature = temp_it->second;
+        } else {
+            conditions.temperature = 25.0; // Room temperature
+        }
+
+        // Run enhanced ion implantation simulation
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          "Starting enhanced ion implantation: " +
+                          doping_engine.ionSpeciesToString(conditions.species) +
+                          ", Energy: " + std::to_string(conditions.energy) + " keV" +
+                          ", Dose: " + std::to_string(conditions.dose) + " cm⁻²" +
+                          ", Tilt: " + std::to_string(conditions.tilt_angle) + "°",
+                          "EnhancedDoping");
+
+        auto results = doping_engine.simulateIonImplantation(wafer, conditions);
+
+        // Log detailed results
+        std::string result_message = "Enhanced ion implantation completed: " +
+                          std::string("Range: ") + std::to_string(results.projected_range) + " μm, " +
+                          "Straggling: " + std::to_string(results.range_straggling) + " μm, " +
+                          "Peak conc: " + std::to_string(results.peak_concentration) + " cm⁻³, " +
+                          "Sheet R: " + std::to_string(results.sheet_resistance) + " Ω/sq, " +
+                          "Junction depth: " + std::to_string(results.junction_depth) + " μm, " +
+                          "Quality score: " + std::to_string(results.quality_metrics.at("overall_score"));
+
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          result_message, "EnhancedDoping");
+
+        // Validate results
+        if (results.projected_range < 0 || results.projected_range > 100.0) {
+            SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                              "Ion implantation result out of physical range: " +
+                              std::to_string(results.projected_range) + " μm",
+                              "EnhancedDoping");
+            return false;
+        }
 
         return true;
 
+    } catch (const SemiPROException& e) {
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Enhanced ion implantation failed: " + std::string(e.what()),
+                          "EnhancedDoping");
+        return false;
     } catch (const std::exception& e) {
-        Logger::getInstance().log("Ion implantation simulation failed: " + std::string(e.what()));
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Ion implantation simulation failed: " + std::string(e.what()),
+                          "EnhancedDoping");
         return false;
     }
 }
