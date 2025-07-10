@@ -31,11 +31,33 @@ Makefile
 # Specific executables (but keep source code)
 simulator
 tests
-example_*
-tutorial_*
-working_*
-*_example
-*_demo
+# Only exclude compiled executables, not source files
+/build/example_*
+/build/tutorial_*
+/build/working_*
+/build/*_example
+/build/*_demo
+example_geometry
+example_oxidation
+example_deposition
+example_doping
+example_etching
+example_metallization
+example_photolithography
+example_packaging
+example_thermal
+example_reliability
+tutorial_geometry
+tutorial_oxidation
+tutorial_deposition
+tutorial_doping
+tutorial_etching
+tutorial_metallization
+tutorial_photolithography
+tutorial_packaging
+tutorial_thermal
+tutorial_reliability
+working_doping_example
 
 # Object files
 *.o
