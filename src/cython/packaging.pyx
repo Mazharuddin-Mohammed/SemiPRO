@@ -5,7 +5,7 @@ from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.pair cimport pair
-from geometry cimport PyWafer
+from geometry cimport PyWafer, Wafer
 
 cdef extern from "../cpp/modules/packaging/packaging_model.hpp":
     cppclass PackagingModel:

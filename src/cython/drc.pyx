@@ -7,7 +7,7 @@ from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.pair cimport pair
 from libcpp.unordered_map cimport unordered_map
-from geometry cimport PyWafer
+from geometry cimport PyWafer, Wafer
 
 cdef extern from "../cpp/modules/design_rule_check/drc_model.hpp":
     cdef enum ViolationType:

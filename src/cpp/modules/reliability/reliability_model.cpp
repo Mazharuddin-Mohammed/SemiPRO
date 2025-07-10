@@ -38,7 +38,7 @@ void ReliabilityModel::computeElectromigration(std::shared_ptr<Wafer> wafer, dou
     double area = dx * thickness * 10000; // m² to cm²
     double J = current / area; // Current density (A/cm²)
 
-    const double A = 1e-10; // Scaling factor (s·A²/cm⁴)
+    const double A = 1e12; // Scaling factor (s·A²/cm⁴) - increased for realistic MTTF values
     const double n = 2.0; // Current exponent
     const double Ea = 0.9; // Activation energy (eV)
     const double kB = 8.617e-5; // Boltzmann constant (eV/K)

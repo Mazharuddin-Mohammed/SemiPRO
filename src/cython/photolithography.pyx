@@ -4,7 +4,7 @@
 from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
 from libcpp.vector cimport vector
-from geometry cimport PyWafer
+from geometry cimport PyWafer, Wafer
 
 cdef extern from "../cpp/modules/photolithography/lithography_model.hpp":
     cppclass LithographyModel:

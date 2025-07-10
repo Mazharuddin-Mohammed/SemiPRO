@@ -7,23 +7,40 @@ BUILDING_DOCS = os.environ.get('READTHEDOCS') == 'True' or 'sphinx' in sys.modul
 
 if BUILDING_DOCS:
     # Use mock extensions for documentation
-    from .api.mock_extensions import (
-        PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
-        PyLithographyModel, PyDepositionModel, PyEtchingModel,
-        PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
-        PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
-        PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
-        PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
-        get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
-        STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
-        STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
-        STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
-    )
+    try:
+        from .api.mock_extensions import (
+            PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
+            PyLithographyModel, PyDepositionModel, PyEtchingModel,
+            PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
+            PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
+            PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
+            PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
+            get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
+            STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
+            STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
+            STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+        )
+    except ImportError:
+        from api.mock_extensions import (
+            PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
+            PyLithographyModel, PyDepositionModel, PyEtchingModel,
+            PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
+            PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
+            PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
+            PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
+            get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
+            STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
+            STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
+            STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+        )
     ORCHESTRATION_AVAILABLE = True
 else:
     # Use C++ bridge or fallback to mock extensions
     try:
-        from .cpp_bridge import create_bridge
+        try:
+            from .cpp_bridge import create_bridge
+        except ImportError:
+            from cpp_bridge import create_bridge
 
         # Create bridge instances
         geometry_bridge = create_bridge('geometry')
@@ -128,15 +145,26 @@ else:
                 return None
 
         # Mock classes for multi-die, DRC, and advanced visualization
-        from .api.mock_extensions import (
-            PyMultiDieModel, PyDie, PyInterconnect, PyDRCModel, PyDRCRule,
-            PyAdvancedVisualizationModel, PySimulationOrchestrator,
-            PyProcessStepDefinition, create_process_step, get_orchestrator,
-            STEP_TYPE_OXIDATION, STEP_TYPE_DOPING, STEP_TYPE_LITHOGRAPHY,
-            STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING, STEP_TYPE_METALLIZATION,
-            STEP_TYPE_ANNEALING, STEP_TYPE_CMP, STEP_TYPE_INSPECTION,
-            EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
-        )
+        try:
+            from .api.mock_extensions import (
+                PyMultiDieModel, PyDie, PyInterconnect, PyDRCModel, PyDRCRule,
+                PyAdvancedVisualizationModel, PySimulationOrchestrator,
+                PyProcessStepDefinition, create_process_step, get_orchestrator,
+                STEP_TYPE_OXIDATION, STEP_TYPE_DOPING, STEP_TYPE_LITHOGRAPHY,
+                STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING, STEP_TYPE_METALLIZATION,
+                STEP_TYPE_ANNEALING, STEP_TYPE_CMP, STEP_TYPE_INSPECTION,
+                EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+            )
+        except ImportError:
+            from api.mock_extensions import (
+                PyMultiDieModel, PyDie, PyInterconnect, PyDRCModel, PyDRCRule,
+                PyAdvancedVisualizationModel, PySimulationOrchestrator,
+                PyProcessStepDefinition, create_process_step, get_orchestrator,
+                STEP_TYPE_OXIDATION, STEP_TYPE_DOPING, STEP_TYPE_LITHOGRAPHY,
+                STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING, STEP_TYPE_METALLIZATION,
+                STEP_TYPE_ANNEALING, STEP_TYPE_CMP, STEP_TYPE_INSPECTION,
+                EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+            )
 
         ORCHESTRATION_AVAILABLE = False
         print("✅ Using C++ bridge for core simulation modules")
@@ -144,18 +172,32 @@ else:
     except Exception as e:
         print(f"Warning: Could not import C++ bridge: {e}")
         # Fallback to mock extensions
-        from .api.mock_extensions import (
-            PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
-            PyLithographyModel, PyDepositionModel, PyEtchingModel,
-            PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
-            PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
-            PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
-            PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
-            get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
-            STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
-            STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
-            STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
-        )
+        try:
+            from .api.mock_extensions import (
+                PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
+                PyLithographyModel, PyDepositionModel, PyEtchingModel,
+                PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
+                PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
+                PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
+                PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
+                get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
+                STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
+                STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
+                STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+            )
+        except ImportError:
+            from api.mock_extensions import (
+                PyGeometryManager, PyWafer, PyOxidationModel, PyDopingManager,
+                PyLithographyModel, PyDepositionModel, PyEtchingModel,
+                PyMetallizationModel, PyPackagingModel, PyThermalSimulationModel,
+                PyReliabilityModel, PyVulkanRenderer, PyMultiDieModel, PyDie,
+                PyInterconnect, PyDRCModel, PyDRCRule, PyAdvancedVisualizationModel,
+                PySimulationOrchestrator, PyProcessStepDefinition, create_process_step,
+                get_orchestrator, STEP_TYPE_OXIDATION, STEP_TYPE_DOPING,
+                STEP_TYPE_LITHOGRAPHY, STEP_TYPE_DEPOSITION, STEP_TYPE_ETCHING,
+                STEP_TYPE_METALLIZATION, STEP_TYPE_ANNEALING, STEP_TYPE_CMP,
+                STEP_TYPE_INSPECTION, EXECUTION_MODE_SEQUENTIAL, EXECUTION_MODE_PARALLEL
+            )
         ORCHESTRATION_AVAILABLE = False
 
 import numpy as np

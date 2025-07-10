@@ -26,9 +26,13 @@ class CPPBridge:
     
     def __del__(self):
         """Cleanup temporary files"""
-        import shutil
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
-            shutil.rmtree(self.temp_dir, ignore_errors=True)
+        try:
+            import shutil
+            if hasattr(self, 'temp_dir') and self.temp_dir and self.temp_dir.exists():
+                shutil.rmtree(self.temp_dir, ignore_errors=True)
+        except (ImportError, AttributeError):
+            # Ignore cleanup errors during shutdown
+            pass
     
     def create_config_file(self, config_data):
         """Create a configuration file for C++ backend"""
@@ -39,14 +43,8 @@ class CPPBridge:
     
     def run_simulation(self, process_type, parameters):
         """Run a simulation process"""
-        config = {
-            "process_type": process_type,
-            "parameters": parameters,
-            "output_dir": str(self.temp_dir),
-            "input_dir": str(self.temp_dir)
-        }
-        
-        config_file = self.create_config_file(config)
+        # Create config with just the parameters (not nested)
+        config_file = self.create_config_file(parameters)
         
         try:
             # Run the C++ simulator
@@ -110,6 +108,14 @@ class GeometryBridge(CPPBridge):
         return self.run_simulation("grid_init", {
             "x_dimension": x_dim,
             "y_dimension": y_dim
+        })
+
+    def apply_layer(self, thickness, material_id):
+        """Apply a layer to the wafer using deposition process"""
+        return self.run_simulation("deposition", {
+            "thickness": thickness,
+            "material": material_id,
+            "temperature": 400.0  # Default deposition temperature
         })
 
 class OxidationBridge(CPPBridge):

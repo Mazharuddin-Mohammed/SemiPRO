@@ -3,7 +3,7 @@
 
 from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
-from geometry cimport PyWafer
+from geometry cimport PyWafer, Wafer
 
 cdef extern from "../cpp/modules/etching/etching_model.hpp":
     cppclass EtchingModel:
