@@ -4,6 +4,7 @@
 #include "enhanced_error_handling.hpp"
 #include "advanced_logger.hpp"
 #include "memory_manager.hpp"
+#include "config_manager.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -14,22 +15,27 @@
 SimulationEngine& SimulationEngine::getInstance() {
     static SimulationEngine instance;
 
-    // Initialize advanced logging on first access
-    static bool logging_initialized = false;
-    if (!logging_initialized) {
+    // Initialize advanced systems on first access
+    static bool systems_initialized = false;
+    if (!systems_initialized) {
+        // Initialize advanced logging
         auto& logger = SemiPRO::AdvancedLogger::getInstance();
-
-        // Add console output
         logger.addOutput(std::make_unique<SemiPRO::ConsoleOutput>(true, SemiPRO::LogLevel::INFO));
-
-        // Add file output
         logger.addOutput(std::make_unique<SemiPRO::FileOutput>("logs/semipro.log"));
-
-        // Add JSON output for structured logging
         logger.addOutput(std::make_unique<SemiPRO::JSONOutput>("logs/semipro.json"));
 
-        SEMIPRO_INFO("Advanced logging system initialized");
-        logging_initialized = true;
+        // Initialize configuration manager
+        auto& config = SemiPRO::ConfigManager::getInstance();
+
+        // Set memory limits from config
+        auto& memory_mgr = SemiPRO::MemoryManager::getInstance();
+        auto memory_limit = CONFIG_GET("performance.memory_limit", int, 0);
+        if (memory_limit > 0) {
+            memory_mgr.setMemoryLimit(static_cast<size_t>(memory_limit));
+        }
+
+        SEMIPRO_INFO("Advanced systems initialized (logging, config, memory)");
+        systems_initialized = true;
     }
 
     return instance;
