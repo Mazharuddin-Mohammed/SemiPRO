@@ -135,12 +135,10 @@ int main(int argc, char* argv[]) {
             params.parameters["mass"] = std::stod(config.count("mass") ? config["mass"] : "11.0");
             params.parameters["atomic_number"] = std::stod(config.count("atomic_number") ? config["atomic_number"] : "5.0");
 
-            // Use batch processing to avoid async deadlock
+            // Use direct execution to avoid batch processing deadlock
             std::cout << "Starting ion implantation simulation..." << std::endl;
-            engine.addProcessToBatch("main_wafer", params);
-            auto batch_future = engine.executeBatch();
-            auto results = batch_future.get();
-            success = !results.empty() && results[0];
+            auto future = engine.simulateProcessAsync("main_wafer", params);
+            success = future.get();
             std::cout << "Ion implantation completed: " << (success ? "SUCCESS" : "FAILED") << std::endl;
 
         } else if (process_type == "deposition") {

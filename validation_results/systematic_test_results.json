@@ -1,30 +1,30 @@
 {
-  "timestamp": "2025-07-10 15:15:52",
+  "timestamp": "2025-07-10 15:33:43",
   "results": {
     "oxidation": {
       "success": true,
-      "execution_time": 0.0025835037231445312,
+      "execution_time": 0.002602815628051758,
       "stdout": "SemiPRO C++ Simulator starting...\n",
       "stderr": "",
       "output_files": 3
     },
     "doping": {
       "success": false,
-      "execution_time": 20,
-      "stdout": "",
-      "stderr": "Timeout",
-      "output_files": 0
+      "execution_time": 0.0050830841064453125,
+      "stdout": "SemiPRO C++ Simulator starting...\nStarting ion implantation simulation...\nIon implantation completed: FAILED\n",
+      "stderr": "",
+      "output_files": 3
     },
     "deposition": {
       "success": false,
-      "execution_time": 0.003979682922363281,
+      "execution_time": 0.002037525177001953,
       "stdout": "SemiPRO C++ Simulator starting...\nStarting deposition simulation...\n  Material: aluminum\n  Thickness: 0.1 \u03bcm\n  Temperature: 300\u00b0C\nDeposition completed: FAILED\n",
       "stderr": "",
       "output_files": 3
     },
     "etching": {
       "success": true,
-      "execution_time": 0.003922224044799805,
+      "execution_time": 0.0023584365844726562,
       "stdout": "SemiPRO C++ Simulator starting...\n",
       "stderr": "",
       "output_files": 3
@@ -38,9 +38,7 @@
       "oxidation",
       "etching"
     ],
-    "timeout_modules": [
-      "doping"
-    ],
+    "timeout_modules": [],
     "config_error_modules": []
   }
 }

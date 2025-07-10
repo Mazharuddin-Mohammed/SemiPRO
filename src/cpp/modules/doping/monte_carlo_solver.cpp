@@ -2,6 +2,7 @@
 #include "../../core/utils.hpp"
 #include <cmath>
 #include <iostream>
+#include <chrono>
 
 MonteCarloSolver::MonteCarloSolver() : rng_(std::random_device{}()) {}
 
@@ -28,6 +29,12 @@ Eigen::ArrayXd MonteCarloSolver::simulateImplantation(std::shared_ptr<Wafer> waf
   long num_ions = calculateOptimalParticleCount(dose, energy, wafer->getGrid().rows());
   double dz = wafer->getThickness() / x_dim; // Grid spacing (um)
 
+  // Hard limit to prevent timeouts
+  if (num_ions > 5000) {
+    std::cout << "  WARNING: Reducing particle count from " << num_ions << " to 5000 to prevent timeout\n";
+    num_ions = 5000;
+  }
+
   std::cout << "  Number of ions: " << num_ions << "\n";
   std::cout << "  Grid spacing: " << dz << " μm\n";
   std::cout << "  Range mean: " << range_mean << " μm\n";
@@ -37,10 +44,21 @@ Eigen::ArrayXd MonteCarloSolver::simulateImplantation(std::shared_ptr<Wafer> waf
   long progress_interval = num_ions / 10; // Report progress every 10%
   if (progress_interval == 0) progress_interval = 1;
 
+  // Safety check to prevent infinite loops
+  auto start_time = std::chrono::steady_clock::now();
+  const auto max_duration = std::chrono::seconds(15); // 15 second hard limit
+
   for (long i = 0; i < num_ions; ++i) {
     // Progress tracking to prevent timeout appearance
     if (i % progress_interval == 0) {
       std::cout << "  Progress: " << (100 * i / num_ions) << "% (" << i << "/" << num_ions << " ions)\n";
+
+      // Check for timeout
+      auto current_time = std::chrono::steady_clock::now();
+      if (current_time - start_time > max_duration) {
+        std::cout << "  WARNING: Simulation timeout, stopping at " << i << " ions\n";
+        break;
+      }
     }
 
     double depth = std::max(0.0, dist(rng_)); // Depth in um

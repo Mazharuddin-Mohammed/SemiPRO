@@ -454,6 +454,9 @@ bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wa
         // Range straggling (Bohr straggling)
         double straggling = 0.42 * range; // Simplified model
 
+        // Debug logging
+        Logger::getInstance().log("Ion implantation debug: energy=" + std::to_string(energy) + "keV, dose=" + std::to_string(dose) + "cm^-2, range=" + std::to_string(range) + "um, straggling=" + std::to_string(straggling) + "um");
+
         // Validate physical limits
         if (range < 0.001 || range > 100.0) { // 1 nm to 100 μm
             Logger::getInstance().log("Ion range out of physical limits: " + std::to_string(range) + " μm");
@@ -569,6 +572,9 @@ bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, 
 
         // Calculate deposition time
         double deposition_time = thickness / effective_rate; // minutes
+
+        // Debug logging
+        Logger::getInstance().log("Deposition debug: material=" + material + ", rate=" + std::to_string(rate) + ", temp_factor=" + std::to_string(temp_factor) + ", effective_rate=" + std::to_string(effective_rate) + ", deposition_time=" + std::to_string(deposition_time));
 
         if (deposition_time > 1000.0) { // More than 16 hours is unrealistic
             Logger::getInstance().log("Deposition time too long: " + std::to_string(deposition_time) + " minutes");
