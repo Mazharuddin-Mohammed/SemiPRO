@@ -45,7 +45,8 @@ enum class LogCategory {
     NETWORK,
     USER_INTERFACE,
     MEMORY,
-    THREADING
+    THREADING,
+    ADVANCED
 };
 
 // Performance metrics structure
