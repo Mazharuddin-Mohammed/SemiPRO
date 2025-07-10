@@ -218,6 +218,15 @@ data/
 *.hdf5
 *.h5
 
+# SemiPRO specific output artifacts
+output/visualizations/
+output/reports/
+output/test_*.html
+output/test_*.json
+output/test_*.py
+output/test_*.csv
+config/test_*.json
+
 # Simulation artifacts
 dopant_profile.dat
 dopant_profile_visualization.png
@@ -225,6 +234,25 @@ wafer_3d_visualization.png
 mosfet_final.png
 temperature_field.png
 stress_analysis.png
+
+# Generated visualization files
+*.html
+*.svg
+*.plotly
+*_visualization.png
+*_plot.png
+*_chart.png
+*_graph.png
+*_report.html
+*_analysis.html
+
+# Generated reports and documentation
+reports/
+analysis/
+benchmarks/
+validation_results/
+performance_reports/
+scientific_validation/
 
 # Large data files
 *.bin
