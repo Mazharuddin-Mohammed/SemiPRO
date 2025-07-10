@@ -55,6 +55,7 @@ set(SOURCES
     src/cpp/physics/enhanced_etching.cpp
     src/cpp/advanced/multi_layer_engine.cpp
     src/cpp/advanced/temperature_controller.cpp
+    src/cpp/advanced/process_optimizer.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp
