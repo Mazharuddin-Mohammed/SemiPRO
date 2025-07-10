@@ -522,6 +522,12 @@ bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, 
             temperature = temp_it->second;
         }
 
+        // Parse material parameter
+        auto mat_it = params.string_parameters.find("material");
+        if (mat_it != params.string_parameters.end()) {
+            material = mat_it->second;
+        }
+
         // Material properties database
         std::unordered_map<std::string, double> step_coverage = {
             {"aluminum", 0.3},      // Poor step coverage

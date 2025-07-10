@@ -31,10 +31,11 @@ public:
     struct ProcessParameters {
         std::string operation;
         std::unordered_map<std::string, double> parameters;
+        std::unordered_map<std::string, std::string> string_parameters;
         double duration;
         int priority = 0;
-        
-        ProcessParameters(const std::string& op, double dur) 
+
+        ProcessParameters(const std::string& op, double dur)
             : operation(op), duration(dur) {}
     };
     

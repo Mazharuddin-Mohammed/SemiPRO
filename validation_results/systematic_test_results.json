@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-07-10 15:15:52",
+  "results": {
+    "oxidation": {
+      "success": true,
+      "execution_time": 0.0025835037231445312,
+      "stdout": "SemiPRO C++ Simulator starting...\n",
+      "stderr": "",
+      "output_files": 3
+    },
+    "doping": {
+      "success": false,
+      "execution_time": 20,
+      "stdout": "",
+      "stderr": "Timeout",
+      "output_files": 0
+    },
+    "deposition": {
+      "success": false,
+      "execution_time": 0.003979682922363281,
+      "stdout": "SemiPRO C++ Simulator starting...\nStarting deposition simulation...\n  Material: aluminum\n  Thickness: 0.1 \u03bcm\n  Temperature: 300\u00b0C\nDeposition completed: FAILED\n",
+      "stderr": "",
+      "output_files": 3
+    },
+    "etching": {
+      "success": true,
+      "execution_time": 0.003922224044799805,
+      "stdout": "SemiPRO C++ Simulator starting...\n",
+      "stderr": "",
+      "output_files": 3
+    }
+  },
+  "analysis": {
+    "total": 4,
+    "successful": 2,
+    "success_rate": 0.5,
+    "working_modules": [
+      "oxidation",
+      "etching"
+    ],
+    "timeout_modules": [
+      "doping"
+    ],
+    "config_error_modules": []
+  }
+}

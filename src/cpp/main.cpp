@@ -148,8 +148,18 @@ int main(int argc, char* argv[]) {
             params.parameters["thickness"] = std::stod(config.count("thickness") ? config["thickness"] : "0.5");
             params.parameters["temperature"] = std::stod(config.count("temperature") ? config["temperature"] : "400");
 
+            // Add material parameter with proper default
+            std::string material = config.count("material") ? config["material"] : "aluminum";
+            params.string_parameters["material"] = material;
+
+            std::cout << "Starting deposition simulation..." << std::endl;
+            std::cout << "  Material: " << material << std::endl;
+            std::cout << "  Thickness: " << params.parameters["thickness"] << " μm" << std::endl;
+            std::cout << "  Temperature: " << params.parameters["temperature"] << "°C" << std::endl;
+
             auto future = engine.simulateProcessAsync("main_wafer", params);
             success = future.get();
+            std::cout << "Deposition completed: " << (success ? "SUCCESS" : "FAILED") << std::endl;
 
         } else if (process_type == "etching") {
             SimulationEngine::ProcessParameters params(process_type, 1.0);

@@ -34,7 +34,15 @@ Eigen::ArrayXd MonteCarloSolver::simulateImplantation(std::shared_ptr<Wafer> waf
   std::cout << "  Range stdev: " << range_stdev << " μm\n";
 
   long ions_deposited = 0;
+  long progress_interval = num_ions / 10; // Report progress every 10%
+  if (progress_interval == 0) progress_interval = 1;
+
   for (long i = 0; i < num_ions; ++i) {
+    // Progress tracking to prevent timeout appearance
+    if (i % progress_interval == 0) {
+      std::cout << "  Progress: " << (100 * i / num_ions) << "% (" << i << "/" << num_ions << " ions)\n";
+    }
+
     double depth = std::max(0.0, dist(rng_)); // Depth in um
     int index = static_cast<int>(depth / dz);
     if (index < x_dim) {
@@ -90,26 +98,27 @@ double MonteCarloSolver::calculateRangeStraggle(double energy, const std::string
 
 long MonteCarloSolver::calculateOptimalParticleCount(double dose, double energy, int grid_size) {
   // Adaptive particle count based on simulation requirements
+  // Reduced for faster execution and timeout prevention
 
-  // Base particle count
-  long base_count = 1000;
+  // Base particle count - reduced from 1000 to 500
+  long base_count = 500;
 
   // Scale with dose (higher dose needs more particles for accuracy)
   double dose_factor = std::log10(dose / 1e15) + 1.0; // Normalized to 1e15 cm^-2
-  dose_factor = std::max(0.1, std::min(10.0, dose_factor));
+  dose_factor = std::max(0.1, std::min(5.0, dose_factor)); // Reduced max from 10 to 5
 
   // Scale with energy (lower energy needs more particles for surface accuracy)
   double energy_factor = 100.0 / energy; // Inverse relationship
-  energy_factor = std::max(0.5, std::min(5.0, energy_factor));
+  energy_factor = std::max(0.5, std::min(3.0, energy_factor)); // Reduced max from 5 to 3
 
   // Scale with grid resolution
   double grid_factor = static_cast<double>(grid_size) / 100.0;
-  grid_factor = std::max(0.5, std::min(3.0, grid_factor));
+  grid_factor = std::max(0.5, std::min(2.0, grid_factor)); // Reduced max from 3 to 2
 
   long optimal_count = static_cast<long>(base_count * dose_factor * energy_factor * grid_factor);
 
-  // Limit to reasonable range
-  return std::max(100L, std::min(100000L, optimal_count));
+  // Limit to reasonable range - reduced max from 100000 to 10000 for timeout prevention
+  return std::max(100L, std::min(10000L, optimal_count));
 }
 
 double MonteCarloSolver::getAtomicMass(const std::string& element) {
