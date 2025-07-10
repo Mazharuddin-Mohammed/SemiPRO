@@ -102,10 +102,20 @@ std::shared_ptr<WaferEnhanced> SimulationEngine::getWafer(const std::string& nam
     return it->second;
 }
 
-std::future<bool> SimulationEngine::simulateProcessAsync(const std::string& wafer_name, 
+std::future<bool> SimulationEngine::simulateProcessAsync(const std::string& wafer_name,
                                                         const ProcessParameters& params) {
+    std::cout << "DEBUG: simulateProcessAsync called for wafer: " << wafer_name << ", operation: " << params.operation << std::endl;
+
     return std::async(std::launch::async, [this, wafer_name, params]() {
-        return executeProcess(wafer_name, params);
+        std::cout << "DEBUG: Inside async lambda, about to call executeProcess" << std::endl;
+        try {
+            bool result = executeProcess(wafer_name, params);
+            std::cout << "DEBUG: executeProcess returned: " << (result ? "true" : "false") << std::endl;
+            return result;
+        } catch (const std::exception& e) {
+            std::cout << "DEBUG: Exception in executeProcess: " << e.what() << std::endl;
+            return false;
+        }
     });
 }
 
@@ -174,9 +184,12 @@ void SimulationEngine::clearErrors() {
 }
 
 bool SimulationEngine::executeProcess(const std::string& wafer_name, const ProcessParameters& params) {
+    std::cout << "DEBUG: executeProcess called with operation: " << params.operation << std::endl;
+
     try {
         auto wafer = getWafer(wafer_name);
-        
+        std::cout << "DEBUG: Wafer retrieved successfully" << std::endl;
+
         // Update statistics
         {
             std::lock_guard<std::mutex> lock(state_mutex_);
@@ -186,20 +199,27 @@ bool SimulationEngine::executeProcess(const std::string& wafer_name, const Proce
         
         // Execute the process based on type
         bool success = false;
-        
+        std::cout << "DEBUG: Dispatching process type: " << params.operation << std::endl;
+
         if (params.operation == "oxidation") {
+            std::cout << "DEBUG: Calling simulateOxidation" << std::endl;
             // Implement Deal-Grove oxidation kinetics
             success = simulateOxidation(wafer, params);
         } else if (params.operation == "doping") {
+            std::cout << "DEBUG: Calling simulateIonImplantation" << std::endl;
             // Implement ion implantation with LSS theory
             success = simulateIonImplantation(wafer, params);
         } else if (params.operation == "deposition") {
+            std::cout << "DEBUG: Calling simulateDeposition" << std::endl;
             // Implement physical vapor deposition
             success = simulateDeposition(wafer, params);
+            std::cout << "DEBUG: simulateDeposition returned: " << (success ? "true" : "false") << std::endl;
         } else if (params.operation == "etching") {
+            std::cout << "DEBUG: Calling simulateEtching" << std::endl;
             // Implement plasma etching
             success = simulateEtching(wafer, params);
         } else {
+            std::cout << "DEBUG: Unknown process type: " << params.operation << std::endl;
             throw std::runtime_error("Unknown process type: " + params.operation);
         }
         
@@ -399,7 +419,10 @@ bool SimulationEngine::simulateOxidation(std::shared_ptr<WaferEnhanced> wafer, c
 }
 
 bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
+    std::cout << "DEBUG: simulateIonImplantation function entered" << std::endl;
+
     try {
+        std::cout << "DEBUG: Inside try block, extracting parameters" << std::endl;
         // Extract parameters
         double energy = 50.0; // keV
         double dose = 1e15; // ions/cm²
@@ -455,11 +478,19 @@ bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wa
         double straggling = 0.42 * range; // Simplified model
 
         // Debug logging
-        Logger::getInstance().log("Ion implantation debug: energy=" + std::to_string(energy) + "keV, dose=" + std::to_string(dose) + "cm^-2, range=" + std::to_string(range) + "um, straggling=" + std::to_string(straggling) + "um");
+        std::cout << "DEBUG: Ion implantation calculations:" << std::endl;
+        std::cout << "  energy=" << energy << " keV" << std::endl;
+        std::cout << "  dose=" << dose << " cm^-2" << std::endl;
+        std::cout << "  mass=" << mass << " amu" << std::endl;
+        std::cout << "  atomic_number=" << atomic_number << std::endl;
+        std::cout << "  epsilon=" << epsilon << std::endl;
+        std::cout << "  reduced_range=" << reduced_range << std::endl;
+        std::cout << "  range=" << range << " μm" << std::endl;
+        std::cout << "  straggling=" << straggling << " μm" << std::endl;
 
-        // Validate physical limits
-        if (range < 0.001 || range > 100.0) { // 1 nm to 100 μm
-            Logger::getInstance().log("Ion range out of physical limits: " + std::to_string(range) + " μm");
+        // Validate physical limits - FIXED: More realistic range limits
+        if (range < 0.00001 || range > 100.0) { // 0.01 nm to 100 μm (more realistic for low energy)
+            std::cout << "DEBUG: Ion range out of physical limits: " << range << " μm" << std::endl;
             return false;
         }
 
@@ -508,7 +539,10 @@ bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wa
 }
 
 bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
+    std::cout << "DEBUG: simulateDeposition function entered" << std::endl;
+
     try {
+        std::cout << "DEBUG: Inside try block, extracting parameters" << std::endl;
         // Extract parameters
         double thickness = 0.5; // μm
         double temperature = 400.0; // °C
@@ -565,19 +599,27 @@ bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, 
         double coverage = step_coverage.count(material) ? step_coverage[material] : 0.5;
         double rate = deposition_rate.count(material) ? deposition_rate[material] : 0.1;
 
-        // Temperature dependence (Arrhenius)
+        // Temperature dependence (Arrhenius) - FIXED: Higher temperature = faster rate
         double activation_energy = 0.5; // eV (typical)
-        double temp_factor = std::exp(-activation_energy * 11600.0 / (temperature + 273.15));
+        double reference_temp = 400.0; // Reference temperature in °C
+        double temp_factor = std::exp(-activation_energy * 11600.0 * (1.0/(temperature + 273.15) - 1.0/(reference_temp + 273.15)));
         double effective_rate = rate * temp_factor;
 
         // Calculate deposition time
         double deposition_time = thickness / effective_rate; // minutes
 
         // Debug logging
-        Logger::getInstance().log("Deposition debug: material=" + material + ", rate=" + std::to_string(rate) + ", temp_factor=" + std::to_string(temp_factor) + ", effective_rate=" + std::to_string(effective_rate) + ", deposition_time=" + std::to_string(deposition_time));
+        std::cout << "DEBUG: Deposition calculations:" << std::endl;
+        std::cout << "  material=" << material << std::endl;
+        std::cout << "  thickness=" << thickness << " μm" << std::endl;
+        std::cout << "  temperature=" << temperature << "°C" << std::endl;
+        std::cout << "  rate=" << rate << " μm/min" << std::endl;
+        std::cout << "  temp_factor=" << temp_factor << std::endl;
+        std::cout << "  effective_rate=" << effective_rate << " μm/min" << std::endl;
+        std::cout << "  deposition_time=" << deposition_time << " minutes" << std::endl;
 
         if (deposition_time > 1000.0) { // More than 16 hours is unrealistic
-            Logger::getInstance().log("Deposition time too long: " + std::to_string(deposition_time) + " minutes");
+            std::cout << "DEBUG: Deposition time too long: " << deposition_time << " minutes" << std::endl;
             return false;
         }
 

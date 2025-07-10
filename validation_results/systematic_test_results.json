@@ -1,41 +1,43 @@
 {
-  "timestamp": "2025-07-10 15:33:43",
+  "timestamp": "2025-07-10 16:34:24",
   "results": {
     "oxidation": {
       "success": true,
-      "execution_time": 0.002602815628051758,
-      "stdout": "SemiPRO C++ Simulator starting...\n",
+      "execution_time": 0.0025489330291748047,
+      "stdout": "SemiPRO C++ Simulator starting...\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: oxidation\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: executeProcess called with operation: oxidation\nDEBUG: Wafer retrieved successfully\nDEBUG: Dispatching process type: oxidation\nDEBUG: Calling simulateOxidation\nDEBUG: executeProcess returned: true\n",
       "stderr": "",
       "output_files": 3
     },
     "doping": {
-      "success": false,
-      "execution_time": 0.0050830841064453125,
-      "stdout": "SemiPRO C++ Simulator starting...\nStarting ion implantation simulation...\nIon implantation completed: FAILED\n",
+      "success": true,
+      "execution_time": 0.0029985904693603516,
+      "stdout": "SemiPRO C++ Simulator starting...\nStarting ion implantation simulation...\nDEBUG: About to call simulateProcessAsync for doping\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: doping\nDEBUG: simulateProcessAsync returned, getting result...\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: executeProcess called with operation: doping\nDEBUG: Wafer retrieved successfully\nDEBUG: Dispatching process type: doping\nDEBUG: Calling simulateIonImplantation\nDEBUG: simulateIonImplantation function entered\nDEBUG: Inside try block, extracting parameters\nDEBUG: Ion implantation calculations:\n  energy=50 keV\n  dose=1e+14 cm^-2\n  mass=11 amu\n  atomic_number=5\n  epsilon=2.34282\n  reduced_range=0.07462\n  range=2.66259e-05 \u03bcm\n  straggling=1.11829e-05 \u03bcm\nDEBUG: executeProcess returned: true\nDEBUG: Result obtained: true\nIon implantation completed: SUCCESS\n",
       "stderr": "",
       "output_files": 3
     },
     "deposition": {
-      "success": false,
-      "execution_time": 0.002037525177001953,
-      "stdout": "SemiPRO C++ Simulator starting...\nStarting deposition simulation...\n  Material: aluminum\n  Thickness: 0.1 \u03bcm\n  Temperature: 300\u00b0C\nDeposition completed: FAILED\n",
+      "success": true,
+      "execution_time": 0.002850770950317383,
+      "stdout": "SemiPRO C++ Simulator starting...\nStarting deposition simulation...\n  Material: aluminum\n  Thickness: 0.1 \u03bcm\n  Temperature: 300\u00b0C\nDEBUG: About to call simulateProcessAsync for deposition\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: deposition\nDEBUG: simulateProcessAsync returned, getting result...\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: executeProcess called with operation: deposition\nDEBUG: Wafer retrieved successfully\nDEBUG: Dispatching process type: deposition\nDEBUG: Calling simulateDeposition\nDEBUG: simulateDeposition function entered\nDEBUG: Inside try block, extracting parameters\nDEBUG: Deposition calculations:\n  material=aluminum\n  thickness=0.1 \u03bcm\n  temperature=300\u00b0C\n  rate=0.1 \u03bcm/min\n  temp_factor=0.222393\n  effective_rate=0.0222393 \u03bcm/min\n  deposition_time=4.49654 minutes\nDEBUG: simulateDeposition returned: true\nDEBUG: executeProcess returned: true\nDEBUG: Result obtained: true\nDeposition completed: SUCCESS\n",
       "stderr": "",
       "output_files": 3
     },
     "etching": {
       "success": true,
-      "execution_time": 0.0023584365844726562,
-      "stdout": "SemiPRO C++ Simulator starting...\n",
+      "execution_time": 0.0024454593658447266,
+      "stdout": "SemiPRO C++ Simulator starting...\nDEBUG: simulateProcessAsync called for wafer: main_wafer, operation: etching\nDEBUG: Inside async lambda, about to call executeProcess\nDEBUG: executeProcess called with operation: etching\nDEBUG: Wafer retrieved successfully\nDEBUG: Dispatching process type: etching\nDEBUG: Calling simulateEtching\nDEBUG: executeProcess returned: true\n",
       "stderr": "",
       "output_files": 3
     }
   },
   "analysis": {
     "total": 4,
-    "successful": 2,
-    "success_rate": 0.5,
+    "successful": 4,
+    "success_rate": 1.0,
     "working_modules": [
       "oxidation",
+      "doping",
+      "deposition",
       "etching"
     ],
     "timeout_modules": [],

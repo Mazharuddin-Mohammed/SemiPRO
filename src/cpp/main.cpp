@@ -137,8 +137,11 @@ int main(int argc, char* argv[]) {
 
             // Use direct execution to avoid batch processing deadlock
             std::cout << "Starting ion implantation simulation..." << std::endl;
+            std::cout << "DEBUG: About to call simulateProcessAsync for doping" << std::endl;
             auto future = engine.simulateProcessAsync("main_wafer", params);
+            std::cout << "DEBUG: simulateProcessAsync returned, getting result..." << std::endl;
             success = future.get();
+            std::cout << "DEBUG: Result obtained: " << (success ? "true" : "false") << std::endl;
             std::cout << "Ion implantation completed: " << (success ? "SUCCESS" : "FAILED") << std::endl;
 
         } else if (process_type == "deposition") {
@@ -154,9 +157,12 @@ int main(int argc, char* argv[]) {
             std::cout << "  Material: " << material << std::endl;
             std::cout << "  Thickness: " << params.parameters["thickness"] << " μm" << std::endl;
             std::cout << "  Temperature: " << params.parameters["temperature"] << "°C" << std::endl;
+            std::cout << "DEBUG: About to call simulateProcessAsync for deposition" << std::endl;
 
             auto future = engine.simulateProcessAsync("main_wafer", params);
+            std::cout << "DEBUG: simulateProcessAsync returned, getting result..." << std::endl;
             success = future.get();
+            std::cout << "DEBUG: Result obtained: " << (success ? "true" : "false") << std::endl;
             std::cout << "Deposition completed: " << (success ? "SUCCESS" : "FAILED") << std::endl;
 
         } else if (process_type == "etching") {
