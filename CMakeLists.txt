@@ -52,6 +52,7 @@ set(SOURCES
     src/cpp/physics/enhanced_oxidation.cpp
     src/cpp/physics/enhanced_doping.cpp
     src/cpp/physics/enhanced_deposition.cpp
+    src/cpp/physics/enhanced_etching.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp

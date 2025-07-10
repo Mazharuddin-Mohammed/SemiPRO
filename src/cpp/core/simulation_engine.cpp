@@ -8,6 +8,7 @@
 #include "../physics/enhanced_oxidation.hpp"
 #include "../physics/enhanced_doping.hpp"
 #include "../physics/enhanced_deposition.hpp"
+#include "../physics/enhanced_etching.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -711,110 +712,119 @@ bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, 
 }
 
 bool SimulationEngine::simulateEtching(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
-    try {
-        // Extract parameters
-        double etch_depth = 0.5; // μm
-        std::string etch_type = "anisotropic"; // anisotropic or isotropic
-        double selectivity = 10.0; // etch selectivity
+    using namespace SemiPRO;
 
-        // Parse parameters
+    // Create memory scope for tracking
+    MEMORY_SCOPE("etching_simulation");
+
+    try {
+        // Initialize enhanced etching physics (singleton pattern)
+        static std::unique_ptr<EnhancedEtchingPhysics> etching_engine_ptr;
+        if (!etching_engine_ptr) {
+            etching_engine_ptr = std::make_unique<EnhancedEtchingPhysics>();
+        }
+        auto& etching_engine = *etching_engine_ptr;
+
+        // Extract and validate parameters
+        EtchingConditions conditions;
+
+        // Target depth
         auto depth_it = params.parameters.find("depth");
         if (depth_it != params.parameters.end()) {
-            etch_depth = depth_it->second;
+            conditions.target_depth = depth_it->second;
+        } else {
+            conditions.target_depth = 0.5; // Default 0.5 μm
         }
 
+        // Etch type (anisotropic vs isotropic)
         auto type_it = params.parameters.find("type");
         if (type_it != params.parameters.end()) {
-            etch_type = (type_it->second > 0.5) ? "anisotropic" : "isotropic";
+            bool is_anisotropic = (type_it->second > 0.5);
+            conditions.technique = is_anisotropic ? EtchingTechnique::RIE : EtchingTechnique::WET_CHEMICAL;
+        } else {
+            conditions.technique = EtchingTechnique::RIE; // Default to RIE
         }
 
+        // Selectivity target
         auto sel_it = params.parameters.find("selectivity");
         if (sel_it != params.parameters.end()) {
-            selectivity = sel_it->second;
-        }
-
-        // Validate parameters
-        if (etch_depth < 0.001 || etch_depth > 100.0) { // 1 nm to 100 μm
-            Logger::getInstance().log("Etch depth out of range: " + std::to_string(etch_depth) + " μm");
-            return false;
-        }
-
-        if (selectivity < 1.0 || selectivity > 1000.0) {
-            Logger::getInstance().log("Etch selectivity out of range: " + std::to_string(selectivity));
-            return false;
-        }
-
-        // Apply etching to wafer
-        auto grid = wafer->getGrid();
-        int rows = grid.rows();
-        int cols = grid.cols();
-
-        if (etch_type == "anisotropic") {
-            // Anisotropic etching (RIE) - vertical etching with minimal lateral
-            for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < cols; ++j) {
-                    // Check if there's material to etch
-                    if (grid(i, j) > etch_depth) {
-                        grid(i, j) -= etch_depth;
-                    } else {
-                        grid(i, j) = 0.0; // Etched completely
-                    }
-                }
-            }
+            conditions.selectivity_target = sel_it->second;
         } else {
-            // Isotropic etching - uniform etching in all directions
-            auto original_grid = grid;
-
-            for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < cols; ++j) {
-                    if (original_grid(i, j) > 0) {
-                        // Calculate isotropic etch with neighbor averaging
-                        double etch_amount = etch_depth;
-
-                        // Consider neighboring cells for isotropic behavior
-                        int neighbor_count = 0;
-                        double neighbor_sum = 0.0;
-
-                        for (int di = -1; di <= 1; ++di) {
-                            for (int dj = -1; dj <= 1; ++dj) {
-                                int ni = i + di;
-                                int nj = j + dj;
-
-                                if (ni >= 0 && ni < rows && nj >= 0 && nj < cols) {
-                                    neighbor_sum += original_grid(ni, nj);
-                                    neighbor_count++;
-                                }
-                            }
-                        }
-
-                        double avg_neighbor = neighbor_sum / neighbor_count;
-
-                        // Modify etch rate based on local environment
-                        if (avg_neighbor < original_grid(i, j) * 0.5) {
-                            etch_amount *= 1.2; // Faster etching at edges
-                        }
-
-                        if (grid(i, j) > etch_amount) {
-                            grid(i, j) -= etch_amount;
-                        } else {
-                            grid(i, j) = 0.0;
-                        }
-                    }
-                }
-            }
+            conditions.selectivity_target = 10.0; // Default selectivity
         }
 
-        wafer->setGrid(grid);
+        // Material types (default to silicon)
+        conditions.target_material = EtchMaterial::SILICON;
+        conditions.mask_material = EtchMaterial::PHOTORESIST;
 
-        Logger::getInstance().log("Etching completed");
-        Logger::getInstance().log("Etch depth: " + std::to_string(etch_depth) + " μm");
-        Logger::getInstance().log("Etch type: " + etch_type);
-        Logger::getInstance().log("Selectivity: " + std::to_string(selectivity));
+        // Chemistry (default to fluorine-based)
+        conditions.chemistry = EtchChemistry::FLUORINE_BASED;
+
+        // Process parameters
+        auto pressure_it = params.parameters.find("pressure");
+        if (pressure_it != params.parameters.end()) {
+            conditions.pressure = pressure_it->second;
+        } else {
+            conditions.pressure = 10.0; // Default 10 mTorr
+        }
+
+        auto power_it = params.parameters.find("power");
+        if (power_it != params.parameters.end()) {
+            conditions.power = power_it->second;
+        } else {
+            conditions.power = 100.0; // Default 100 W
+        }
+
+        auto bias_it = params.parameters.find("bias");
+        if (bias_it != params.parameters.end()) {
+            conditions.bias_voltage = bias_it->second;
+        } else {
+            conditions.bias_voltage = 100.0; // Default 100 V
+        }
+
+        // Run enhanced etching simulation
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          "Starting enhanced etching: " +
+                          etching_engine.materialToString(conditions.target_material) +
+                          ", Technique: " + etching_engine.techniqueToString(conditions.technique) +
+                          ", Depth: " + std::to_string(conditions.target_depth) + " μm" +
+                          ", Pressure: " + std::to_string(conditions.pressure) + " mTorr",
+                          "EnhancedEtching");
+
+        auto results = etching_engine.simulateEtching(wafer, conditions);
+
+        // Log detailed results
+        std::string result_message = "Enhanced etching completed: " +
+                          std::string("Depth: ") + std::to_string(results.final_depth) + " μm, " +
+                          "Rate: " + std::to_string(results.etch_rate) + " μm/min, " +
+                          "Selectivity: " + std::to_string(results.selectivity) + ", " +
+                          "Anisotropy: " + std::to_string(results.anisotropy * 100.0) + "%, " +
+                          "Uniformity: " + std::to_string(results.uniformity) + "%, " +
+                          "Quality score: " + std::to_string(results.quality_metrics.at("overall_score"));
+
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          result_message, "EnhancedEtching");
+
+        // Validate results
+        if (results.final_depth < 0 || results.final_depth > 1000.0) {
+            SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                              "Etching result out of physical range: " +
+                              std::to_string(results.final_depth) + " μm",
+                              "EnhancedEtching");
+            return false;
+        }
 
         return true;
 
+    } catch (const SemiPROException& e) {
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Enhanced etching failed: " + std::string(e.what()),
+                          "EnhancedEtching");
+        return false;
     } catch (const std::exception& e) {
-        Logger::getInstance().log("Etching simulation failed: " + std::string(e.what()));
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Etching simulation failed: " + std::string(e.what()),
+                          "EnhancedEtching");
         return false;
     }
 }
