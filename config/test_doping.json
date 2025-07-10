@@ -1,0 +1,8 @@
+{
+  "energy": 120.0,
+  "dose": 1000000000000000.0,
+  "angle": 0.0,
+  "species": "phosphorus",
+  "grid_size_x": 50,
+  "grid_size_y": 50
+}

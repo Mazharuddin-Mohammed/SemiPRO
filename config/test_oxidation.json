@@ -1,0 +1,8 @@
+{
+  "temperature": 1200.0,
+  "time": 2.0,
+  "pressure": 1.0,
+  "oxygen_partial_pressure": 0.21,
+  "grid_size_x": 50,
+  "grid_size_y": 50
+}

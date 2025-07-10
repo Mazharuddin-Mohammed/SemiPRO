@@ -1,0 +1,21 @@
+{
+  "simulation": {
+    "wafer": {
+      "diameter": 200.0,
+      "thickness": 0.5,
+      "material": "silicon"
+    },
+    "grid": {
+      "x_dimension": 50,
+      "y_dimension": 50
+    },
+    "process": {
+      "operation": "multilayer_demo",
+      "parameters": {
+        "stack_layers": 4,
+        "enable_optimization": 1.0,
+        "enable_stress_analysis": 1.0
+      }
+    }
+  }
+}

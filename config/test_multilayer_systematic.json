@@ -1,0 +1,128 @@
+{
+  "simulation": {
+    "wafer": {
+      "diameter": 200.0,
+      "thickness": 0.5,
+      "material": "silicon"
+    },
+    "grid": {
+      "x_dimension": 100,
+      "y_dimension": 100
+    },
+    "process": {
+      "operation": "multilayer",
+      "parameters": {
+        "stack_id": "test_stack",
+        "optimization_objective": "minimize_stress",
+        "enable_interface_effects": 1.0,
+        "enable_stress_coupling": 1.0,
+        "enable_thermal_coupling": 1.0
+      }
+    },
+    "layers": [
+      {
+        "id": "substrate",
+        "type": "substrate",
+        "material": "silicon",
+        "thickness": 500.0,
+        "properties": {
+          "resistivity": 10.0,
+          "crystal_orientation": "100"
+        }
+      },
+      {
+        "id": "gate_oxide",
+        "type": "oxide",
+        "material": "SiO2",
+        "thickness": 0.005,
+        "process": {
+          "type": "oxidation",
+          "temperature": 1000.0,
+          "time": 0.5,
+          "ambient": 1.0
+        }
+      },
+      {
+        "id": "polysilicon_gate",
+        "type": "polysilicon",
+        "material": "poly_silicon",
+        "thickness": 0.3,
+        "process": {
+          "type": "deposition",
+          "temperature": 620.0,
+          "pressure": 0.1,
+          "technique": "LPCVD"
+        }
+      },
+      {
+        "id": "metal_contact",
+        "type": "metal",
+        "material": "aluminum",
+        "thickness": 0.8,
+        "process": {
+          "type": "deposition",
+          "temperature": 300.0,
+          "pressure": 5.0,
+          "technique": "sputtering"
+        }
+      }
+    ],
+    "process_sequence": [
+      {
+        "step": "oxidation:gate_oxide",
+        "parameters": {
+          "temperature": 1000.0,
+          "time": 0.5,
+          "ambient": 1.0
+        }
+      },
+      {
+        "step": "deposition:polysilicon_gate",
+        "parameters": {
+          "temperature": 620.0,
+          "pressure": 0.1
+        }
+      },
+      {
+        "step": "etching:polysilicon_gate",
+        "parameters": {
+          "depth": 0.1,
+          "pressure": 10.0,
+          "power": 150.0
+        }
+      },
+      {
+        "step": "deposition:metal_contact",
+        "parameters": {
+          "temperature": 300.0,
+          "pressure": 5.0
+        }
+      }
+    ],
+    "optimization": {
+      "objective": "minimize_stress",
+      "constraints": {
+        "max_total_thickness": 2.0,
+        "min_uniformity": 95.0,
+        "max_stress": 500.0
+      },
+      "algorithm": "genetic",
+      "iterations": 50,
+      "population_size": 20
+    }
+  },
+  "output": {
+    "format": "json",
+    "include_profiles": true,
+    "include_stress_analysis": true,
+    "include_interface_analysis": true,
+    "save_optimization_history": true
+  },
+  "validation": {
+    "check_layer_compatibility": true,
+    "check_process_feasibility": true,
+    "check_thermal_budget": true,
+    "max_temperature": 1200.0,
+    "max_process_time": 10.0
+  }
+}

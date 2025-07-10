@@ -1,6 +1,6 @@
 # SemiPRO Semiconductor Simulator - Git Ignore File
 
-# Build directories
+# Build directories and compiled outputs
 build/
 Build/
 BUILD/
@@ -19,17 +19,16 @@ Makefile
 *.cmake
 !CMakeLists.txt
 
-# Compiled binaries
+# Compiled binaries and libraries
 *.exe
 *.out
 *.app
 *.dll
-*.so
 *.dylib
 *.a
 *.lib
 
-# Specific executables
+# Specific executables (but keep source code)
 simulator
 tests
 example_*
@@ -71,14 +70,6 @@ Thumbs.db
 *.sln.docstates
 *.code-workspace
 
-# Visual Studio Code
-.vscode/
-*.code-workspace
-
-# CLion
-.idea/
-cmake-build-*/
-
 # Qt Creator
 CMakeLists.txt.user*
 
@@ -94,25 +85,24 @@ core.*
 !src/cpp/core/
 vgcore.*
 
-# Configuration files (keep templates)
+# Configuration files (keep templates and examples)
 config/*.yaml
 config/*.yml
 config/*.json
 !config/*.template.*
 !config/example_*
 
-# Python cache and bytecode
+# Python cache and bytecode (but keep source .py files)
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
+*.pyc
+*.pyo
 *.pyd
+*$py.class
 
-# Python compiled extensions in source tree
+# Python compiled extensions (but keep source .py files)
 src/**/__pycache__/
-src/**/*.so
-src/**/*.pyd
 src/**/*.pyc
+src/**/*.pyo
 .Python
 env/
 venv/
@@ -122,15 +112,10 @@ venv.bak/
 .pytest_cache/
 
 # Python distribution / packaging
-.Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -146,12 +131,12 @@ MANIFEST
 # pyenv
 .python-version
 
-# Vulkan and graphics
+# Vulkan and graphics compiled shaders
 *.spv
 shaders/compiled/
 vulkan_debug.txt
 
-# Documentation build
+# Documentation build outputs
 docs/_build/
 docs/build/
 site/
@@ -209,42 +194,31 @@ package-lock.json
 *.sqlite
 *.sqlite3
 
-# Simulation output files
+# Simulation output files and data
 results/
 output/
 data/
 *.dat
-*.csv
 *.hdf5
 *.h5
 
 # SemiPRO specific output artifacts
 output/visualizations/
 output/reports/
-output/test_*.html
-output/test_*.json
-output/test_*.py
-output/test_*.csv
+output/test_*
 config/test_*.json
 
-# Simulation artifacts
+# Simulation artifacts and generated images
 dopant_profile.dat
 dopant_profile_visualization.png
 wafer_3d_visualization.png
 mosfet_final.png
 temperature_field.png
 stress_analysis.png
-
-# Generated visualization files
-*.html
-*.svg
-*.plotly
 *_visualization.png
 *_plot.png
 *_chart.png
 *_graph.png
-*_report.html
-*_analysis.html
 
 # Generated reports and documentation
 reports/
@@ -264,34 +238,22 @@ sim_temp_*
 wafer_*.tmp
 process_*.cache
 
-# But keep source code
-!src/
-!src/**/*
-
 # Generated documentation
 doxygen/
 sphinx/_build/
 
-# Conan package manager
+# Package managers
 conanfile.txt
 conaninfo.txt
 conanbuildinfo.*
 conan.lock
-
-# vcpkg
 vcpkg_installed/
-
-# FetchContent
 _deps/
 
-# CCache
+# Build tools
 .ccache/
-
-# Ninja
 .ninja_deps
 .ninja_log
-
-# Clang
 .clangd/
 compile_commands.json
 
@@ -309,7 +271,7 @@ scan-build-*/
 benchmark_results/
 *.benchmark
 
-# Machine learning models (if any)
+# Machine learning models
 *.model
 *.pkl
 *.joblib
@@ -318,47 +280,42 @@ benchmark_results/
 checkpoints/
 *.checkpoint
 
-# Video and image outputs
+# Generated media files (but keep source images in docs/)
 *.mp4
 *.avi
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.bmp
-*.tiff
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.gif
+!README*.png
+!README*.jpg
 
 # CAD files (large)
 *.gds
 *.gdsii
 *.oasis
 
-# SPICE simulation files
+# SPICE simulation outputs
 *.sp
 *.cir
 *.lis
-*.out
 
 # Custom application data
 .semipro/
 user_data/
 preferences.ini
 
-# Cython specific files
-*.c
-*.cpp
-*.html
-*.pyx.c
-*.pyx.cpp
+# Cython compiled files (but keep .pyx source files)
 src/cython/*.c
 src/cython/*.cpp
 src/cython/*.so
 src/cython/*.pyd
 src/cython/*.html
-Cython-*/
-setup_*.py
+!src/cython/*.pyx
+!src/cython/*.pxd
+!src/cython/setup.py
+!src/cython/build_single.py
 
-# Large downloaded dependencies (should not be in repo)
+# Large downloaded dependencies
 Cython-*/
 eigen-*/
 yaml-cpp-*/
@@ -366,7 +323,6 @@ glfw-*/
 vulkan-*/
 
 # Downloaded dependencies and build artifacts
-*.tar.gz
 *.whl
 pip-wheel-metadata/
 share/python-wheels/
@@ -374,10 +330,8 @@ share/python-wheels/
 # Test artifacts
 test_results/
 coverage_reports/
-.pytest_cache/
 .tox/
 .nox/
-htmlcov/
 nosetests.xml
 
 # Additional Python artifacts
@@ -385,15 +339,13 @@ nosetests.xml
 *.spec
 pip-log.txt
 pip-delete-this-directory.txt
-.hypothesis/
 .cache/
 
-# Documentation artifacts
+# Documentation artifacts (but keep source docs)
 docs/build/
 docs/_build/
-*.pdf
-*.epub
-site/
+!docs/**/*.md
+!docs/**/*.rst
 
 # IDE specific
 .spyderproject
@@ -413,27 +365,18 @@ __pypackages__/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Windows
 *.lnk
 *.url
-
-# Linux
-*~
 .fuse_hidden*
 .directory
 .Trash-*
 .nfs*
-
-# macOS
 .AppleDouble
 .LSOverride
 Icon
 .DocumentRevisions-V100
 .fseventsd
-.Spotlight-V100
 .TemporaryItems
-.Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 .AppleDB
@@ -441,3 +384,30 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# IMPORTANT: Keep all source code files
+# This ensures .cpp, .hpp, .c, .h, .py, .pyx files are included
+!src/**/*.cpp
+!src/**/*.hpp
+!src/**/*.c
+!src/**/*.h
+!src/**/*.py
+!src/**/*.pyx
+!src/**/*.pxd
+!*.cpp
+!*.hpp
+!*.c
+!*.h
+!*.py
+!*.pyx
+!*.pxd
+!CMakeLists.txt
+!*.md
+!*.rst
+!*.txt
+!*.yaml
+!*.yml
+!*.json
+!*.frag
+!*.vert
+!*.glsl

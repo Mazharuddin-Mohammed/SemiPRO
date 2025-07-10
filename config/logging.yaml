@@ -1,0 +1,5 @@
+# Author: Dr. Mazharuddin Mohammed
+# SemiPRO Logging Configuration
+
+logging:
+  path: "logs/simulator.log"

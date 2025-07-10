@@ -1,0 +1,11 @@
+{
+  "temperature": 1000.0,
+  "time": 2.0,
+  "pressure": 1.0,
+  "oxygen_partial_pressure": 0.21,
+  "wafer_diameter": 300.0,
+  "wafer_thickness": 775.0,
+  "grid_size_x": 100,
+  "grid_size_y": 100,
+  "output_file": "oxidation_results.dat"
+}

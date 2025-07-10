@@ -1,0 +1,21 @@
+{
+  "simulation": {
+    "wafer": {
+      "diameter": 200.0,
+      "thickness": 0.5,
+      "material": "silicon"
+    },
+    "grid": {
+      "x_dimension": 100,
+      "y_dimension": 100
+    },
+    "process": {
+      "operation": "oxidation",
+      "parameters": {
+        "temperature": 1000,
+        "time": 1.0,
+        "ambient": 1.0
+      }
+    }
+  }
+}

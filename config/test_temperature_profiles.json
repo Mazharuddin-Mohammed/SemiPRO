@@ -1,0 +1,80 @@
+{
+  "simulation": {
+    "wafer": {
+      "diameter": 200.0,
+      "thickness": 0.5,
+      "material": "silicon"
+    },
+    "grid": {
+      "x_dimension": 50,
+      "y_dimension": 50
+    },
+    "process": {
+      "operation": "temperature_control",
+      "parameters": {
+        "profile_type": "thermal_cycling",
+        "enable_spatial_gradients": 1.0,
+        "enable_thermal_coupling": 1.0,
+        "enable_optimization": 1.0
+      }
+    },
+    "temperature_profiles": [
+      {
+        "profile_id": "rapid_thermal_anneal",
+        "type": "ramp",
+        "start_temperature": 25.0,
+        "end_temperature": 1000.0,
+        "ramp_rate": 50.0,
+        "hold_time": 2.0,
+        "mode": "linear_ramp"
+      },
+      {
+        "profile_id": "stress_relief_cycle",
+        "type": "thermal_cycle",
+        "min_temperature": 25.0,
+        "max_temperature": 400.0,
+        "cycle_time": 10.0,
+        "num_cycles": 3,
+        "dwell_time_hot": 3.0,
+        "dwell_time_cold": 2.0,
+        "cycling_type": "stress_relief"
+      },
+      {
+        "profile_id": "furnace_oxidation",
+        "type": "ramp",
+        "start_temperature": 25.0,
+        "end_temperature": 1100.0,
+        "ramp_rate": 5.0,
+        "hold_time": 30.0,
+        "mode": "linear_ramp"
+      }
+    ],
+    "spatial_config": {
+      "distribution_type": "radial_gradient",
+      "center_temperature": 1000.0,
+      "edge_temperature": 980.0,
+      "gradient_strength": 1.0
+    },
+    "optimization": {
+      "target_uniformity": 98.0,
+      "max_ramp_rate": 100.0,
+      "stress_relief_target": 80.0,
+      "cycle_time_limit": 15.0
+    }
+  },
+  "output": {
+    "format": "json",
+    "include_temperature_profiles": true,
+    "include_spatial_analysis": true,
+    "include_thermal_budget": true,
+    "save_optimization_results": true
+  },
+  "validation": {
+    "check_temperature_limits": true,
+    "check_ramp_rates": true,
+    "check_thermal_budget": true,
+    "max_temperature": 1200.0,
+    "max_ramp_rate": 200.0,
+    "max_thermal_budget": 50000.0
+  }
+}
