@@ -47,6 +47,7 @@ set(SOURCES
     src/cpp/core/plugin_manager.cpp
     src/cpp/core/enhanced_error_handling.cpp
     src/cpp/core/advanced_logger.cpp
+    src/cpp/core/memory_manager.cpp
     src/cpp/modules/geometry/geometry_manager.cpp
     src/cpp/modules/oxidation/oxidation_model.cpp
     src/cpp/modules/doping/doping_manager.cpp

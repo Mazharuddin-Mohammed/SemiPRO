@@ -3,6 +3,7 @@
 #include "utils.hpp"
 #include "enhanced_error_handling.hpp"
 #include "advanced_logger.hpp"
+#include "memory_manager.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -207,15 +208,20 @@ void SimulationEngine::clearErrors() {
 bool SimulationEngine::executeProcess(const std::string& wafer_name, const ProcessParameters& params) {
     using namespace SemiPRO;
 
+    // Create memory scope for tracking
+    MEMORY_SCOPE("process_" + params.operation);
+
     // Create performance timer for the entire process
     auto process_timer = AdvancedLogger::getInstance().createTimer(
         "process_" + params.operation, "SimulationEngine"
     );
 
     try {
-        // Log process start
+        // Log process start with memory info
+        auto& memory_mgr = MemoryManager::getInstance();
         SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::SIMULATION,
-                          "Starting process: " + params.operation + " on wafer: " + wafer_name,
+                          "Starting process: " + params.operation + " on wafer: " + wafer_name +
+                          " (Memory usage: " + std::to_string(memory_mgr.getCurrentUsage()) + " bytes)",
                           "SimulationEngine");
 
         auto wafer = getWafer(wafer_name);
