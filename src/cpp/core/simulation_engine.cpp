@@ -7,6 +7,7 @@
 #include "config_manager.hpp"
 #include "../physics/enhanced_oxidation.hpp"
 #include "../physics/enhanced_doping.hpp"
+#include "../physics/enhanced_deposition.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -600,147 +601,111 @@ bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wa
 bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
     using namespace SemiPRO;
 
+    // Create memory scope for tracking
+    MEMORY_SCOPE("deposition_simulation");
+
     try {
-        ErrorManager::getInstance().reportError(
-            ErrorSeverity::DEBUG, ErrorCategory::PHYSICS,
-            "Starting deposition simulation",
-            SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
-        );
+        // Initialize enhanced deposition physics (singleton pattern)
+        static std::unique_ptr<EnhancedDepositionPhysics> deposition_engine_ptr;
+        if (!deposition_engine_ptr) {
+            deposition_engine_ptr = std::make_unique<EnhancedDepositionPhysics>();
+        }
+        auto& deposition_engine = *deposition_engine_ptr;
 
-        // Extract parameters with validation
-        double thickness = 0.5; // μm
-        double temperature = 400.0; // °C
-        std::string material = "aluminum"; // default material
+        // Extract and validate parameters
+        DepositionConditions conditions;
 
-        // Parse parameters with validation
+        // Thickness
         auto thick_it = params.parameters.find("thickness");
         if (thick_it != params.parameters.end()) {
-            thickness = thick_it->second;
-            if (thickness <= 0.0 || thickness > 100.0) {
-                throw ValidationException(
-                    "Thickness out of range: " + std::to_string(thickness) + " μm (valid: 0-100 μm)",
-                    SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
-                );
-            }
+            conditions.target_thickness = thick_it->second;
+        } else {
+            conditions.target_thickness = 0.1; // Default 0.1 μm
         }
 
+        // Temperature
         auto temp_it = params.parameters.find("temperature");
         if (temp_it != params.parameters.end()) {
-            temperature = temp_it->second;
-            if (temperature < 0.0 || temperature > 2000.0) {
-                throw ValidationException(
-                    "Temperature out of range: " + std::to_string(temperature) + "°C (valid: 0-2000°C)",
-                    SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
-                );
-            }
+            conditions.temperature = temp_it->second;
+        } else {
+            conditions.temperature = 400.0; // Default 400°C
         }
 
-        // Parse material parameter
+        // Material (default to aluminum)
         auto mat_it = params.string_parameters.find("material");
         if (mat_it != params.string_parameters.end()) {
-            material = mat_it->second;
-            if (material.empty()) {
-                throw ValidationException(
-                    "Material name cannot be empty",
-                    SEMIPRO_MODULE_ERROR_CONTEXT("Deposition")
-                );
+            std::string material_name = mat_it->second;
+            if (material_name == "aluminum") {
+                conditions.material = MaterialType::ALUMINUM;
+            } else if (material_name == "copper") {
+                conditions.material = MaterialType::COPPER;
+            } else if (material_name == "tungsten") {
+                conditions.material = MaterialType::TUNGSTEN;
+            } else if (material_name == "silicon_dioxide") {
+                conditions.material = MaterialType::SILICON_DIOXIDE;
+            } else if (material_name == "silicon_nitride") {
+                conditions.material = MaterialType::SILICON_NITRIDE;
+            } else {
+                conditions.material = MaterialType::ALUMINUM; // Default
             }
+        } else {
+            conditions.material = MaterialType::ALUMINUM;
         }
 
-        // Material properties database
-        std::unordered_map<std::string, double> step_coverage = {
-            {"aluminum", 0.3},      // Poor step coverage
-            {"copper", 0.8},        // Good step coverage (electroplating)
-            {"tungsten", 0.95},     // Excellent step coverage (CVD)
-            {"polysilicon", 0.7},   // Good step coverage
-            {"silicon_nitride", 0.9}, // Excellent conformality
-            {"silicon_dioxide", 0.85}  // Good conformality
-        };
+        // Technique (default to CVD)
+        conditions.technique = DepositionTechnique::CVD;
 
-        std::unordered_map<std::string, double> deposition_rate = {
-            {"aluminum", 0.1},      // μm/min (sputtering)
-            {"copper", 0.5},        // μm/min (electroplating)
-            {"tungsten", 0.05},     // μm/min (CVD)
-            {"polysilicon", 0.02},  // μm/min (LPCVD)
-            {"silicon_nitride", 0.01}, // μm/min (PECVD)
-            {"silicon_dioxide", 0.015}  // μm/min (PECVD)
-        };
+        // Pressure
+        auto pressure_it = params.parameters.find("pressure");
+        if (pressure_it != params.parameters.end()) {
+            conditions.pressure = pressure_it->second;
+        } else {
+            conditions.pressure = 1.0; // Default 1 Torr
+        }
 
-        // Validate parameters
-        if (thickness < 0.001 || thickness > 50.0) { // 1 nm to 50 μm
-            Logger::getInstance().log("Deposition thickness out of range: " + std::to_string(thickness) + " μm");
+        // Run enhanced deposition simulation
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          "Starting enhanced deposition: " +
+                          deposition_engine.materialToString(conditions.material) +
+                          ", Technique: " + deposition_engine.techniqueToString(conditions.technique) +
+                          ", Thickness: " + std::to_string(conditions.target_thickness) + " μm" +
+                          ", Temperature: " + std::to_string(conditions.temperature) + "°C",
+                          "EnhancedDeposition");
+
+        auto results = deposition_engine.simulateDeposition(wafer, conditions);
+
+        // Log detailed results
+        std::string result_message = "Enhanced deposition completed: " +
+                          std::string("Thickness: ") + std::to_string(results.final_thickness) + " μm, " +
+                          "Rate: " + std::to_string(results.deposition_rate) + " μm/min, " +
+                          "Step coverage: " + std::to_string(results.step_coverage * 100.0) + "%, " +
+                          "Conformality: " + std::to_string(results.conformality * 100.0) + "%, " +
+                          "Uniformity: " + std::to_string(results.uniformity) + "%, " +
+                          "Quality score: " + std::to_string(results.quality_metrics.at("overall_score"));
+
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          result_message, "EnhancedDeposition");
+
+        // Validate results
+        if (results.final_thickness < 0 || results.final_thickness > 100.0) {
+            SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                              "Deposition result out of physical range: " +
+                              std::to_string(results.final_thickness) + " μm",
+                              "EnhancedDeposition");
             return false;
         }
-
-        if (temperature < 25.0 || temperature > 1200.0) {
-            Logger::getInstance().log("Deposition temperature out of range: " + std::to_string(temperature) + "°C");
-            return false;
-        }
-
-        // Get material properties
-        double coverage = step_coverage.count(material) ? step_coverage[material] : 0.5;
-        double rate = deposition_rate.count(material) ? deposition_rate[material] : 0.1;
-
-        // Temperature dependence (Arrhenius) - FIXED: Higher temperature = faster rate
-        double activation_energy = 0.5; // eV (typical)
-        double reference_temp = 400.0; // Reference temperature in °C
-        double temp_factor = std::exp(-activation_energy * 11600.0 * (1.0/(temperature + 273.15) - 1.0/(reference_temp + 273.15)));
-        double effective_rate = rate * temp_factor;
-
-        // Calculate deposition time
-        double deposition_time = thickness / effective_rate; // minutes
-
-        // Debug logging
-        std::cout << "DEBUG: Deposition calculations:" << std::endl;
-        std::cout << "  material=" << material << std::endl;
-        std::cout << "  thickness=" << thickness << " μm" << std::endl;
-        std::cout << "  temperature=" << temperature << "°C" << std::endl;
-        std::cout << "  rate=" << rate << " μm/min" << std::endl;
-        std::cout << "  temp_factor=" << temp_factor << std::endl;
-        std::cout << "  effective_rate=" << effective_rate << " μm/min" << std::endl;
-        std::cout << "  deposition_time=" << deposition_time << " minutes" << std::endl;
-
-        if (deposition_time > 1000.0) { // More than 16 hours is unrealistic
-            std::cout << "DEBUG: Deposition time too long: " << deposition_time << " minutes" << std::endl;
-            return false;
-        }
-
-        // Apply deposition to wafer
-        auto grid = wafer->getGrid();
-        int rows = grid.rows();
-        int cols = grid.cols();
-
-        // Simple conformal deposition model
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                // Calculate local step coverage based on topology
-                double local_coverage = coverage;
-
-                // Check for steps/trenches (simplified)
-                if (i > 0 && i < rows - 1) {
-                    double height_diff = std::abs(grid(i+1, j) - grid(i-1, j));
-                    if (height_diff > 0.1) { // Significant topology
-                        local_coverage *= 0.7; // Reduced coverage at steps
-                    }
-                }
-
-                grid(i, j) += thickness * local_coverage;
-            }
-        }
-
-        wafer->setGrid(grid);
-
-        Logger::getInstance().log("Deposition completed");
-        Logger::getInstance().log("Material: " + material);
-        Logger::getInstance().log("Thickness: " + std::to_string(thickness) + " μm");
-        Logger::getInstance().log("Temperature: " + std::to_string(temperature) + "°C");
-        Logger::getInstance().log("Deposition time: " + std::to_string(deposition_time) + " minutes");
-        Logger::getInstance().log("Step coverage: " + std::to_string(coverage * 100) + "%");
 
         return true;
 
+    } catch (const SemiPROException& e) {
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Enhanced deposition failed: " + std::string(e.what()),
+                          "EnhancedDeposition");
+        return false;
     } catch (const std::exception& e) {
-        Logger::getInstance().log("Deposition simulation failed: " + std::string(e.what()));
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Deposition simulation failed: " + std::string(e.what()),
+                          "EnhancedDeposition");
         return false;
     }
 }
