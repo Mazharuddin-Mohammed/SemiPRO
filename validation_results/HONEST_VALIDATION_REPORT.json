@@ -1,0 +1,117 @@
+{
+  "timestamp": "2025-07-10 14:51:41",
+  "validation_type": "REAL_SIMULATION_DATA",
+  "oxidation": {
+    "total_tests": 3,
+    "successful": 3,
+    "failed": 0,
+    "avg_time": 0.0026297569274902344,
+    "details": [
+      {
+        "temperature": 800,
+        "success": true,
+        "time": 0.002790689468383789,
+        "error": null
+      },
+      {
+        "temperature": 1000,
+        "success": true,
+        "time": 0.0026025772094726562,
+        "error": null
+      },
+      {
+        "temperature": 1200,
+        "success": true,
+        "time": 0.002496004104614258,
+        "error": null
+      }
+    ]
+  },
+  "doping": {
+    "total_tests": 3,
+    "successful": 0,
+    "failed": 3,
+    "avg_time": 30.0,
+    "details": [
+      {
+        "energy": 50,
+        "success": false,
+        "time": 30,
+        "error": "Simulation timed out"
+      },
+      {
+        "energy": 80,
+        "success": false,
+        "time": 30,
+        "error": "Simulation timed out"
+      },
+      {
+        "energy": 120,
+        "success": false,
+        "time": 30,
+        "error": "Simulation timed out"
+      }
+    ]
+  },
+  "deposition": {
+    "total_tests": 3,
+    "successful": 0,
+    "failed": 3,
+    "avg_time": 0.009382883707682291,
+    "details": [
+      {
+        "material": "SiO2",
+        "success": false,
+        "time": 0.009094953536987305,
+        "error": ""
+      },
+      {
+        "material": "Si3N4",
+        "success": false,
+        "time": 0.009732961654663086,
+        "error": ""
+      },
+      {
+        "material": "polysilicon",
+        "success": false,
+        "time": 0.009320735931396484,
+        "error": ""
+      }
+    ]
+  },
+  "data_analysis": {
+    "total_files": 4,
+    "file_details": [
+      {
+        "file": "dopant_profile.dat",
+        "size_bytes": 4224,
+        "data_points": 200,
+        "columns": 2,
+        "type": "numerical_data"
+      },
+      {
+        "file": "CMakeLists.txt",
+        "size_bytes": 6089,
+        "type": "log_file"
+      },
+      {
+        "file": "requirements.txt",
+        "size_bytes": 570,
+        "type": "log_file"
+      },
+      {
+        "file": "build/dopant_profile.dat",
+        "size_bytes": 4224,
+        "data_points": 200,
+        "columns": 2,
+        "type": "numerical_data"
+      }
+    ]
+  },
+  "overall": {
+    "total_tests": 9,
+    "successful": 3,
+    "success_rate": 0.3333333333333333,
+    "total_data_files": 4
+  }
+}
