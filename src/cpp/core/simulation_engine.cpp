@@ -5,6 +5,7 @@
 #include "advanced_logger.hpp"
 #include "memory_manager.hpp"
 #include "config_manager.hpp"
+#include "../physics/enhanced_oxidation.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -393,87 +394,94 @@ bool SimulationEngine::loadCheckpoint(const std::string& filename) {
 
 // Physics simulation implementations
 bool SimulationEngine::simulateOxidation(std::shared_ptr<WaferEnhanced> wafer, const ProcessParameters& params) {
-    try {
-        // Extract parameters
-        double temperature = 1000.0; // Default temperature in Celsius
-        double time = 1.0; // Default time in hours
-        std::string ambient = "dry"; // Default ambient
+    using namespace SemiPRO;
 
-        // Parse parameters from params.parameters map
+    // Create memory scope for tracking
+    MEMORY_SCOPE("oxidation_simulation");
+
+    try {
+        // Initialize enhanced oxidation physics
+        static EnhancedOxidationPhysics oxidation_engine;
+
+        // Extract and validate parameters
+        OxidationConditions conditions;
+
+        // Temperature
         auto temp_it = params.parameters.find("temperature");
         if (temp_it != params.parameters.end()) {
-            temperature = temp_it->second;
+            conditions.temperature = temp_it->second;
+        } else {
+            conditions.temperature = CONFIG_GET("physics.temperature.default", double, 1000.0);
         }
 
+        // Time
         auto time_it = params.parameters.find("time");
         if (time_it != params.parameters.end()) {
-            time = time_it->second;
+            conditions.time = time_it->second;
+        } else {
+            conditions.time = 1.0; // Default 1 hour
         }
 
+        // Atmosphere
         auto ambient_it = params.parameters.find("ambient");
         if (ambient_it != params.parameters.end()) {
-            // ambient is stored as double, convert to string
-            ambient = (ambient_it->second > 0.5) ? "wet" : "dry";
-        }
-
-        // Deal-Grove oxidation kinetics
-        // x² + Ax = B(t + τ)
-        // where x is oxide thickness, t is time
-
-        double A, B; // Deal-Grove constants
-
-        if (ambient == "dry") {
-            // Dry oxidation constants for <100> silicon
-            if (temperature >= 1000) {
-                A = 0.165; // μm
-                B = 0.0117 * std::exp(-2.05 * 11600.0 / (8.314 * (temperature + 273.15))); // μm²/h
-            } else {
-                A = 0.165;
-                B = 0.0117 * std::exp(-2.05 * 11600.0 / (8.314 * (temperature + 273.15)));
-            }
+            conditions.atmosphere = (ambient_it->second > 0.5) ?
+                OxidationAtmosphere::WET_H2O : OxidationAtmosphere::DRY_O2;
         } else {
-            // Wet oxidation constants
-            A = 0.226; // μm
-            B = 0.51 * std::exp(-0.78 * 11600.0 / (8.314 * (temperature + 273.15))); // μm²/h
+            conditions.atmosphere = OxidationAtmosphere::DRY_O2;
         }
 
-        // Solve quadratic equation: x² + Ax - Bt = 0
-        double discriminant = A * A + 4 * B * time;
-        if (discriminant < 0) {
-            Logger::getInstance().log("Invalid oxidation parameters - negative discriminant");
+        // Pressure
+        auto pressure_it = params.parameters.find("pressure");
+        if (pressure_it != params.parameters.end()) {
+            conditions.pressure = pressure_it->second;
+        } else {
+            conditions.pressure = CONFIG_GET("physics.pressure.default", double, 1.0);
+        }
+
+        // Crystal orientation (default to <100>)
+        conditions.orientation = CrystalOrientation::SILICON_100;
+
+        // Run enhanced oxidation simulation
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          "Starting enhanced oxidation: " +
+                          std::to_string(conditions.temperature) + "°C, " +
+                          std::to_string(conditions.time) + "h, " +
+                          oxidation_engine.atmosphereToString(conditions.atmosphere),
+                          "EnhancedOxidation");
+
+        auto results = oxidation_engine.simulateOxidation(wafer, conditions);
+
+        // Log detailed results
+        SEMIPRO_LOG_MODULE(LogLevel::INFO, LogCategory::PHYSICS,
+                          "Enhanced oxidation completed: " +
+                          std::to_string(results.final_thickness) + " μm oxide grown, " +
+                          "Growth rate: " + std::to_string(results.growth_rate) + " μm/h, " +
+                          "Regime: " + oxidation_engine.regimeToString(results.regime) + ", " +
+                          "Stress: " + std::to_string(results.stress_level) + " MPa, " +
+                          "Quality score: " + std::to_string(results.quality_metrics.at("overall_score")),
+                          "EnhancedOxidation");
+
+        // Validate results
+        if (results.final_thickness < 0 || results.final_thickness > 10.0) {
+            SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                              "Oxidation result out of physical range: " +
+                              std::to_string(results.final_thickness) + " μm",
+                              "EnhancedOxidation");
             return false;
         }
-
-        double oxide_thickness = (-A + std::sqrt(discriminant)) / 2.0; // μm
-
-        // Validate result
-        if (oxide_thickness < 0 || oxide_thickness > 10.0) { // Reasonable limits
-            Logger::getInstance().log("Oxidation result out of physical range: " + std::to_string(oxide_thickness) + " μm");
-            return false;
-        }
-
-        // Apply oxidation to wafer grid
-        auto grid = wafer->getGrid();
-        int rows = grid.rows();
-        int cols = grid.cols();
-
-        // Add oxide layer uniformly
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                grid(i, j) += oxide_thickness;
-            }
-        }
-
-        wafer->setGrid(grid);
-
-        Logger::getInstance().log("Oxidation completed: " + std::to_string(oxide_thickness) + " μm oxide grown");
-        Logger::getInstance().log("Conditions: " + std::to_string(temperature) + "°C, " +
-                                 std::to_string(time) + "h, " + ambient);
 
         return true;
 
+    } catch (const SemiPROException& e) {
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Enhanced oxidation failed: " + std::string(e.what()),
+                          "EnhancedOxidation");
+        return false;
     } catch (const std::exception& e) {
-        Logger::getInstance().log("Oxidation simulation failed: " + std::string(e.what()));
+        SEMIPRO_LOG_MODULE(LogLevel::ERROR, LogCategory::PHYSICS,
+                          "Oxidation simulation failed: " + std::string(e.what()),
+                          "EnhancedOxidation");
         return false;
     }
 }
