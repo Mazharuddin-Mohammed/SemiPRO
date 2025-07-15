@@ -524,7 +524,22 @@ bool SimulationEngine::simulateIonImplantation(std::shared_ptr<WaferEnhanced> wa
 
         // Ion species (default to boron)
         auto species_it = params.parameters.find("species");
-        if (species_it != params.parameters.end()) {
+        auto species_str_it = params.string_parameters.find("species");
+
+        if (species_str_it != params.string_parameters.end()) {
+            // Handle string species names
+            std::string species_name = species_str_it->second;
+            if (species_name == "boron" || species_name == "B") {
+                conditions.species = IonSpecies::BORON_11;
+            } else if (species_name == "phosphorus" || species_name == "P") {
+                conditions.species = IonSpecies::PHOSPHORUS_31;
+            } else if (species_name == "arsenic" || species_name == "As") {
+                conditions.species = IonSpecies::ARSENIC_75;
+            } else {
+                conditions.species = IonSpecies::BORON_11; // Default
+            }
+        } else if (species_it != params.parameters.end()) {
+            // Handle numeric species IDs
             int species_id = static_cast<int>(species_it->second);
             switch (species_id) {
                 case 5: conditions.species = IonSpecies::BORON_11; break;
@@ -636,16 +651,18 @@ bool SimulationEngine::simulateDeposition(std::shared_ptr<WaferEnhanced> wafer, 
         auto mat_it = params.string_parameters.find("material");
         if (mat_it != params.string_parameters.end()) {
             std::string material_name = mat_it->second;
-            if (material_name == "aluminum") {
+            if (material_name == "aluminum" || material_name == "Al") {
                 conditions.material = MaterialType::ALUMINUM;
-            } else if (material_name == "copper") {
+            } else if (material_name == "copper" || material_name == "Cu") {
                 conditions.material = MaterialType::COPPER;
-            } else if (material_name == "tungsten") {
+            } else if (material_name == "tungsten" || material_name == "W") {
                 conditions.material = MaterialType::TUNGSTEN;
-            } else if (material_name == "silicon_dioxide") {
+            } else if (material_name == "silicon_dioxide" || material_name == "SiO2") {
                 conditions.material = MaterialType::SILICON_DIOXIDE;
-            } else if (material_name == "silicon_nitride") {
+            } else if (material_name == "silicon_nitride" || material_name == "Si3N4") {
                 conditions.material = MaterialType::SILICON_NITRIDE;
+            } else if (material_name == "polysilicon" || material_name == "poly-Si" || material_name == "poly") {
+                conditions.material = MaterialType::POLYSILICON;
             } else {
                 conditions.material = MaterialType::ALUMINUM; // Default
             }
