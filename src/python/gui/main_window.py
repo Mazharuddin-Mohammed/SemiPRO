@@ -15,6 +15,9 @@ from .visualization_panel import VisualizationPanel
 from .multi_die_panel import MultiDiePanel
 from .drc_panel import DRCPanel
 from .advanced_visualization_panel import AdvancedVisualizationPanel
+from .defect_inspection_panel import DefectInspectionPanel
+from .interconnect_panel import InterconnectPanel
+from .metrology_panel import MetrologyPanel
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -44,6 +47,9 @@ class MainWindow(QMainWindow):
         self.multi_die_panel = MultiDiePanel()
         self.drc_panel = DRCPanel()
         self.advanced_viz_panel = AdvancedVisualizationPanel()
+        self.defect_inspection_panel = DefectInspectionPanel()
+        self.interconnect_panel = InterconnectPanel()
+        self.metrology_panel = MetrologyPanel()
 
         # Add tabs
         tab_widget.addTab(self.geometry_panel, "Geometry")
@@ -58,6 +64,9 @@ class MainWindow(QMainWindow):
         tab_widget.addTab(self.reliability_panel, "Reliability")
         tab_widget.addTab(self.multi_die_panel, "Multi-Die")
         tab_widget.addTab(self.drc_panel, "DRC")
+        tab_widget.addTab(self.defect_inspection_panel, "Defect Inspection")
+        tab_widget.addTab(self.interconnect_panel, "Interconnect")
+        tab_widget.addTab(self.metrology_panel, "Metrology")
         tab_widget.addTab(self.advanced_viz_panel, "Advanced Viz")
         tab_widget.addTab(self.visualization_panel, "Visualization")
 
