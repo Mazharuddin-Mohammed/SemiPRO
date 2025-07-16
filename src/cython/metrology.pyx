@@ -162,49 +162,43 @@ cdef class PyMetrologyParameters:
         self.params.destructive = value
 
 cdef class PyMetrologyResult:
-    cdef MetrologyResult* thisptr
-    cdef bint owner
-    
+    cdef MetrologyResult result
+
     def __cinit__(self):
-        self.thisptr = new MetrologyResult()
-        self.owner = True
-    
-    def __dealloc__(self):
-        if self.owner:
-            del self.thisptr
+        pass
     
     @property
     def measured_value(self):
-        return self.thisptr.measured_value
-    
+        return self.result.measured_value
+
     @property
     def uncertainty(self):
-        return self.thisptr.uncertainty
-    
+        return self.result.uncertainty
+
     @property
     def min_value(self):
-        return self.thisptr.min_value
-    
+        return self.result.min_value
+
     @property
     def max_value(self):
-        return self.thisptr.max_value
-    
+        return self.result.max_value
+
     @property
     def signal_to_noise(self):
-        return self.thisptr.signal_to_noise
-    
+        return self.result.signal_to_noise
+
     @property
     def units(self):
-        return self.thisptr.units.decode('utf-8')
-    
+        return self.result.units.decode('utf-8')
+
     @property
     def summary(self):
-        return self.thisptr.summary.decode('utf-8')
-    
+        return self.result.summary.decode('utf-8')
+
     def get_profile_data(self):
         profile = []
-        for i in range(self.thisptr.profile_data.size()):
-            profile.append((self.thisptr.profile_data[i].first, self.thisptr.profile_data[i].second))
+        for i in range(self.result.profile_data.size()):
+            profile.append((self.result.profile_data[i].first, self.result.profile_data[i].second))
         return profile
 
 cdef class PyMetrologyModel:
@@ -220,49 +214,49 @@ cdef class PyMetrologyModel:
         cdef MetrologyResult result = self.thisptr.measureThickness(wafer.thisptr, <MetrologyTechnique>technique)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def measure_composition(self, PyWafer wafer, int technique):
         cdef MetrologyResult result = self.thisptr.measureComposition(wafer.thisptr, <MetrologyTechnique>technique)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def measure_roughness(self, PyWafer wafer, int technique):
         cdef MetrologyResult result = self.thisptr.measureRoughness(wafer.thisptr, <MetrologyTechnique>technique)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def measure_stress(self, PyWafer wafer, int technique):
         cdef MetrologyResult result = self.thisptr.measureStress(wafer.thisptr, <MetrologyTechnique>technique)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def measure_resistivity(self, PyWafer wafer, int technique):
         cdef MetrologyResult result = self.thisptr.measureResistivity(wafer.thisptr, <MetrologyTechnique>technique)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def measure_dopant_profile(self, PyWafer wafer, int technique):
         cdef MetrologyResult result = self.thisptr.measureDopantProfile(wafer.thisptr, <MetrologyTechnique>technique)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def perform_measurement(self, PyWafer wafer, PyMetrologyParameters params):
         cdef MetrologyResult result = self.thisptr.performMeasurement(wafer.thisptr, params.params)
         
         py_result = PyMetrologyResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def set_measurement_parameters(self, int technique, double resolution, double accuracy):
@@ -278,7 +272,7 @@ cdef class PyMetrologyModel:
         cdef vector[MetrologyResult] cpp_results
         for result in results:
             if isinstance(result, PyMetrologyResult):
-                cpp_results.push_back((<PyMetrologyResult>result).thisptr[0])
+                cpp_results.push_back((<PyMetrologyResult>result).result)
         
         self.thisptr.generateMetrologyReport(filename.encode('utf-8'), cpp_results)
     

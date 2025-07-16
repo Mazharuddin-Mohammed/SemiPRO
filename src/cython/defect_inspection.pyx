@@ -112,55 +112,49 @@ cdef class PyDefect:
         return self.thisptr.description.decode('utf-8')
 
 cdef class PyInspectionResult:
-    cdef InspectionResult* thisptr
-    cdef bint owner
-    
+    cdef InspectionResult result
+
     def __cinit__(self):
-        self.thisptr = new InspectionResult()
-        self.owner = True
-    
-    def __dealloc__(self):
-        if self.owner:
-            del self.thisptr
+        pass
     
     @property
     def method(self):
-        return <int>self.thisptr.method
-    
+        return <int>self.result.method
+
     @property
     def defect_count(self):
-        return self.thisptr.defects.size()
-    
+        return self.result.defects.size()
+
     @property
     def coverage_area(self):
-        return self.thisptr.coverage_area
-    
+        return self.result.coverage_area
+
     @property
     def inspection_time(self):
-        return self.thisptr.inspection_time
-    
+        return self.result.inspection_time
+
     @property
     def false_positive_rate(self):
-        return self.thisptr.false_positive_rate
-    
+        return self.result.false_positive_rate
+
     @property
     def false_negative_rate(self):
-        return self.thisptr.false_negative_rate
-    
+        return self.result.false_negative_rate
+
     @property
     def summary(self):
-        return self.thisptr.summary.decode('utf-8')
-    
+        return self.result.summary.decode('utf-8')
+
     def get_defects(self):
         defects = []
-        for i in range(self.thisptr.defects.size()):
+        for i in range(self.result.defects.size()):
             defect = PyDefect(
-                <int>self.thisptr.defects[i].type,
-                <int>self.thisptr.defects[i].severity,
-                self.thisptr.defects[i].x,
-                self.thisptr.defects[i].y,
-                self.thisptr.defects[i].z,
-                self.thisptr.defects[i].size
+                <int>self.result.defects[i].type,
+                <int>self.result.defects[i].severity,
+                self.result.defects[i].x,
+                self.result.defects[i].y,
+                self.result.defects[i].z,
+                self.result.defects[i].size
             )
             defects.append(defect)
         return defects
@@ -178,7 +172,7 @@ cdef class PyDefectInspectionModel:
         cdef InspectionResult result = self.thisptr.performInspection(wafer.thisptr, <InspectionMethod>method)
         
         py_result = PyInspectionResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def perform_dimensional_inspection(self, PyWafer wafer, double tolerance):
@@ -223,7 +217,7 @@ cdef class PyDefectInspectionModel:
         self.thisptr.setDefectSizeThreshold(min_size)
     
     def generate_inspection_report(self, str filename, PyInspectionResult result):
-        self.thisptr.generateInspectionReport(filename.encode('utf-8'), result.thisptr[0])
+        self.thisptr.generateInspectionReport(filename.encode('utf-8'), result.result)
     
     def calculate_defect_density(self, list defects, double area):
         cdef vector[Defect] cpp_defects

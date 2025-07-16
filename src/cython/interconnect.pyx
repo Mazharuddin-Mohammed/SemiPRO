@@ -187,48 +187,42 @@ cdef class PyDamasceneParameters:
         self.params.cmp_time = value
 
 cdef class PyDamasceneResult:
-    cdef DamasceneResult* thisptr
-    cdef bint owner
-    
+    cdef DamasceneResult result
+
     def __cinit__(self):
-        self.thisptr = new DamasceneResult()
-        self.owner = True
-    
-    def __dealloc__(self):
-        if self.owner:
-            del self.thisptr
+        pass
     
     @property
     def final_thickness(self):
-        return self.thisptr.final_thickness
-    
+        return self.result.final_thickness
+
     @property
     def resistance(self):
-        return self.thisptr.resistance
-    
+        return self.result.resistance
+
     @property
     def capacitance(self):
-        return self.thisptr.capacitance
-    
+        return self.result.capacitance
+
     @property
     def rc_delay(self):
-        return self.thisptr.rc_delay
-    
+        return self.result.rc_delay
+
     @property
     def barrier_coverage(self):
-        return self.thisptr.barrier_coverage
-    
+        return self.result.barrier_coverage
+
     @property
     def void_probability(self):
-        return self.thisptr.void_probability
-    
+        return self.result.void_probability
+
     @property
     def electromigration_lifetime(self):
-        return self.thisptr.electromigration_lifetime
-    
+        return self.result.electromigration_lifetime
+
     @property
     def quality_summary(self):
-        return self.thisptr.quality_summary.decode('utf-8')
+        return self.result.quality_summary.decode('utf-8')
 
 cdef class PyDamasceneModel:
     cdef DamasceneModel* thisptr
@@ -241,9 +235,9 @@ cdef class PyDamasceneModel:
     
     def simulate_damascene(self, PyWafer wafer, PyDamasceneParameters params):
         cdef DamasceneResult result = self.thisptr.simulateDamascene(wafer.thisptr, params.params)
-        
+
         py_result = PyDamasceneResult()
-        py_result.thisptr[0] = result
+        py_result.result = result
         return py_result
     
     def simulate_barrier_deposition(self, PyWafer wafer, int material, double thickness):
