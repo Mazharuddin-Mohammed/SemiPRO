@@ -229,6 +229,9 @@ double EnhancedDepositionPhysics::calculateDepositionRate(
         case MaterialType::SILICON_NITRIDE:
             base_rate = 0.01; // PECVD rate
             break;
+        case MaterialType::POLYSILICON:
+            base_rate = 0.02; // LPCVD rate
+            break;
         default:
             base_rate = 0.05;
     }
@@ -320,7 +323,67 @@ void EnhancedDepositionPhysics::initializeMaterialDatabase() {
     sio2.is_conductor = false;
     sio2.is_barrier_metal = false;
     material_database_[MaterialType::SILICON_DIOXIDE] = sio2;
-    
+
+    // Polysilicon
+    MaterialProperties polysilicon;
+    polysilicon.name = "Polysilicon";
+    polysilicon.chemical_formula = "poly-Si";
+    polysilicon.density = 2.33;
+    polysilicon.melting_point = 1414.0;
+    polysilicon.thermal_conductivity = 150.0;
+    polysilicon.electrical_resistivity = 1e-3; // Doped polysilicon
+    polysilicon.stress_intrinsic = -100.0; // Compressive
+    polysilicon.etch_selectivity = 0.5;
+    polysilicon.refractive_index = 3.88;
+    polysilicon.is_conductor = true;
+    polysilicon.is_barrier_metal = false;
+    material_database_[MaterialType::POLYSILICON] = polysilicon;
+
+    // Silicon Nitride
+    MaterialProperties si3n4;
+    si3n4.name = "Silicon Nitride";
+    si3n4.chemical_formula = "Si3N4";
+    si3n4.density = 3.17;
+    si3n4.melting_point = 1900.0;
+    si3n4.thermal_conductivity = 30.0;
+    si3n4.electrical_resistivity = 1e14;
+    si3n4.stress_intrinsic = 1000.0; // Tensile
+    si3n4.etch_selectivity = 10.0;
+    si3n4.refractive_index = 2.01;
+    si3n4.is_conductor = false;
+    si3n4.is_barrier_metal = false;
+    material_database_[MaterialType::SILICON_NITRIDE] = si3n4;
+
+    // Copper
+    MaterialProperties copper;
+    copper.name = "Copper";
+    copper.chemical_formula = "Cu";
+    copper.density = 8.96;
+    copper.melting_point = 1085.0;
+    copper.thermal_conductivity = 401.0;
+    copper.electrical_resistivity = 1.68e-6;
+    copper.stress_intrinsic = -50.0; // Compressive
+    copper.etch_selectivity = 0.01;
+    copper.refractive_index = 0.94;
+    copper.is_conductor = true;
+    copper.is_barrier_metal = false;
+    material_database_[MaterialType::COPPER] = copper;
+
+    // Tungsten
+    MaterialProperties tungsten;
+    tungsten.name = "Tungsten";
+    tungsten.chemical_formula = "W";
+    tungsten.density = 19.25;
+    tungsten.melting_point = 3422.0;
+    tungsten.thermal_conductivity = 173.0;
+    tungsten.electrical_resistivity = 5.6e-6;
+    tungsten.stress_intrinsic = -500.0; // Compressive
+    tungsten.etch_selectivity = 0.1;
+    tungsten.refractive_index = 3.5;
+    tungsten.is_conductor = true;
+    tungsten.is_barrier_metal = true;
+    material_database_[MaterialType::TUNGSTEN] = tungsten;
+
     // Add more materials as needed...
 }
 
