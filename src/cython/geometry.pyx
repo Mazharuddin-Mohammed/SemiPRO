@@ -51,7 +51,6 @@ cdef extern from "../cpp/modules/geometry/geometry_manager.hpp":
         void applyLayer(shared_ptr[Wafer], double, string) except +
 
 cdef class PyWafer:
-    cdef shared_ptr[Wafer] thisptr
     def __cinit__(self, diameter: float, thickness: float, material_id: str):
         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
     def initialize_grid(self, x_dim: int, y_dim: int):
@@ -145,7 +144,6 @@ cdef class PyWafer:
         return self.thisptr.get().getThickness()
 
 cdef class PyGeometryManager:
-    cdef GeometryManager* thisptr
     def __cinit__(self):
         self.thisptr = new GeometryManager()
     def __dealloc__(self):

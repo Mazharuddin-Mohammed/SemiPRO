@@ -25,8 +25,9 @@ cdef class PyLithographyModel:
         self.thisptr.simulateExposure(wafer.thisptr, wavelength, na, cpp_mask)
     def simulate_multi_patterning(self, wafer: PyWafer, wavelength: float, na: float, masks: list):
         cdef vector[vector[vector[int]]] cpp_masks
+        cdef vector[vector[int]] cpp_mask
         for mask in masks:
-            cdef vector[vector[int]] cpp_mask
+            cpp_mask.clear()
             for row in mask:
                 cpp_mask.push_back(row)
             cpp_masks.push_back(cpp_mask)

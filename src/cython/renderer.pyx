@@ -4,10 +4,7 @@
 from libcpp.memory cimport shared_ptr
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
-
-cdef extern from "../cpp/core/wafer.hpp":
-    cppclass Wafer:
-        pass
+from geometry cimport PyWafer, Wafer
 
 cdef extern from "../cpp/renderer/vulkan_renderer.hpp":
     cppclass VulkanRenderer:

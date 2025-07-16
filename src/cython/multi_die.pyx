@@ -7,7 +7,7 @@ from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.pair cimport pair
 from libcpp.unordered_map cimport unordered_map
-from geometry cimport PyWafer
+from geometry cimport PyWafer, Wafer
 
 cdef extern from "../cpp/modules/multi_die/multi_die_model.hpp":
     cdef enum DieType:
@@ -48,7 +48,7 @@ cdef extern from "../cpp/modules/multi_die/multi_die_model.hpp":
         double inductance
         double delay
         
-        Interconnect(const string& from, const string& to, const string& type)
+        Interconnect(const string& from_node, const string& to_node, const string& type)
     
     cdef cppclass MultiDieModel:
         MultiDieModel() except +
