@@ -471,4 +471,535 @@ bool SimulationOrchestrator::isPaused() const {
     return current_state_ == SimulationState::PAUSED;
 }
 
+// Missing execution flow methods implementation
+bool SimulationOrchestrator::executeSequentialFlow(const std::string& wafer_name) {
+    for (size_t i = 0; i < current_flow_.steps.size(); ++i) {
+        if (should_cancel_) return false;
+
+        // Handle pause
+        if (should_pause_) {
+            std::unique_lock<std::mutex> lock(state_mutex_);
+            state_cv_.wait(lock, [this] { return !should_pause_ || should_cancel_; });
+            if (should_cancel_) return false;
+        }
+
+        const auto& step = current_flow_.steps[i];
+        bool success = executeStep(step, wafer_name);
+
+        if (!success) {
+            notifyError(step.name, "Step execution failed");
+            return false;
+        }
+
+        progress_.current_step = i + 1;
+        progress_.progress_percentage = (double)(i + 1) / current_flow_.steps.size() * 100.0;
+        progress_.completed_steps.push_back(step.name);
+        notifyStepCompleted(step.name, true);
+        updateProgress();
+        notifyProgress();
+    }
+    return true;
+}
+
+bool SimulationOrchestrator::executeParallelFlow(const std::string& wafer_name) {
+    // Group steps that can be executed in parallel
+    auto parallel_groups = groupParallelSteps(current_flow_.steps);
+
+    size_t completed_steps = 0;
+    for (const auto& group : parallel_groups) {
+        if (should_cancel_) return false;
+
+        // Handle pause
+        if (should_pause_) {
+            std::unique_lock<std::mutex> lock(state_mutex_);
+            state_cv_.wait(lock, [this] { return !should_pause_ || should_cancel_; });
+            if (should_cancel_) return false;
+        }
+
+        // Execute steps in parallel
+        auto futures = executeStepsParallel(group, wafer_name);
+
+        // Wait for all steps in group to complete
+        bool group_success = true;
+        for (size_t i = 0; i < futures.size(); ++i) {
+            bool step_success = futures[i].get();
+            if (!step_success) {
+                notifyError(group[i].name, "Parallel step execution failed");
+                group_success = false;
+            } else {
+                progress_.completed_steps.push_back(group[i].name);
+                notifyStepCompleted(group[i].name, true);
+            }
+        }
+
+        if (!group_success) return false;
+
+        completed_steps += group.size();
+        progress_.current_step = completed_steps;
+        progress_.progress_percentage = (double)completed_steps / current_flow_.steps.size() * 100.0;
+        updateProgress();
+        notifyProgress();
+    }
+    return true;
+}
+
+bool SimulationOrchestrator::executePipelineFlow(const std::string& wafer_name) {
+    // Simplified pipeline implementation - execute with overlap
+    std::vector<std::future<bool>> active_futures;
+    std::vector<ProcessStepDefinition> active_steps;
+
+    size_t step_index = 0;
+    size_t completed_steps = 0;
+
+    while (step_index < current_flow_.steps.size() || !active_futures.empty()) {
+        if (should_cancel_) return false;
+
+        // Handle pause
+        if (should_pause_) {
+            std::unique_lock<std::mutex> lock(state_mutex_);
+            state_cv_.wait(lock, [this] { return !should_pause_ || should_cancel_; });
+            if (should_cancel_) return false;
+        }
+
+        // Start new steps if we have capacity and steps remaining
+        while (active_futures.size() < max_parallel_steps_ && step_index < current_flow_.steps.size()) {
+            const auto& step = current_flow_.steps[step_index];
+
+            // Check dependencies
+            bool dependencies_met = true;
+            for (const auto& dep : step.dependencies) {
+                if (std::find(progress_.completed_steps.begin(), progress_.completed_steps.end(), dep)
+                    == progress_.completed_steps.end()) {
+                    dependencies_met = false;
+                    break;
+                }
+            }
+
+            if (dependencies_met) {
+                auto future = std::async(std::launch::async, [this, step, wafer_name]() {
+                    return executeStep(step, wafer_name);
+                });
+                active_futures.push_back(std::move(future));
+                active_steps.push_back(step);
+                step_index++;
+            } else {
+                break; // Wait for dependencies
+            }
+        }
+
+        // Check for completed steps
+        for (size_t i = 0; i < active_futures.size(); ) {
+            if (active_futures[i].wait_for(std::chrono::milliseconds(10)) == std::future_status::ready) {
+                bool success = active_futures[i].get();
+                const auto& step = active_steps[i];
+
+                if (!success) {
+                    notifyError(step.name, "Pipeline step execution failed");
+                    return false;
+                }
+
+                progress_.completed_steps.push_back(step.name);
+                notifyStepCompleted(step.name, true);
+                completed_steps++;
+
+                // Remove completed future and step
+                active_futures.erase(active_futures.begin() + i);
+                active_steps.erase(active_steps.begin() + i);
+
+                progress_.current_step = completed_steps;
+                progress_.progress_percentage = (double)completed_steps / current_flow_.steps.size() * 100.0;
+                updateProgress();
+                notifyProgress();
+            } else {
+                i++;
+            }
+        }
+
+        // Small delay to prevent busy waiting
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+
+    return true;
+}
+
+bool SimulationOrchestrator::executeBatchFlow(const std::string& wafer_name) {
+    // For single wafer, batch flow is same as sequential
+    return executeSequentialFlow(wafer_name);
+}
+
+bool SimulationOrchestrator::executeStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    try {
+        switch (step.type) {
+            case StepType::OXIDATION:
+                return executeOxidationStep(step, wafer_name);
+            case StepType::DOPING:
+                return executeDopingStep(step, wafer_name);
+            case StepType::LITHOGRAPHY:
+                return executeLithographyStep(step, wafer_name);
+            case StepType::DEPOSITION:
+                return executeDepositionStep(step, wafer_name);
+            case StepType::ETCHING:
+                return executeEtchingStep(step, wafer_name);
+            case StepType::METALLIZATION:
+                return executeMetallizationStep(step, wafer_name);
+            case StepType::ANNEALING:
+                return executeAnnealingStep(step, wafer_name);
+            case StepType::CMP:
+                return executeCMPStep(step, wafer_name);
+            case StepType::INSPECTION:
+                return executeInspectionStep(step, wafer_name);
+            case StepType::CUSTOM:
+                return executeCustomStep(step, wafer_name);
+            default:
+                notifyError(step.name, "Unknown step type");
+                return false;
+        }
+    } catch (const std::exception& e) {
+        notifyError(step.name, "Step execution exception: " + std::string(e.what()));
+        return false;
+    }
+}
+
+// Individual step execution methods
+bool SimulationOrchestrator::executeOxidationStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    auto& engine = SimulationEngine::getInstance();
+
+    ProcessParameters params;
+    params.operation = "oxidation";
+    params.duration = step.estimated_duration;
+    params.priority = step.priority;
+
+    // Extract parameters
+    auto temp_it = step.parameters.find("temperature");
+    auto time_it = step.parameters.find("time");
+    auto atmosphere_it = step.parameters.find("atmosphere");
+
+    if (temp_it != step.parameters.end()) {
+        params.parameters["temperature"] = temp_it->second;
+    }
+    if (time_it != step.parameters.end()) {
+        params.parameters["time"] = time_it->second;
+    }
+    if (atmosphere_it != step.parameters.end()) {
+        params.string_parameters["atmosphere"] = std::to_string(atmosphere_it->second);
+    }
+
+    auto future = engine.simulateProcessAsync(wafer_name, params);
+    return future.get();
+}
+
+bool SimulationOrchestrator::executeDopingStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    auto& engine = SimulationEngine::getInstance();
+
+    ProcessParameters params;
+    params.operation = "doping";
+    params.duration = step.estimated_duration;
+    params.priority = step.priority;
+
+    // Extract parameters
+    auto energy_it = step.parameters.find("energy");
+    auto dose_it = step.parameters.find("dose");
+    auto species_it = step.parameters.find("species");
+
+    if (energy_it != step.parameters.end()) {
+        params.parameters["energy"] = energy_it->second;
+    }
+    if (dose_it != step.parameters.end()) {
+        params.parameters["dose"] = dose_it->second;
+    }
+    if (species_it != step.parameters.end()) {
+        params.string_parameters["species"] = std::to_string(species_it->second);
+    }
+
+    auto future = engine.simulateProcessAsync(wafer_name, params);
+    return future.get();
+}
+
+bool SimulationOrchestrator::executeLithographyStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    // Lithography is not directly supported by simulation engine, implement basic version
+    auto wavelength_it = step.parameters.find("wavelength");
+    auto na_it = step.parameters.find("numerical_aperture");
+
+    if (wavelength_it == step.parameters.end() || na_it == step.parameters.end()) {
+        notifyError(step.name, "Missing required lithography parameters");
+        return false;
+    }
+
+    // For now, just log the operation
+    std::string message = "Lithography step executed: wavelength=" +
+                         std::to_string(wavelength_it->second) + "nm, NA=" +
+                         std::to_string(na_it->second);
+
+    // In a real implementation, this would call the lithography module
+    return true;
+}
+
+bool SimulationOrchestrator::executeDepositionStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    auto& engine = SimulationEngine::getInstance();
+
+    ProcessParameters params;
+    params.operation = "deposition";
+    params.duration = step.estimated_duration;
+    params.priority = step.priority;
+
+    // Extract parameters
+    auto thickness_it = step.parameters.find("thickness");
+    auto temperature_it = step.parameters.find("temperature");
+    auto material_it = step.parameters.find("material");
+
+    if (thickness_it != step.parameters.end()) {
+        params.parameters["thickness"] = thickness_it->second;
+    }
+    if (temperature_it != step.parameters.end()) {
+        params.parameters["temperature"] = temperature_it->second;
+    }
+    if (material_it != step.parameters.end()) {
+        params.string_parameters["material"] = std::to_string(material_it->second);
+    }
+
+    auto future = engine.simulateProcessAsync(wafer_name, params);
+    return future.get();
+}
+
+bool SimulationOrchestrator::executeEtchingStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    auto& engine = SimulationEngine::getInstance();
+
+    ProcessParameters params;
+    params.operation = "etching";
+    params.duration = step.estimated_duration;
+    params.priority = step.priority;
+
+    // Extract parameters
+    auto depth_it = step.parameters.find("depth");
+    auto rate_it = step.parameters.find("rate");
+    auto selectivity_it = step.parameters.find("selectivity");
+
+    if (depth_it != step.parameters.end()) {
+        params.parameters["depth"] = depth_it->second;
+    }
+    if (rate_it != step.parameters.end()) {
+        params.parameters["rate"] = rate_it->second;
+    }
+    if (selectivity_it != step.parameters.end()) {
+        params.parameters["selectivity"] = selectivity_it->second;
+    }
+
+    auto future = engine.simulateProcessAsync(wafer_name, params);
+    return future.get();
+}
+
+bool SimulationOrchestrator::executeMetallizationStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    // Metallization is not directly supported by simulation engine, implement basic version
+    auto thickness_it = step.parameters.find("thickness");
+    auto metal_it = step.parameters.find("metal");
+
+    if (thickness_it == step.parameters.end() || metal_it == step.parameters.end()) {
+        notifyError(step.name, "Missing required metallization parameters");
+        return false;
+    }
+
+    // For now, just log the operation
+    std::string message = "Metallization step executed: thickness=" +
+                         std::to_string(thickness_it->second) + "μm, metal=" +
+                         std::to_string(metal_it->second);
+
+    // In a real implementation, this would call the metallization module
+    return true;
+}
+
+bool SimulationOrchestrator::executeAnnealingStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    // Annealing is not directly supported by simulation engine, implement basic version
+    auto temperature_it = step.parameters.find("temperature");
+    auto time_it = step.parameters.find("time");
+
+    if (temperature_it == step.parameters.end() || time_it == step.parameters.end()) {
+        notifyError(step.name, "Missing required annealing parameters");
+        return false;
+    }
+
+    // For now, just log the operation
+    std::string message = "Annealing step executed: temperature=" +
+                         std::to_string(temperature_it->second) + "°C, time=" +
+                         std::to_string(time_it->second) + "min";
+
+    // In a real implementation, this would call the thermal module
+    return true;
+}
+
+bool SimulationOrchestrator::executeCMPStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    // CMP is not directly supported by simulation engine, implement basic version
+    auto pressure_it = step.parameters.find("pressure");
+    auto time_it = step.parameters.find("time");
+
+    if (pressure_it == step.parameters.end() || time_it == step.parameters.end()) {
+        notifyError(step.name, "Missing required CMP parameters");
+        return false;
+    }
+
+    // For now, just log the operation
+    std::string message = "CMP step executed: pressure=" +
+                         std::to_string(pressure_it->second) + "psi, time=" +
+                         std::to_string(time_it->second) + "min";
+
+    // In a real implementation, this would call the CMP module
+    return true;
+}
+
+bool SimulationOrchestrator::executeInspectionStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    // Inspection step - basic implementation
+    std::string message = "Inspection step executed: " + step.name;
+
+    // In a real implementation, this would call inspection/metrology modules
+    return true;
+}
+
+bool SimulationOrchestrator::executeCustomStep(const ProcessStepDefinition& step, const std::string& wafer_name) {
+    // Custom step - basic implementation
+    std::string message = "Custom step executed: " + step.name;
+
+    // In a real implementation, this would call custom user-defined modules
+    return true;
+}
+
+std::vector<std::future<bool>> SimulationOrchestrator::executeStepsParallel(
+    const std::vector<ProcessStepDefinition>& steps, const std::string& wafer_name) {
+
+    std::vector<std::future<bool>> futures;
+
+    for (const auto& step : steps) {
+        auto future = std::async(std::launch::async, [this, step, wafer_name]() {
+            return executeStep(step, wafer_name);
+        });
+        futures.push_back(std::move(future));
+    }
+
+    return futures;
+}
+
+bool SimulationOrchestrator::resolveDependencies(const std::vector<ProcessStepDefinition>& steps) const {
+    // Check if all dependencies can be resolved
+    std::set<std::string> available_steps;
+
+    for (const auto& step : steps) {
+        available_steps.insert(step.name);
+    }
+
+    for (const auto& step : steps) {
+        for (const auto& dep : step.dependencies) {
+            if (available_steps.find(dep) == available_steps.end()) {
+                return false; // Dependency not found
+            }
+        }
+    }
+
+    return true;
+}
+
+std::vector<std::vector<SimulationOrchestrator::ProcessStepDefinition>>
+SimulationOrchestrator::groupParallelSteps(const std::vector<ProcessStepDefinition>& steps) const {
+
+    std::vector<std::vector<ProcessStepDefinition>> groups;
+    std::set<std::string> completed_steps;
+    std::vector<ProcessStepDefinition> remaining_steps = steps;
+
+    while (!remaining_steps.empty()) {
+        std::vector<ProcessStepDefinition> current_group;
+
+        // Find steps that can be executed in parallel (no dependencies or dependencies met)
+        auto it = remaining_steps.begin();
+        while (it != remaining_steps.end()) {
+            bool dependencies_met = true;
+
+            for (const auto& dep : it->dependencies) {
+                if (completed_steps.find(dep) == completed_steps.end()) {
+                    dependencies_met = false;
+                    break;
+                }
+            }
+
+            if (dependencies_met && it->parallel_compatible &&
+                current_group.size() < max_parallel_steps_) {
+                current_group.push_back(*it);
+                completed_steps.insert(it->name);
+                it = remaining_steps.erase(it);
+            } else if (dependencies_met && current_group.empty()) {
+                // If no parallel group started, add this step anyway
+                current_group.push_back(*it);
+                completed_steps.insert(it->name);
+                it = remaining_steps.erase(it);
+                break; // Only one non-parallel step per group
+            } else {
+                ++it;
+            }
+        }
+
+        if (!current_group.empty()) {
+            groups.push_back(current_group);
+        } else {
+            // Deadlock - circular dependencies or other issue
+            break;
+        }
+    }
+
+    return groups;
+}
+
+void SimulationOrchestrator::updateProgress() {
+    auto current_time = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+        current_time - progress_.start_time).count();
+
+    progress_.elapsed_time = elapsed;
+
+    if (progress_.current_step > 0 && progress_.total_steps > 0) {
+        double steps_per_second = (double)progress_.current_step / elapsed;
+        double remaining_steps = progress_.total_steps - progress_.current_step;
+        progress_.estimated_remaining_time = remaining_steps / steps_per_second;
+    }
+}
+
+void SimulationOrchestrator::notifyProgress() {
+    // Notify progress callbacks if any are registered
+    for (auto& callback : progress_callbacks_) {
+        if (callback) {
+            callback(progress_);
+        }
+    }
+}
+
+void SimulationOrchestrator::notifyStepCompleted(const std::string& step_name, bool success) {
+    // Notify step completion callbacks if any are registered
+    for (auto& callback : step_completion_callbacks_) {
+        if (callback) {
+            callback(step_name, success);
+        }
+    }
+}
+
+void SimulationOrchestrator::notifyError(const std::string& step_name, const std::string& error_message) {
+    progress_.errors.push_back(step_name + ": " + error_message);
+
+    // Notify error callbacks if any are registered
+    for (auto& callback : error_callbacks_) {
+        if (callback) {
+            callback(step_name, error_message);
+        }
+    }
+}
+
+void SimulationOrchestrator::updateStatistics() {
+    auto current_time = std::chrono::system_clock::now();
+    auto total_elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+        current_time - execution_start_time_).count();
+
+    stats_.total_execution_time = total_elapsed;
+    stats_.total_steps_executed = progress_.current_step;
+    stats_.successful_steps = progress_.completed_steps.size();
+    stats_.failed_steps = progress_.errors.size();
+
+    if (stats_.total_steps_executed > 0) {
+        stats_.average_step_time = (double)total_elapsed / stats_.total_steps_executed;
+    }
+}
+
 } // namespace SemiPRO

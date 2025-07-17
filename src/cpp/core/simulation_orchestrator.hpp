@@ -212,9 +212,9 @@ private:
     int max_parallel_steps_{4};
     
     // Callbacks
-    ProgressCallback progress_callback_;
-    StepCompletedCallback step_completed_callback_;
-    ErrorCallback error_callback_;
+    std::vector<ProgressCallback> progress_callbacks_;
+    std::vector<StepCompletedCallback> step_completion_callbacks_;
+    std::vector<ErrorCallback> error_callbacks_;
     
     // Directories
     std::string input_directory_;
@@ -246,6 +246,12 @@ private:
     
     void checkpointWorker();
     void updateStatistics();
+
+    // Execution flow methods
+    bool executeSequentialFlow(const std::string& wafer_name);
+    bool executeParallelFlow(const std::string& wafer_name);
+    bool executePipelineFlow(const std::string& wafer_name);
+    bool executeBatchFlow(const std::string& wafer_name);
     
     // Process step execution
     bool executeOxidationStep(const ProcessStepDefinition& step, const std::string& wafer_name);

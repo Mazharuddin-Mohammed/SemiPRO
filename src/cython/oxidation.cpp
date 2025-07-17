@@ -1195,6 +1195,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 
     #endif
     
+#include <unordered_map>
 #include <stdio.h>
 
     /* Using NumPy API declarations from "numpy/__init__.cython-30.pxd" */
@@ -1804,6 +1805,8 @@ static CYTHON_INLINE __pyx_t_double_complex __pyx_t_double_complex_from_parts(do
 /*--- Type declarations ---*/
 struct __pyx_obj_8geometry_PyWafer;
 struct __pyx_obj_8geometry_PyGeometryManager;
+struct __pyx_obj_9oxidation_PyOxidationConditions;
+struct __pyx_obj_9oxidation_PyOxidationResults;
 struct __pyx_obj_9oxidation_PyOxidationModel;
 
 /* "../../../../../../../../usr/lib/python3/dist-packages/numpy/__init__.cython-30.pxd":767
@@ -1867,12 +1870,38 @@ struct __pyx_obj_8geometry_PyGeometryManager {
 };
 
 
-/* "oxidation.pyx":13
- *         void simulateOxidation(shared_ptr[Wafer], double, double) except +
+/* "oxidation.pyx":51
+ * 
+ * # Python wrapper classes
+ * cdef class PyOxidationConditions:             # <<<<<<<<<<<<<<
+ *     cdef OxidationConditions conditions
+ * 
+*/
+struct __pyx_obj_9oxidation_PyOxidationConditions {
+  PyObject_HEAD
+  struct OxidationConditions conditions;
+};
+
+
+/* "oxidation.pyx":107
+ *         self.conditions.orientation = value
+ * 
+ * cdef class PyOxidationResults:             # <<<<<<<<<<<<<<
+ *     cdef OxidationResults results
+ * 
+*/
+struct __pyx_obj_9oxidation_PyOxidationResults {
+  PyObject_HEAD
+  struct OxidationResults results;
+};
+
+
+/* "oxidation.pyx":138
+ *         return dict(self.results.quality_metrics)
  * 
  * cdef class PyOxidationModel:             # <<<<<<<<<<<<<<
  *     cdef OxidationModel* thisptr
- *     def __cinit__(self):
+ * 
 */
 struct __pyx_obj_9oxidation_PyOxidationModel {
   PyObject_HEAD
@@ -2151,6 +2180,14 @@ static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
 /* RejectKeywords.proto */
 static void __Pyx_RejectKeywords(const char* function_name, PyObject *kwds);
 
+/* MoveIfSupported.proto */
+#if CYTHON_USE_CPP_STD_MOVE
+  #include <utility>
+  #define __PYX_STD_MOVE_IF_SUPPORTED(x) std::move(x)
+#else
+  #define __PYX_STD_MOVE_IF_SUPPORTED(x) x
+#endif
+
 /* RaiseDoubleKeywords.proto */
 static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
 
@@ -2220,6 +2257,13 @@ static CYTHON_INLINE PyObject *__Pyx_CallUnboundCMethod2(__Pyx_CachedCFunction *
     ((likely(__Pyx_IS_TYPE(obj, type) | (none_allowed && (obj == Py_None)))) ? 1 :\
         __Pyx__ArgTypeTest(obj, type, name, exact))
 static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact);
+
+/* DefaultPlacementNew.proto */
+#include <new>
+template<typename T>
+void __Pyx_default_placement_construct(T* x) {
+    new (static_cast<void*>(x)) T();
+}
 
 /* LimitedApiGetTypeDict.proto */
 #if CYTHON_COMPILING_IN_LIMITED_API
@@ -2462,6 +2506,11 @@ static void __pyx_insert_code_object(int code_line, __Pyx_CachedCodeObjectType* 
 static void __Pyx_AddTraceback(const char *funcname, int c_line,
                                int py_line, const char *filename);
 
+/* GCCDiagnostics.proto */
+#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
+#define __Pyx_HAS_GCC_DIAGNOSTIC
+#endif
+
 /* CppExceptionConversion.proto */
 #ifndef __Pyx_CppExn2PyErr
 #include <new>
@@ -2602,28 +2651,6 @@ static void __Pyx_CppExn2PyErr() {
     #endif
 #endif
 
-/* FormatTypeName.proto */
-#if CYTHON_COMPILING_IN_LIMITED_API
-typedef PyObject *__Pyx_TypeName;
-#define __Pyx_FMT_TYPENAME "%U"
-#define __Pyx_DECREF_TypeName(obj) Py_XDECREF(obj)
-#if __PYX_LIMITED_VERSION_HEX >= 0x030d0000
-#define __Pyx_PyType_GetFullyQualifiedName PyType_GetFullyQualifiedName
-#else
-static __Pyx_TypeName __Pyx_PyType_GetFullyQualifiedName(PyTypeObject* tp);
-#endif
-#else  // !LIMITED_API
-typedef const char *__Pyx_TypeName;
-#define __Pyx_FMT_TYPENAME "%.200s"
-#define __Pyx_PyType_GetFullyQualifiedName(tp) ((tp)->tp_name)
-#define __Pyx_DECREF_TypeName(obj)
-#endif
-
-/* GCCDiagnostics.proto */
-#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
-#define __Pyx_HAS_GCC_DIAGNOSTIC
-#endif
-
 /* PyObjectVectorCallKwBuilder.proto */
 CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n);
 #if CYTHON_VECTORCALL
@@ -2640,6 +2667,35 @@ static int __Pyx_VectorcallBuilder_AddArgStr(const char *key, PyObject *value, P
 #define __Pyx_MakeVectorcallBuilderKwds(n) __Pyx_PyDict_NewPresized(n)
 #define __Pyx_VectorcallBuilder_AddArg(key, value, builder, args, n) PyDict_SetItem(builder, key, value)
 #define __Pyx_VectorcallBuilder_AddArgStr(key, value, builder, args, n) PyDict_SetItemString(builder, key, value)
+#endif
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyLong_From_enum__OxidationAtmosphere(enum OxidationAtmosphere value);
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyLong_From_enum__CrystalOrientation(enum CrystalOrientation value);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE enum OxidationAtmosphere __Pyx_PyLong_As_enum__OxidationAtmosphere(PyObject *);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE enum CrystalOrientation __Pyx_PyLong_As_enum__CrystalOrientation(PyObject *);
+
+/* FormatTypeName.proto */
+#if CYTHON_COMPILING_IN_LIMITED_API
+typedef PyObject *__Pyx_TypeName;
+#define __Pyx_FMT_TYPENAME "%U"
+#define __Pyx_DECREF_TypeName(obj) Py_XDECREF(obj)
+#if __PYX_LIMITED_VERSION_HEX >= 0x030d0000
+#define __Pyx_PyType_GetFullyQualifiedName PyType_GetFullyQualifiedName
+#else
+static __Pyx_TypeName __Pyx_PyType_GetFullyQualifiedName(PyTypeObject* tp);
+#endif
+#else  // !LIMITED_API
+typedef const char *__Pyx_TypeName;
+#define __Pyx_FMT_TYPENAME "%.200s"
+#define __Pyx_PyType_GetFullyQualifiedName(tp) ((tp)->tp_name)
+#define __Pyx_DECREF_TypeName(obj)
 #endif
 
 /* CIntToPy.proto */
@@ -2750,6 +2806,8 @@ static CYTHON_INLINE char *__pyx_f_5numpy_7ndarray_4data_data(PyArrayObject *__p
 
 /* Module declarations from "libcpp.utility" */
 
+/* Module declarations from "libcpp.unordered_map" */
+
 /* Module declarations from "libcpp.pair" */
 
 /* Module declarations from "libc.stdio" */
@@ -2771,6 +2829,13 @@ static CYTHON_INLINE char *__pyx_f_5numpy_7ndarray_4data_data(PyArrayObject *__p
 /* Module declarations from "geometry" */
 
 /* Module declarations from "oxidation" */
+static std::string __pyx_convert_string_from_py_6libcpp_6string_std__in_string(PyObject *); /*proto*/
+static PyObject *__pyx_convert_vector_to_py_double(std::vector<double>  const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string(std::string const &); /*proto*/
+static PyObject *__pyx_convert_unordered_map_to_py_std_3a__3a_string____double(std::unordered_map<std::string,double>  const &); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
 #define __Pyx_MODULE_NAME "oxidation"
@@ -2780,6 +2845,8 @@ int __pyx_module_is_main_oxidation = 0;
 /* Implementation of "oxidation" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_TypeError;
+static PyObject *__pyx_builtin_MemoryError;
+static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ImportError;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_[] = "?";
@@ -2789,10 +2856,12 @@ static const char __pyx_k_pop[] = "pop";
 static const char __pyx_k_func[] = "__func__";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
+static const char __pyx_k_none[] = "none";
 static const char __pyx_k_self[] = "self";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_time[] = "time";
 static const char __pyx_k_float[] = "float";
+static const char __pyx_k_range[] = "range";
 static const char __pyx_k_wafer[] = "wafer";
 static const char __pyx_k_enable[] = "enable";
 static const char __pyx_k_module[] = "__module__";
@@ -2809,8 +2878,12 @@ static const char __pyx_k_isenabled[] = "isenabled";
 static const char __pyx_k_oxidation[] = "oxidation";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
-static const char __pyx_k_m1_H_auJm1[] = "\320\004(\320(>\270m\3101\330\010\014\210H\320\024&\240a\240u\250J\260m\3001";
+static const char __pyx_k_conditions[] = "conditions";
+static const char __pyx_k_m1_H_auJm1[] = "\320\004(\320(>\270m\3101\340\010\014\210H\320\024&\240a\240u\250J\260m\3001";
+static const char __pyx_k_py_results[] = "py_results";
 static const char __pyx_k_ImportError[] = "ImportError";
+static const char __pyx_k_MemoryError[] = "MemoryError";
+static const char __pyx_k_cpp_results[] = "cpp_results";
 static const char __pyx_k_temperature[] = "temperature";
 static const char __pyx_k_is_coroutine[] = "_is_coroutine";
 static const char __pyx_k_stringsource[] = "<stringsource>";
@@ -2818,22 +2891,65 @@ static const char __pyx_k_oxidation_pyx[] = "oxidation.pyx";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_PyOxidationModel[] = "PyOxidationModel";
+static const char __pyx_k_STEAM_ATMOSPHERE[] = "STEAM_ATMOSPHERE";
+static const char __pyx_k_PyOxidationResults[] = "PyOxidationResults";
 static const char __pyx_k_asyncio_coroutines[] = "asyncio.coroutines";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_simulate_oxidation[] = "simulate_oxidation";
+static const char __pyx_k_PYROGENIC_ATMOSPHERE[] = "PYROGENIC_ATMOSPHERE";
+static const char __pyx_k_DRY_OXYGEN_ATMOSPHERE[] = "DRY_OXYGEN_ATMOSPHERE";
+static const char __pyx_k_PyOxidationConditions[] = "PyOxidationConditions";
+static const char __pyx_k_WET_OXYGEN_ATMOSPHERE[] = "WET_OXYGEN_ATMOSPHERE";
+static const char __pyx_k_ORIENTATION_100_CRYSTAL[] = "ORIENTATION_100_CRYSTAL";
+static const char __pyx_k_ORIENTATION_110_CRYSTAL[] = "ORIENTATION_110_CRYSTAL";
+static const char __pyx_k_ORIENTATION_111_CRYSTAL[] = "ORIENTATION_111_CRYSTAL";
+static const char __pyx_k_11Fa_D_8RRSSXXbbllm_q_Q_q[] = "\320\0041\3201F\300a\340\010,\250D\260\010\3208R\320RS\320SX\320Xb\320bl\320lm\340\010\025\320\025'\240q\330\010\022\220+\230Q\330\010\017\210q";
+static const char __pyx_k_simulate_enhanced_oxidation[] = "simulate_enhanced_oxidation";
+static const char __pyx_k_Pickling_of_struct_members_such[] = "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)";
 static const char __pyx_k_numpy_core_multiarray_failed_to[] = "numpy.core.multiarray failed to import";
 static const char __pyx_k_Note_that_Cython_is_deliberately[] = "Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.";
+static const char __pyx_k_PyOxidationConditions___reduce_c[] = "PyOxidationConditions.__reduce_cython__";
+static const char __pyx_k_PyOxidationConditions___setstate[] = "PyOxidationConditions.__setstate_cython__";
 static const char __pyx_k_PyOxidationModel___reduce_cython[] = "PyOxidationModel.__reduce_cython__";
 static const char __pyx_k_PyOxidationModel___setstate_cyth[] = "PyOxidationModel.__setstate_cython__";
+static const char __pyx_k_PyOxidationModel_simulate_enhanc[] = "PyOxidationModel.simulate_enhanced_oxidation";
 static const char __pyx_k_PyOxidationModel_simulate_oxidat[] = "PyOxidationModel.simulate_oxidation";
+static const char __pyx_k_PyOxidationResults___reduce_cyth[] = "PyOxidationResults.__reduce_cython__";
+static const char __pyx_k_PyOxidationResults___setstate_cy[] = "PyOxidationResults.__setstate_cython__";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
 static const char __pyx_k_numpy_core_umath_failed_to_impor[] = "numpy.core.umath failed to import";
+static const char __pyx_k_Pickling_of_struct_members_such_2[] = "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)";
 /* #### Code section: decls ### */
+static int __pyx_pf_9oxidation_21PyOxidationConditions___init__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_11temperature___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static int __pyx_pf_9oxidation_21PyOxidationConditions_11temperature_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_4time___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static int __pyx_pf_9oxidation_21PyOxidationConditions_4time_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_8pressure___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static int __pyx_pf_9oxidation_21PyOxidationConditions_8pressure_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_10atmosphere___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static int __pyx_pf_9oxidation_21PyOxidationConditions_10atmosphere_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_11orientation___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static int __pyx_pf_9oxidation_21PyOxidationConditions_11orientation_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_15final_thickness___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_11growth_rate___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_19interface_roughness___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_12stress_level___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_10uniformity___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_17thickness_profile___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_15quality_metrics___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_pf_9oxidation_16PyOxidationModel___cinit__(struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self); /* proto */
 static void __pyx_pf_9oxidation_16PyOxidationModel_2__dealloc__(struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_4simulate_oxidation(struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, struct __pyx_obj_8geometry_PyWafer *__pyx_v_wafer, double __pyx_v_temperature, double __pyx_v_time); /* proto */
-static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_6__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_8__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_6simulate_enhanced_oxidation(struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, struct __pyx_obj_8geometry_PyWafer *__pyx_v_wafer, struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_conditions); /* proto */
+static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_tp_new_9oxidation_PyOxidationConditions(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_9oxidation_PyOxidationResults(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_9oxidation_PyOxidationModel(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
@@ -2891,11 +3007,15 @@ typedef struct {
   PyTypeObject *__pyx_ptype_5numpy_ufunc;
   PyTypeObject *__pyx_ptype_8geometry_PyWafer;
   PyTypeObject *__pyx_ptype_8geometry_PyGeometryManager;
+  PyObject *__pyx_type_9oxidation_PyOxidationConditions;
+  PyObject *__pyx_type_9oxidation_PyOxidationResults;
   PyObject *__pyx_type_9oxidation_PyOxidationModel;
+  PyTypeObject *__pyx_ptype_9oxidation_PyOxidationConditions;
+  PyTypeObject *__pyx_ptype_9oxidation_PyOxidationResults;
   PyTypeObject *__pyx_ptype_9oxidation_PyOxidationModel;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
-  PyObject *__pyx_codeobj_tab[3];
-  PyObject *__pyx_string_tab[44];
+  PyObject *__pyx_codeobj_tab[8];
+  PyObject *__pyx_string_tab[67];
 /* #### Code section: module_state_contents ### */
 /* CommonTypesMetaclass.module_state_decls */
 PyTypeObject *__pyx_CommonTypesMetaclassType;
@@ -2934,49 +3054,72 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #endif
 /* #### Code section: constant_name_defines ### */
 #define __pyx_kp_u_ __pyx_string_tab[0]
-#define __pyx_n_u_ImportError __pyx_string_tab[1]
-#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[2]
-#define __pyx_n_u_PyOxidationModel __pyx_string_tab[3]
-#define __pyx_n_u_PyOxidationModel___reduce_cython __pyx_string_tab[4]
-#define __pyx_n_u_PyOxidationModel___setstate_cyth __pyx_string_tab[5]
-#define __pyx_n_u_PyOxidationModel_simulate_oxidat __pyx_string_tab[6]
-#define __pyx_n_u_PyWafer __pyx_string_tab[7]
-#define __pyx_n_u_TypeError __pyx_string_tab[8]
-#define __pyx_kp_u_add_note __pyx_string_tab[9]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[10]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[11]
-#define __pyx_kp_u_disable __pyx_string_tab[12]
-#define __pyx_kp_u_enable __pyx_string_tab[13]
-#define __pyx_n_u_float __pyx_string_tab[14]
-#define __pyx_n_u_func __pyx_string_tab[15]
-#define __pyx_kp_u_gc __pyx_string_tab[16]
-#define __pyx_n_u_getstate __pyx_string_tab[17]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[18]
-#define __pyx_kp_u_isenabled __pyx_string_tab[19]
-#define __pyx_n_u_main __pyx_string_tab[20]
-#define __pyx_n_u_module __pyx_string_tab[21]
-#define __pyx_n_u_name __pyx_string_tab[22]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[23]
-#define __pyx_kp_u_numpy_core_multiarray_failed_to __pyx_string_tab[24]
-#define __pyx_kp_u_numpy_core_umath_failed_to_impor __pyx_string_tab[25]
-#define __pyx_n_u_oxidation __pyx_string_tab[26]
-#define __pyx_kp_u_oxidation_pyx __pyx_string_tab[27]
-#define __pyx_n_u_pop __pyx_string_tab[28]
-#define __pyx_n_u_pyx_state __pyx_string_tab[29]
-#define __pyx_n_u_qualname __pyx_string_tab[30]
-#define __pyx_n_u_reduce __pyx_string_tab[31]
-#define __pyx_n_u_reduce_cython __pyx_string_tab[32]
-#define __pyx_n_u_reduce_ex __pyx_string_tab[33]
-#define __pyx_n_u_self __pyx_string_tab[34]
-#define __pyx_n_u_set_name __pyx_string_tab[35]
-#define __pyx_n_u_setstate __pyx_string_tab[36]
-#define __pyx_n_u_setstate_cython __pyx_string_tab[37]
-#define __pyx_n_u_simulate_oxidation __pyx_string_tab[38]
-#define __pyx_kp_u_stringsource __pyx_string_tab[39]
-#define __pyx_n_u_temperature __pyx_string_tab[40]
-#define __pyx_n_u_test __pyx_string_tab[41]
-#define __pyx_n_u_time __pyx_string_tab[42]
-#define __pyx_n_u_wafer __pyx_string_tab[43]
+#define __pyx_n_u_DRY_OXYGEN_ATMOSPHERE __pyx_string_tab[1]
+#define __pyx_n_u_ImportError __pyx_string_tab[2]
+#define __pyx_n_u_MemoryError __pyx_string_tab[3]
+#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[4]
+#define __pyx_n_u_ORIENTATION_100_CRYSTAL __pyx_string_tab[5]
+#define __pyx_n_u_ORIENTATION_110_CRYSTAL __pyx_string_tab[6]
+#define __pyx_n_u_ORIENTATION_111_CRYSTAL __pyx_string_tab[7]
+#define __pyx_n_u_PYROGENIC_ATMOSPHERE __pyx_string_tab[8]
+#define __pyx_kp_u_Pickling_of_struct_members_such __pyx_string_tab[9]
+#define __pyx_kp_u_Pickling_of_struct_members_such_2 __pyx_string_tab[10]
+#define __pyx_n_u_PyOxidationConditions __pyx_string_tab[11]
+#define __pyx_n_u_PyOxidationConditions___reduce_c __pyx_string_tab[12]
+#define __pyx_n_u_PyOxidationConditions___setstate __pyx_string_tab[13]
+#define __pyx_n_u_PyOxidationModel __pyx_string_tab[14]
+#define __pyx_n_u_PyOxidationModel___reduce_cython __pyx_string_tab[15]
+#define __pyx_n_u_PyOxidationModel___setstate_cyth __pyx_string_tab[16]
+#define __pyx_n_u_PyOxidationModel_simulate_enhanc __pyx_string_tab[17]
+#define __pyx_n_u_PyOxidationModel_simulate_oxidat __pyx_string_tab[18]
+#define __pyx_n_u_PyOxidationResults __pyx_string_tab[19]
+#define __pyx_n_u_PyOxidationResults___reduce_cyth __pyx_string_tab[20]
+#define __pyx_n_u_PyOxidationResults___setstate_cy __pyx_string_tab[21]
+#define __pyx_n_u_PyWafer __pyx_string_tab[22]
+#define __pyx_n_u_STEAM_ATMOSPHERE __pyx_string_tab[23]
+#define __pyx_n_u_TypeError __pyx_string_tab[24]
+#define __pyx_n_u_WET_OXYGEN_ATMOSPHERE __pyx_string_tab[25]
+#define __pyx_kp_u_add_note __pyx_string_tab[26]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[27]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[28]
+#define __pyx_n_u_conditions __pyx_string_tab[29]
+#define __pyx_n_u_cpp_results __pyx_string_tab[30]
+#define __pyx_kp_u_disable __pyx_string_tab[31]
+#define __pyx_kp_u_enable __pyx_string_tab[32]
+#define __pyx_n_u_float __pyx_string_tab[33]
+#define __pyx_n_u_func __pyx_string_tab[34]
+#define __pyx_kp_u_gc __pyx_string_tab[35]
+#define __pyx_n_u_getstate __pyx_string_tab[36]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[37]
+#define __pyx_kp_u_isenabled __pyx_string_tab[38]
+#define __pyx_n_u_main __pyx_string_tab[39]
+#define __pyx_n_u_module __pyx_string_tab[40]
+#define __pyx_n_u_name __pyx_string_tab[41]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[42]
+#define __pyx_n_b_none __pyx_string_tab[43]
+#define __pyx_kp_u_numpy_core_multiarray_failed_to __pyx_string_tab[44]
+#define __pyx_kp_u_numpy_core_umath_failed_to_impor __pyx_string_tab[45]
+#define __pyx_n_u_oxidation __pyx_string_tab[46]
+#define __pyx_kp_u_oxidation_pyx __pyx_string_tab[47]
+#define __pyx_n_u_pop __pyx_string_tab[48]
+#define __pyx_n_u_py_results __pyx_string_tab[49]
+#define __pyx_n_u_pyx_state __pyx_string_tab[50]
+#define __pyx_n_u_qualname __pyx_string_tab[51]
+#define __pyx_n_u_range __pyx_string_tab[52]
+#define __pyx_n_u_reduce __pyx_string_tab[53]
+#define __pyx_n_u_reduce_cython __pyx_string_tab[54]
+#define __pyx_n_u_reduce_ex __pyx_string_tab[55]
+#define __pyx_n_u_self __pyx_string_tab[56]
+#define __pyx_n_u_set_name __pyx_string_tab[57]
+#define __pyx_n_u_setstate __pyx_string_tab[58]
+#define __pyx_n_u_setstate_cython __pyx_string_tab[59]
+#define __pyx_n_u_simulate_enhanced_oxidation __pyx_string_tab[60]
+#define __pyx_n_u_simulate_oxidation __pyx_string_tab[61]
+#define __pyx_kp_u_stringsource __pyx_string_tab[62]
+#define __pyx_n_u_temperature __pyx_string_tab[63]
+#define __pyx_n_u_test __pyx_string_tab[64]
+#define __pyx_n_u_time __pyx_string_tab[65]
+#define __pyx_n_u_wafer __pyx_string_tab[66]
 /* #### Code section: module_state_clear ### */
 #if CYTHON_USE_MODULE_STATE
 static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
@@ -3015,10 +3158,14 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_5numpy_ufunc);
   Py_CLEAR(clear_module_state->__pyx_ptype_8geometry_PyWafer);
   Py_CLEAR(clear_module_state->__pyx_ptype_8geometry_PyGeometryManager);
+  Py_CLEAR(clear_module_state->__pyx_ptype_9oxidation_PyOxidationConditions);
+  Py_CLEAR(clear_module_state->__pyx_type_9oxidation_PyOxidationConditions);
+  Py_CLEAR(clear_module_state->__pyx_ptype_9oxidation_PyOxidationResults);
+  Py_CLEAR(clear_module_state->__pyx_type_9oxidation_PyOxidationResults);
   Py_CLEAR(clear_module_state->__pyx_ptype_9oxidation_PyOxidationModel);
   Py_CLEAR(clear_module_state->__pyx_type_9oxidation_PyOxidationModel);
-  for (int i=0; i<3; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<44; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<8; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
+  for (int i=0; i<67; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   return 0;
 }
 #endif
@@ -3057,14 +3204,557 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   Py_VISIT(traverse_module_state->__pyx_ptype_5numpy_ufunc);
   Py_VISIT(traverse_module_state->__pyx_ptype_8geometry_PyWafer);
   Py_VISIT(traverse_module_state->__pyx_ptype_8geometry_PyGeometryManager);
+  Py_VISIT(traverse_module_state->__pyx_ptype_9oxidation_PyOxidationConditions);
+  Py_VISIT(traverse_module_state->__pyx_type_9oxidation_PyOxidationConditions);
+  Py_VISIT(traverse_module_state->__pyx_ptype_9oxidation_PyOxidationResults);
+  Py_VISIT(traverse_module_state->__pyx_type_9oxidation_PyOxidationResults);
   Py_VISIT(traverse_module_state->__pyx_ptype_9oxidation_PyOxidationModel);
   Py_VISIT(traverse_module_state->__pyx_type_9oxidation_PyOxidationModel);
-  for (int i=0; i<3; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<44; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<8; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
+  for (int i=0; i<67; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   return 0;
 }
 #endif
 /* #### Code section: module_code ### */
+
+/* "string.from_py":12
+ *     cdef const char* __Pyx_PyObject_AsStringAndSize(object, Py_ssize_t*) except NULL
+ * 
+ * @cname("__pyx_convert_string_from_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef string __pyx_convert_string_from_py_6libcpp_6string_std__in_string(object o) except *:
+ *     cdef Py_ssize_t length = 0
+*/
+
+static std::string __pyx_convert_string_from_py_6libcpp_6string_std__in_string(PyObject *__pyx_v_o) {
+  Py_ssize_t __pyx_v_length;
+  char const *__pyx_v_data;
+  std::string __pyx_r;
+  char const *__pyx_t_1;
+  std::string __pyx_t_2;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "string.from_py":14
+ * @cname("__pyx_convert_string_from_py_6libcpp_6string_std__in_string")
+ * cdef string __pyx_convert_string_from_py_6libcpp_6string_std__in_string(object o) except *:
+ *     cdef Py_ssize_t length = 0             # <<<<<<<<<<<<<<
+ *     cdef const char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ *     return string(data, length)
+*/
+  __pyx_v_length = 0;
+
+  /* "string.from_py":15
+ * cdef string __pyx_convert_string_from_py_6libcpp_6string_std__in_string(object o) except *:
+ *     cdef Py_ssize_t length = 0
+ *     cdef const char* data = __Pyx_PyObject_AsStringAndSize(o, &length)             # <<<<<<<<<<<<<<
+ *     return string(data, length)
+ * 
+*/
+  __pyx_t_1 = __Pyx_PyObject_AsStringAndSize(__pyx_v_o, (&__pyx_v_length)); if (unlikely(__pyx_t_1 == ((char const *)0))) __PYX_ERR(1, 15, __pyx_L1_error)
+  __pyx_v_data = __pyx_t_1;
+
+  /* "string.from_py":16
+ *     cdef Py_ssize_t length = 0
+ *     cdef const char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ *     return string(data, length)             # <<<<<<<<<<<<<<
+ * 
+ * 
+*/
+  try {
+    __pyx_t_2 = std::string(__pyx_v_data, __pyx_v_length);
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    __PYX_ERR(1, 16, __pyx_L1_error)
+  }
+  __pyx_r = __pyx_t_2;
+  goto __pyx_L0;
+
+  /* "string.from_py":12
+ *     cdef const char* __Pyx_PyObject_AsStringAndSize(object, Py_ssize_t*) except NULL
+ * 
+ * @cname("__pyx_convert_string_from_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef string __pyx_convert_string_from_py_6libcpp_6string_std__in_string(object o) except *:
+ *     cdef Py_ssize_t length = 0
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("string.from_py.__pyx_convert_string_from_py_6libcpp_6string_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_pretend_to_initialize(&__pyx_r);
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "vector.to_py":76
+ *     const Py_ssize_t PY_SSIZE_T_MAX
+ * 
+ * @cname("__pyx_convert_vector_to_py_double")             # <<<<<<<<<<<<<<
+ * cdef object __pyx_convert_vector_to_py_double(const vector[X]& v):
+ *     if v.size() > <size_t> PY_SSIZE_T_MAX:
+*/
+
+static PyObject *__pyx_convert_vector_to_py_double(std::vector<double>  const &__pyx_v_v) {
+  Py_ssize_t __pyx_v_v_size_signed;
+  PyObject *__pyx_v_o = NULL;
+  Py_ssize_t __pyx_v_i;
+  PyObject *__pyx_v_item = 0;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  Py_ssize_t __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  int __pyx_t_6;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_vector_to_py_double", 0);
+
+  /* "vector.to_py":78
+ * @cname("__pyx_convert_vector_to_py_double")
+ * cdef object __pyx_convert_vector_to_py_double(const vector[X]& v):
+ *     if v.size() > <size_t> PY_SSIZE_T_MAX:             # <<<<<<<<<<<<<<
+ *         raise MemoryError()
+ *     v_size_signed = <Py_ssize_t> v.size()
+*/
+  __pyx_t_1 = (__pyx_v_v.size() > ((size_t)PY_SSIZE_T_MAX));
+  if (unlikely(__pyx_t_1)) {
+
+    /* "vector.to_py":79
+ * cdef object __pyx_convert_vector_to_py_double(const vector[X]& v):
+ *     if v.size() > <size_t> PY_SSIZE_T_MAX:
+ *         raise MemoryError()             # <<<<<<<<<<<<<<
+ *     v_size_signed = <Py_ssize_t> v.size()
+ * 
+*/
+    PyErr_NoMemory(); __PYX_ERR(1, 79, __pyx_L1_error)
+
+    /* "vector.to_py":78
+ * @cname("__pyx_convert_vector_to_py_double")
+ * cdef object __pyx_convert_vector_to_py_double(const vector[X]& v):
+ *     if v.size() > <size_t> PY_SSIZE_T_MAX:             # <<<<<<<<<<<<<<
+ *         raise MemoryError()
+ *     v_size_signed = <Py_ssize_t> v.size()
+*/
+  }
+
+  /* "vector.to_py":80
+ *     if v.size() > <size_t> PY_SSIZE_T_MAX:
+ *         raise MemoryError()
+ *     v_size_signed = <Py_ssize_t> v.size()             # <<<<<<<<<<<<<<
+ * 
+ *     o = PyList_New(v_size_signed)
+*/
+  __pyx_v_v_size_signed = ((Py_ssize_t)__pyx_v_v.size());
+
+  /* "vector.to_py":82
+ *     v_size_signed = <Py_ssize_t> v.size()
+ * 
+ *     o = PyList_New(v_size_signed)             # <<<<<<<<<<<<<<
+ * 
+ *     cdef Py_ssize_t i
+*/
+  __pyx_t_2 = PyList_New(__pyx_v_v_size_signed); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_v_o = ((PyObject*)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "vector.to_py":87
+ *     cdef object item
+ * 
+ *     for i in range(v_size_signed):             # <<<<<<<<<<<<<<
+ *         item = v[i]
+ *         Py_INCREF(item)
+*/
+  __pyx_t_3 = __pyx_v_v_size_signed;
+  __pyx_t_4 = __pyx_t_3;
+  for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
+    __pyx_v_i = __pyx_t_5;
+
+    /* "vector.to_py":88
+ * 
+ *     for i in range(v_size_signed):
+ *         item = v[i]             # <<<<<<<<<<<<<<
+ *         Py_INCREF(item)
+ *         __Pyx_PyList_SET_ITEM(o, i, item)
+*/
+    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_v[__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_XDECREF_SET(__pyx_v_item, __pyx_t_2);
+    __pyx_t_2 = 0;
+
+    /* "vector.to_py":89
+ *     for i in range(v_size_signed):
+ *         item = v[i]
+ *         Py_INCREF(item)             # <<<<<<<<<<<<<<
+ *         __Pyx_PyList_SET_ITEM(o, i, item)
+ * 
+*/
+    Py_INCREF(__pyx_v_item);
+
+    /* "vector.to_py":90
+ *         item = v[i]
+ *         Py_INCREF(item)
+ *         __Pyx_PyList_SET_ITEM(o, i, item)             # <<<<<<<<<<<<<<
+ * 
+ *     return o
+*/
+    __pyx_t_6 = __Pyx_PyList_SET_ITEM(__pyx_v_o, __pyx_v_i, __pyx_v_item); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(1, 90, __pyx_L1_error)
+  }
+
+  /* "vector.to_py":92
+ *         __Pyx_PyList_SET_ITEM(o, i, item)
+ * 
+ *     return o             # <<<<<<<<<<<<<<
+ * 
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_o);
+  __pyx_r = __pyx_v_o;
+  goto __pyx_L0;
+
+  /* "vector.to_py":76
+ *     const Py_ssize_t PY_SSIZE_T_MAX
+ * 
+ * @cname("__pyx_convert_vector_to_py_double")             # <<<<<<<<<<<<<<
+ * cdef object __pyx_convert_vector_to_py_double(const vector[X]& v):
+ *     if v.size() > <size_t> PY_SSIZE_T_MAX:
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("vector.to_py.__pyx_convert_vector_to_py_double", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_o);
+  __Pyx_XDECREF(__pyx_v_item);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":30
+ *     cdef object __Pyx_PyObject_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyObject_FromStringAndSize(s.data(), s.size())
+*/
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string", 0);
+
+  /* "string.to_py":32
+ * @cname("__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string")
+ * cdef inline object __pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyObject_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyUnicode_FromStringAndSize(const char*, size_t)
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyObject_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 32, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":30
+ *     cdef object __Pyx_PyObject_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyObject_FromStringAndSize(s.data(), s.size())
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyObject_string_to_py_6libcpp_6string_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":36
+ *     cdef object __Pyx_PyUnicode_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyUnicode_FromStringAndSize(s.data(), s.size())
+*/
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string", 0);
+
+  /* "string.to_py":38
+ * @cname("__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string")
+ * cdef inline object __pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyUnicode_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyBytes_FromStringAndSize(const char*, size_t)
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyUnicode_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 38, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":36
+ *     cdef object __Pyx_PyUnicode_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyUnicode_FromStringAndSize(s.data(), s.size())
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyUnicode_string_to_py_6libcpp_6string_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":42
+ *     cdef object __Pyx_PyBytes_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyBytes_FromStringAndSize(s.data(), s.size())
+*/
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string", 0);
+
+  /* "string.to_py":44
+ * @cname("__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string")
+ * cdef inline object __pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyBytes_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyByteArray_FromStringAndSize(const char*, size_t)
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBytes_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":42
+ *     cdef object __Pyx_PyBytes_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyBytes_FromStringAndSize(s.data(), s.size())
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":48
+ *     cdef object __Pyx_PyByteArray_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())
+*/
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string", 0);
+
+  /* "string.to_py":50
+ * @cname("__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string")
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * 
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyByteArray_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 50, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":48
+ *     cdef object __Pyx_PyByteArray_FromStringAndSize(const char*, size_t)
+ * 
+ * @cname("__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string")             # <<<<<<<<<<<<<<
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string(const string& s):
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyByteArray_string_to_py_6libcpp_6string_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "map.to_py":242
+ *         const_iterator end()
+ * 
+ * @cname("__pyx_convert_unordered_map_to_py_std_3a__3a_string____double")             # <<<<<<<<<<<<<<
+ * cdef object __pyx_convert_unordered_map_to_py_std_3a__3a_string____double(const map[X,Y]& s):
+ *     o = {}
+*/
+
+static PyObject *__pyx_convert_unordered_map_to_py_std_3a__3a_string____double(std::unordered_map<std::string,double>  const &__pyx_v_s) {
+  PyObject *__pyx_v_o = NULL;
+  std::unordered_map<std::string,double> ::value_type const *__pyx_v_key_value;
+  std::unordered_map<std::string,double> ::const_iterator __pyx_v_iter;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_unordered_map_to_py_std_3a__3a_string____double", 0);
+
+  /* "map.to_py":244
+ * @cname("__pyx_convert_unordered_map_to_py_std_3a__3a_string____double")
+ * cdef object __pyx_convert_unordered_map_to_py_std_3a__3a_string____double(const map[X,Y]& s):
+ *     o = {}             # <<<<<<<<<<<<<<
+ *     cdef const map[X,Y].value_type *key_value
+ *     cdef map[X,Y].const_iterator iter = s.begin()
+*/
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 244, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_v_o = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "map.to_py":246
+ *     o = {}
+ *     cdef const map[X,Y].value_type *key_value
+ *     cdef map[X,Y].const_iterator iter = s.begin()             # <<<<<<<<<<<<<<
+ *     while iter != s.end():
+ *         key_value = &cython.operator.dereference(iter)
+*/
+  __pyx_v_iter = __pyx_v_s.begin();
+
+  /* "map.to_py":247
+ *     cdef const map[X,Y].value_type *key_value
+ *     cdef map[X,Y].const_iterator iter = s.begin()
+ *     while iter != s.end():             # <<<<<<<<<<<<<<
+ *         key_value = &cython.operator.dereference(iter)
+ *         o[key_value.first] = key_value.second
+*/
+  while (1) {
+    __pyx_t_2 = (__pyx_v_iter != __pyx_v_s.end());
+    if (!__pyx_t_2) break;
+
+    /* "map.to_py":248
+ *     cdef map[X,Y].const_iterator iter = s.begin()
+ *     while iter != s.end():
+ *         key_value = &cython.operator.dereference(iter)             # <<<<<<<<<<<<<<
+ *         o[key_value.first] = key_value.second
+ *         cython.operator.preincrement(iter)
+*/
+    __pyx_v_key_value = (&(*__pyx_v_iter));
+
+    /* "map.to_py":249
+ *     while iter != s.end():
+ *         key_value = &cython.operator.dereference(iter)
+ *         o[key_value.first] = key_value.second             # <<<<<<<<<<<<<<
+ *         cython.operator.preincrement(iter)
+ *     return o
+*/
+    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_key_value->second); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 249, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = __pyx_convert_PyBytes_string_to_py_6libcpp_6string_std__in_string(__pyx_v_key_value->first); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 249, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    if (unlikely((PyDict_SetItem(__pyx_v_o, __pyx_t_3, __pyx_t_1) < 0))) __PYX_ERR(1, 249, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "map.to_py":250
+ *         key_value = &cython.operator.dereference(iter)
+ *         o[key_value.first] = key_value.second
+ *         cython.operator.preincrement(iter)             # <<<<<<<<<<<<<<
+ *     return o
+ * 
+*/
+    (void)((++__pyx_v_iter));
+  }
+
+  /* "map.to_py":251
+ *         o[key_value.first] = key_value.second
+ *         cython.operator.preincrement(iter)
+ *     return o             # <<<<<<<<<<<<<<
+ * 
+ * 
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_o);
+  __pyx_r = __pyx_v_o;
+  goto __pyx_L0;
+
+  /* "map.to_py":242
+ *         const_iterator end()
+ * 
+ * @cname("__pyx_convert_unordered_map_to_py_std_3a__3a_string____double")             # <<<<<<<<<<<<<<
+ * cdef object __pyx_convert_unordered_map_to_py_std_3a__3a_string____double(const map[X,Y]& s):
+ *     o = {}
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("map.to_py.__pyx_convert_unordered_map_to_py_std_3a__3a_string____double", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_o);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
 
 /* "../../../../../../../../usr/lib/python3/dist-packages/numpy/__init__.cython-30.pxd":244
  *         # Instead, we use properties that map to the corresponding C-API functions.
@@ -4373,12 +5063,1673 @@ static CYTHON_INLINE NPY_DATETIMEUNIT __pyx_f_5numpy_get_datetime64_unit(PyObjec
   return __pyx_r;
 }
 
-/* "oxidation.pyx":15
+/* "oxidation.pyx":54
+ *     cdef OxidationConditions conditions
+ * 
+ *     def __init__(self):             # <<<<<<<<<<<<<<
+ *         self.conditions.temperature = 1000.0
+ *         self.conditions.time = 1.0
+*/
+
+/* Python wrapper */
+static int __pyx_pw_9oxidation_21PyOxidationConditions_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_9oxidation_21PyOxidationConditions_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return -1;
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  if (unlikely(__pyx_nargs > 0)) { __Pyx_RaiseArgtupleInvalid("__init__", 1, 0, 0, __pyx_nargs); return -1; }
+  const Py_ssize_t __pyx_kwds_len = unlikely(__pyx_kwds) ? __Pyx_NumKwargs_VARARGS(__pyx_kwds) : 0;
+  if (unlikely(__pyx_kwds_len < 0)) return -1;
+  if (unlikely(__pyx_kwds_len > 0)) {__Pyx_RejectKeywords("__init__", __pyx_kwds); return -1;}
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions___init__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9oxidation_21PyOxidationConditions___init__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  int __pyx_r;
+  std::string __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "oxidation.pyx":55
+ * 
+ *     def __init__(self):
+ *         self.conditions.temperature = 1000.0             # <<<<<<<<<<<<<<
+ *         self.conditions.time = 1.0
+ *         self.conditions.pressure = 1.0
+*/
+  __pyx_v_self->conditions.temperature = 1000.0;
+
+  /* "oxidation.pyx":56
+ *     def __init__(self):
+ *         self.conditions.temperature = 1000.0
+ *         self.conditions.time = 1.0             # <<<<<<<<<<<<<<
+ *         self.conditions.pressure = 1.0
+ *         self.conditions.atmosphere = DRY_OXYGEN
+*/
+  __pyx_v_self->conditions.time = 1.0;
+
+  /* "oxidation.pyx":57
+ *         self.conditions.temperature = 1000.0
+ *         self.conditions.time = 1.0
+ *         self.conditions.pressure = 1.0             # <<<<<<<<<<<<<<
+ *         self.conditions.atmosphere = DRY_OXYGEN
+ *         self.conditions.orientation = ORIENTATION_100
+*/
+  __pyx_v_self->conditions.pressure = 1.0;
+
+  /* "oxidation.pyx":58
+ *         self.conditions.time = 1.0
+ *         self.conditions.pressure = 1.0
+ *         self.conditions.atmosphere = DRY_OXYGEN             # <<<<<<<<<<<<<<
+ *         self.conditions.orientation = ORIENTATION_100
+ *         self.conditions.dopant_concentration = 0.0
+*/
+  __pyx_v_self->conditions.atmosphere = DRY_OXYGEN;
+
+  /* "oxidation.pyx":59
+ *         self.conditions.pressure = 1.0
+ *         self.conditions.atmosphere = DRY_OXYGEN
+ *         self.conditions.orientation = ORIENTATION_100             # <<<<<<<<<<<<<<
+ *         self.conditions.dopant_concentration = 0.0
+ *         self.conditions.dopant_type = b"none"
+*/
+  __pyx_v_self->conditions.orientation = ORIENTATION_100;
+
+  /* "oxidation.pyx":60
+ *         self.conditions.atmosphere = DRY_OXYGEN
+ *         self.conditions.orientation = ORIENTATION_100
+ *         self.conditions.dopant_concentration = 0.0             # <<<<<<<<<<<<<<
+ *         self.conditions.dopant_type = b"none"
+ *         self.conditions.initial_oxide_thickness = 0.0
+*/
+  __pyx_v_self->conditions.dopant_concentration = 0.0;
+
+  /* "oxidation.pyx":61
+ *         self.conditions.orientation = ORIENTATION_100
+ *         self.conditions.dopant_concentration = 0.0
+ *         self.conditions.dopant_type = b"none"             # <<<<<<<<<<<<<<
+ *         self.conditions.initial_oxide_thickness = 0.0
+ *         self.conditions.enable_stress_effects = True
+*/
+  __pyx_t_1 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_mstate_global->__pyx_n_b_none); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_v_self->conditions.dopant_type = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_1);
+
+  /* "oxidation.pyx":62
+ *         self.conditions.dopant_concentration = 0.0
+ *         self.conditions.dopant_type = b"none"
+ *         self.conditions.initial_oxide_thickness = 0.0             # <<<<<<<<<<<<<<
+ *         self.conditions.enable_stress_effects = True
+ *         self.conditions.enable_orientation_effects = True
+*/
+  __pyx_v_self->conditions.initial_oxide_thickness = 0.0;
+
+  /* "oxidation.pyx":63
+ *         self.conditions.dopant_type = b"none"
+ *         self.conditions.initial_oxide_thickness = 0.0
+ *         self.conditions.enable_stress_effects = True             # <<<<<<<<<<<<<<
+ *         self.conditions.enable_orientation_effects = True
+ *         self.conditions.enable_dopant_effects = True
+*/
+  __pyx_v_self->conditions.enable_stress_effects = 1;
+
+  /* "oxidation.pyx":64
+ *         self.conditions.initial_oxide_thickness = 0.0
+ *         self.conditions.enable_stress_effects = True
+ *         self.conditions.enable_orientation_effects = True             # <<<<<<<<<<<<<<
+ *         self.conditions.enable_dopant_effects = True
+ * 
+*/
+  __pyx_v_self->conditions.enable_orientation_effects = 1;
+
+  /* "oxidation.pyx":65
+ *         self.conditions.enable_stress_effects = True
+ *         self.conditions.enable_orientation_effects = True
+ *         self.conditions.enable_dopant_effects = True             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __pyx_v_self->conditions.enable_dopant_effects = 1;
+
+  /* "oxidation.pyx":54
+ *     cdef OxidationConditions conditions
+ * 
+ *     def __init__(self):             # <<<<<<<<<<<<<<
+ *         self.conditions.temperature = 1000.0
+ *         self.conditions.time = 1.0
+*/
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":67
+ *         self.conditions.enable_dopant_effects = True
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def temperature(self):
+ *         return self.conditions.temperature
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_11temperature_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_11temperature_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_11temperature___get__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_11temperature___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":69
+ *     @property
+ *     def temperature(self):
+ *         return self.conditions.temperature             # <<<<<<<<<<<<<<
+ * 
+ *     @temperature.setter
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->conditions.temperature); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":67
+ *         self.conditions.enable_dopant_effects = True
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def temperature(self):
+ *         return self.conditions.temperature
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.temperature.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":71
+ *         return self.conditions.temperature
+ * 
+ *     @temperature.setter             # <<<<<<<<<<<<<<
+ *     def temperature(self, value):
+ *         self.conditions.temperature = value
+*/
+
+/* Python wrapper */
+static int __pyx_pw_9oxidation_21PyOxidationConditions_11temperature_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9oxidation_21PyOxidationConditions_11temperature_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_11temperature_2__set__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9oxidation_21PyOxidationConditions_11temperature_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  double __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "oxidation.pyx":73
+ *     @temperature.setter
+ *     def temperature(self, value):
+ *         self.conditions.temperature = value             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __pyx_t_1 = __Pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_v_self->conditions.temperature = __pyx_t_1;
+
+  /* "oxidation.pyx":71
+ *         return self.conditions.temperature
+ * 
+ *     @temperature.setter             # <<<<<<<<<<<<<<
+ *     def temperature(self, value):
+ *         self.conditions.temperature = value
+*/
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.temperature.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":75
+ *         self.conditions.temperature = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def time(self):
+ *         return self.conditions.time
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_4time_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_4time_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_4time___get__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_4time___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":77
+ *     @property
+ *     def time(self):
+ *         return self.conditions.time             # <<<<<<<<<<<<<<
+ * 
+ *     @time.setter
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->conditions.time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":75
+ *         self.conditions.temperature = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def time(self):
+ *         return self.conditions.time
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.time.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":79
+ *         return self.conditions.time
+ * 
+ *     @time.setter             # <<<<<<<<<<<<<<
+ *     def time(self, value):
+ *         self.conditions.time = value
+*/
+
+/* Python wrapper */
+static int __pyx_pw_9oxidation_21PyOxidationConditions_4time_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9oxidation_21PyOxidationConditions_4time_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_4time_2__set__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9oxidation_21PyOxidationConditions_4time_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  double __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "oxidation.pyx":81
+ *     @time.setter
+ *     def time(self, value):
+ *         self.conditions.time = value             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __pyx_t_1 = __Pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_v_self->conditions.time = __pyx_t_1;
+
+  /* "oxidation.pyx":79
+ *         return self.conditions.time
+ * 
+ *     @time.setter             # <<<<<<<<<<<<<<
+ *     def time(self, value):
+ *         self.conditions.time = value
+*/
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.time.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":83
+ *         self.conditions.time = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def pressure(self):
+ *         return self.conditions.pressure
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_8pressure_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_8pressure_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_8pressure___get__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_8pressure___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":85
+ *     @property
+ *     def pressure(self):
+ *         return self.conditions.pressure             # <<<<<<<<<<<<<<
+ * 
+ *     @pressure.setter
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->conditions.pressure); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":83
+ *         self.conditions.time = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def pressure(self):
+ *         return self.conditions.pressure
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.pressure.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":87
+ *         return self.conditions.pressure
+ * 
+ *     @pressure.setter             # <<<<<<<<<<<<<<
+ *     def pressure(self, value):
+ *         self.conditions.pressure = value
+*/
+
+/* Python wrapper */
+static int __pyx_pw_9oxidation_21PyOxidationConditions_8pressure_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9oxidation_21PyOxidationConditions_8pressure_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_8pressure_2__set__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9oxidation_21PyOxidationConditions_8pressure_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  double __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "oxidation.pyx":89
+ *     @pressure.setter
+ *     def pressure(self, value):
+ *         self.conditions.pressure = value             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __pyx_t_1 = __Pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 89, __pyx_L1_error)
+  __pyx_v_self->conditions.pressure = __pyx_t_1;
+
+  /* "oxidation.pyx":87
+ *         return self.conditions.pressure
+ * 
+ *     @pressure.setter             # <<<<<<<<<<<<<<
+ *     def pressure(self, value):
+ *         self.conditions.pressure = value
+*/
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.pressure.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":91
+ *         self.conditions.pressure = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def atmosphere(self):
+ *         return self.conditions.atmosphere
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_10atmosphere_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_10atmosphere_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_10atmosphere___get__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_10atmosphere___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":93
+ *     @property
+ *     def atmosphere(self):
+ *         return self.conditions.atmosphere             # <<<<<<<<<<<<<<
+ * 
+ *     @atmosphere.setter
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyLong_From_enum__OxidationAtmosphere(__pyx_v_self->conditions.atmosphere); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":91
+ *         self.conditions.pressure = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def atmosphere(self):
+ *         return self.conditions.atmosphere
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.atmosphere.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":95
+ *         return self.conditions.atmosphere
+ * 
+ *     @atmosphere.setter             # <<<<<<<<<<<<<<
+ *     def atmosphere(self, value):
+ *         self.conditions.atmosphere = value
+*/
+
+/* Python wrapper */
+static int __pyx_pw_9oxidation_21PyOxidationConditions_10atmosphere_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9oxidation_21PyOxidationConditions_10atmosphere_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_10atmosphere_2__set__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9oxidation_21PyOxidationConditions_10atmosphere_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  enum OxidationAtmosphere __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "oxidation.pyx":97
+ *     @atmosphere.setter
+ *     def atmosphere(self, value):
+ *         self.conditions.atmosphere = value             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __pyx_t_1 = ((enum OxidationAtmosphere)__Pyx_PyLong_As_enum__OxidationAtmosphere(__pyx_v_value)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 97, __pyx_L1_error)
+  __pyx_v_self->conditions.atmosphere = __pyx_t_1;
+
+  /* "oxidation.pyx":95
+ *         return self.conditions.atmosphere
+ * 
+ *     @atmosphere.setter             # <<<<<<<<<<<<<<
+ *     def atmosphere(self, value):
+ *         self.conditions.atmosphere = value
+*/
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.atmosphere.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":99
+ *         self.conditions.atmosphere = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def orientation(self):
+ *         return self.conditions.orientation
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_11orientation_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_11orientation_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_11orientation___get__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_11orientation___get__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":101
+ *     @property
+ *     def orientation(self):
+ *         return self.conditions.orientation             # <<<<<<<<<<<<<<
+ * 
+ *     @orientation.setter
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyLong_From_enum__CrystalOrientation(__pyx_v_self->conditions.orientation); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":99
+ *         self.conditions.atmosphere = value
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def orientation(self):
+ *         return self.conditions.orientation
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.orientation.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":103
+ *         return self.conditions.orientation
+ * 
+ *     @orientation.setter             # <<<<<<<<<<<<<<
+ *     def orientation(self, value):
+ *         self.conditions.orientation = value
+*/
+
+/* Python wrapper */
+static int __pyx_pw_9oxidation_21PyOxidationConditions_11orientation_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9oxidation_21PyOxidationConditions_11orientation_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_11orientation_2__set__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9oxidation_21PyOxidationConditions_11orientation_2__set__(struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  enum CrystalOrientation __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* "oxidation.pyx":105
+ *     @orientation.setter
+ *     def orientation(self, value):
+ *         self.conditions.orientation = value             # <<<<<<<<<<<<<<
+ * 
+ * cdef class PyOxidationResults:
+*/
+  __pyx_t_1 = ((enum CrystalOrientation)__Pyx_PyLong_As_enum__CrystalOrientation(__pyx_v_value)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_v_self->conditions.orientation = __pyx_t_1;
+
+  /* "oxidation.pyx":103
+ *         return self.conditions.orientation
+ * 
+ *     @orientation.setter             # <<<<<<<<<<<<<<
+ *     def orientation(self, value):
+ *         self.conditions.orientation = value
+*/
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.orientation.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_3__reduce_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+static PyMethodDef __pyx_mdef_9oxidation_21PyOxidationConditions_3__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_21PyOxidationConditions_3__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_3__reduce_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  if (unlikely(__pyx_nargs > 0)) { __Pyx_RaiseArgtupleInvalid("__reduce_cython__", 1, 0, 0, __pyx_nargs); return NULL; }
+  const Py_ssize_t __pyx_kwds_len = unlikely(__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
+  if (unlikely(__pyx_kwds_len < 0)) return NULL;
+  if (unlikely(__pyx_kwds_len > 0)) {__Pyx_RejectKeywords("__reduce_cython__", __pyx_kwds); return NULL;}
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_2__reduce_cython__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_2__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+*/
+  __Pyx_Raise(__pyx_builtin_TypeError, __pyx_mstate_global->__pyx_kp_u_Pickling_of_struct_members_such, 0, 0);
+  __PYX_ERR(1, 2, __pyx_L1_error)
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_5__setstate_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+static PyMethodDef __pyx_mdef_9oxidation_21PyOxidationConditions_5__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_21PyOxidationConditions_5__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9oxidation_21PyOxidationConditions_5__setstate_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  CYTHON_UNUSED PyObject *__pyx_v___pyx_state = 0;
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject* values[1] = {0};
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  {
+    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_pyx_state,0};
+    const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(1, 3, __pyx_L3_error)
+    if (__pyx_kwds_len > 0) {
+      switch (__pyx_nargs) {
+        case  1:
+        values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(1, 3, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      const Py_ssize_t kwd_pos_args = __pyx_nargs;
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__setstate_cython__", 0) < 0) __PYX_ERR(1, 3, __pyx_L3_error)
+      for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__setstate_cython__", 1, 1, 1, i); __PYX_ERR(1, 3, __pyx_L3_error) }
+      }
+    } else if (unlikely(__pyx_nargs != 1)) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(1, 3, __pyx_L3_error)
+    }
+    __pyx_v___pyx_state = values[0];
+  }
+  goto __pyx_L6_skip;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("__setstate_cython__", 1, 1, 1, __pyx_nargs); __PYX_ERR(1, 3, __pyx_L3_error)
+  __pyx_L6_skip:;
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_9oxidation_21PyOxidationConditions_4__setstate_cython__(((struct __pyx_obj_9oxidation_PyOxidationConditions *)__pyx_v_self), __pyx_v___pyx_state);
+
+  /* function exit code */
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_21PyOxidationConditions_4__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+
+  /* "(tree fragment)":4
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"             # <<<<<<<<<<<<<<
+*/
+  __Pyx_Raise(__pyx_builtin_TypeError, __pyx_mstate_global->__pyx_kp_u_Pickling_of_struct_members_such, 0, 0);
+  __PYX_ERR(1, 4, __pyx_L1_error)
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationConditions.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":110
+ *     cdef OxidationResults results
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def final_thickness(self):
+ *         return self.results.final_thickness
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_15final_thickness_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_15final_thickness_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_15final_thickness___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_15final_thickness___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":112
+ *     @property
+ *     def final_thickness(self):
+ *         return self.results.final_thickness             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->results.final_thickness); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":110
+ *     cdef OxidationResults results
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def final_thickness(self):
+ *         return self.results.final_thickness
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.final_thickness.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":114
+ *         return self.results.final_thickness
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def growth_rate(self):
+ *         return self.results.growth_rate
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_11growth_rate_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_11growth_rate_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_11growth_rate___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_11growth_rate___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":116
+ *     @property
+ *     def growth_rate(self):
+ *         return self.results.growth_rate             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->results.growth_rate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":114
+ *         return self.results.final_thickness
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def growth_rate(self):
+ *         return self.results.growth_rate
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.growth_rate.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":118
+ *         return self.results.growth_rate
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def interface_roughness(self):
+ *         return self.results.interface_roughness
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_19interface_roughness_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_19interface_roughness_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_19interface_roughness___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_19interface_roughness___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":120
+ *     @property
+ *     def interface_roughness(self):
+ *         return self.results.interface_roughness             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->results.interface_roughness); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 120, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":118
+ *         return self.results.growth_rate
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def interface_roughness(self):
+ *         return self.results.interface_roughness
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.interface_roughness.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":122
+ *         return self.results.interface_roughness
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def stress_level(self):
+ *         return self.results.stress_level
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_12stress_level_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_12stress_level_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_12stress_level___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_12stress_level___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":124
+ *     @property
+ *     def stress_level(self):
+ *         return self.results.stress_level             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->results.stress_level); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 124, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":122
+ *         return self.results.interface_roughness
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def stress_level(self):
+ *         return self.results.stress_level
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.stress_level.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":126
+ *         return self.results.stress_level
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def uniformity(self):
+ *         return self.results.uniformity
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_10uniformity_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_10uniformity_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_10uniformity___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_10uniformity___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":128
+ *     @property
+ *     def uniformity(self):
+ *         return self.results.uniformity             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->results.uniformity); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":126
+ *         return self.results.stress_level
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def uniformity(self):
+ *         return self.results.uniformity
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.uniformity.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":130
+ *         return self.results.uniformity
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def thickness_profile(self):
+ *         return list(self.results.thickness_profile)
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_17thickness_profile_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_17thickness_profile_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_17thickness_profile___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_17thickness_profile___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":132
+ *     @property
+ *     def thickness_profile(self):
+ *         return list(self.results.thickness_profile)             # <<<<<<<<<<<<<<
+ * 
+ *     @property
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_convert_vector_to_py_double(__pyx_v_self->results.thickness_profile); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PySequence_ListKeepNew(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":130
+ *         return self.results.uniformity
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def thickness_profile(self):
+ *         return list(self.results.thickness_profile)
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.thickness_profile.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":134
+ *         return list(self.results.thickness_profile)
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def quality_metrics(self):
+ *         return dict(self.results.quality_metrics)
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_15quality_metrics_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_15quality_metrics_1__get__(PyObject *__pyx_v_self) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_15quality_metrics___get__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_15quality_metrics___get__(struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  size_t __pyx_t_5;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+
+  /* "oxidation.pyx":136
+ *     @property
+ *     def quality_metrics(self):
+ *         return dict(self.results.quality_metrics)             # <<<<<<<<<<<<<<
+ * 
  * cdef class PyOxidationModel:
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_2 = NULL;
+  __Pyx_INCREF((PyObject *)(&PyDict_Type));
+  __pyx_t_3 = ((PyObject *)(&PyDict_Type)); 
+  __pyx_t_4 = __pyx_convert_unordered_map_to_py_std_3a__3a_string____double(__pyx_v_self->results.quality_metrics); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = 1;
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_4};
+    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 136, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  }
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":134
+ *         return list(self.results.thickness_profile)
+ * 
+ *     @property             # <<<<<<<<<<<<<<
+ *     def quality_metrics(self):
+ *         return dict(self.results.quality_metrics)
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.quality_metrics.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_1__reduce_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+static PyMethodDef __pyx_mdef_9oxidation_18PyOxidationResults_1__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_18PyOxidationResults_1__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_1__reduce_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  if (unlikely(__pyx_nargs > 0)) { __Pyx_RaiseArgtupleInvalid("__reduce_cython__", 1, 0, 0, __pyx_nargs); return NULL; }
+  const Py_ssize_t __pyx_kwds_len = unlikely(__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
+  if (unlikely(__pyx_kwds_len < 0)) return NULL;
+  if (unlikely(__pyx_kwds_len > 0)) {__Pyx_RejectKeywords("__reduce_cython__", __pyx_kwds); return NULL;}
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults___reduce_cython__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults___reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+*/
+  __Pyx_Raise(__pyx_builtin_TypeError, __pyx_mstate_global->__pyx_kp_u_Pickling_of_struct_members_such_2, 0, 0);
+  __PYX_ERR(1, 2, __pyx_L1_error)
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_3__setstate_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+static PyMethodDef __pyx_mdef_9oxidation_18PyOxidationResults_3__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_18PyOxidationResults_3__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9oxidation_18PyOxidationResults_3__setstate_cython__(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  CYTHON_UNUSED PyObject *__pyx_v___pyx_state = 0;
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject* values[1] = {0};
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  {
+    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_pyx_state,0};
+    const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(1, 3, __pyx_L3_error)
+    if (__pyx_kwds_len > 0) {
+      switch (__pyx_nargs) {
+        case  1:
+        values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(1, 3, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      const Py_ssize_t kwd_pos_args = __pyx_nargs;
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__setstate_cython__", 0) < 0) __PYX_ERR(1, 3, __pyx_L3_error)
+      for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__setstate_cython__", 1, 1, 1, i); __PYX_ERR(1, 3, __pyx_L3_error) }
+      }
+    } else if (unlikely(__pyx_nargs != 1)) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(1, 3, __pyx_L3_error)
+    }
+    __pyx_v___pyx_state = values[0];
+  }
+  goto __pyx_L6_skip;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("__setstate_cython__", 1, 1, 1, __pyx_nargs); __PYX_ERR(1, 3, __pyx_L3_error)
+  __pyx_L6_skip:;
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_9oxidation_18PyOxidationResults_2__setstate_cython__(((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_v_self), __pyx_v___pyx_state);
+
+  /* function exit code */
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_18PyOxidationResults_2__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+
+  /* "(tree fragment)":4
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"             # <<<<<<<<<<<<<<
+*/
+  __Pyx_Raise(__pyx_builtin_TypeError, __pyx_mstate_global->__pyx_kp_u_Pickling_of_struct_members_such_2, 0, 0);
+  __PYX_ERR(1, 4, __pyx_L1_error)
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("oxidation.PyOxidationResults.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "oxidation.pyx":141
  *     cdef OxidationModel* thisptr
+ * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
  *         self.thisptr = new OxidationModel()
- *     def __dealloc__(self):
+ * 
 */
 
 /* Python wrapper */
@@ -4413,27 +6764,27 @@ static int __pyx_pf_9oxidation_16PyOxidationModel___cinit__(struct __pyx_obj_9ox
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "oxidation.pyx":16
- *     cdef OxidationModel* thisptr
+  /* "oxidation.pyx":142
+ * 
  *     def __cinit__(self):
  *         self.thisptr = new OxidationModel()             # <<<<<<<<<<<<<<
+ * 
  *     def __dealloc__(self):
- *         del self.thisptr
 */
   try {
     __pyx_t_1 = new OxidationModel();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 16, __pyx_L1_error)
+    __PYX_ERR(0, 142, __pyx_L1_error)
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "oxidation.pyx":15
- * cdef class PyOxidationModel:
+  /* "oxidation.pyx":141
  *     cdef OxidationModel* thisptr
+ * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
  *         self.thisptr = new OxidationModel()
- *     def __dealloc__(self):
+ * 
 */
 
   /* function exit code */
@@ -4446,12 +6797,12 @@ static int __pyx_pf_9oxidation_16PyOxidationModel___cinit__(struct __pyx_obj_9ox
   return __pyx_r;
 }
 
-/* "oxidation.pyx":17
- *     def __cinit__(self):
+/* "oxidation.pyx":144
  *         self.thisptr = new OxidationModel()
+ * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
- *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):
+ * 
 */
 
 /* Python wrapper */
@@ -4469,30 +6820,31 @@ static void __pyx_pw_9oxidation_16PyOxidationModel_3__dealloc__(PyObject *__pyx_
 
 static void __pyx_pf_9oxidation_16PyOxidationModel_2__dealloc__(struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self) {
 
-  /* "oxidation.pyx":18
- *         self.thisptr = new OxidationModel()
+  /* "oxidation.pyx":145
+ * 
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
+ * 
  *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):
- *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
 */
   delete __pyx_v_self->thisptr;
 
-  /* "oxidation.pyx":17
- *     def __cinit__(self):
+  /* "oxidation.pyx":144
  *         self.thisptr = new OxidationModel()
+ * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
- *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):
+ * 
 */
 
   /* function exit code */
 }
 
-/* "oxidation.pyx":19
- *     def __dealloc__(self):
+/* "oxidation.pyx":147
  *         del self.thisptr
+ * 
  *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):             # <<<<<<<<<<<<<<
+ *         """Basic oxidation simulation"""
  *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
 */
 
@@ -4504,7 +6856,8 @@ PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_5simulate_oxidation = {"simulate_oxidation", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_5simulate_oxidation, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+PyDoc_STRVAR(__pyx_doc_9oxidation_16PyOxidationModel_4simulate_oxidation, "Basic oxidation simulation");
+static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_5simulate_oxidation = {"simulate_oxidation", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_5simulate_oxidation, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_9oxidation_16PyOxidationModel_4simulate_oxidation};
 static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_5simulate_oxidation(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
@@ -4537,46 +6890,46 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_wafer,&__pyx_mstate_global->__pyx_n_u_temperature,&__pyx_mstate_global->__pyx_n_u_time,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 19, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 147, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 19, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 147, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 19, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 147, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 19, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 147, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "simulate_oxidation", 0) < 0) __PYX_ERR(0, 19, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "simulate_oxidation", 0) < 0) __PYX_ERR(0, 147, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("simulate_oxidation", 1, 3, 3, i); __PYX_ERR(0, 19, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("simulate_oxidation", 1, 3, 3, i); __PYX_ERR(0, 147, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 19, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 147, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 19, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 147, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 19, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 147, __pyx_L3_error)
     }
     __pyx_v_wafer = ((struct __pyx_obj_8geometry_PyWafer *)values[0]);
-    __pyx_v_temperature = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_temperature == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 19, __pyx_L3_error)
-    __pyx_v_time = __Pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_time == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 19, __pyx_L3_error)
+    __pyx_v_temperature = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_temperature == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L3_error)
+    __pyx_v_time = __Pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_time == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("simulate_oxidation", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 19, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("simulate_oxidation", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 147, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -4587,7 +6940,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 0, "wafer", 0))) __PYX_ERR(0, 19, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 0, "wafer", 0))) __PYX_ERR(0, 147, __pyx_L1_error)
   __pyx_r = __pyx_pf_9oxidation_16PyOxidationModel_4simulate_oxidation(((struct __pyx_obj_9oxidation_PyOxidationModel *)__pyx_v_self), __pyx_v_wafer, __pyx_v_temperature, __pyx_v_time);
 
   /* function exit code */
@@ -4615,22 +6968,25 @@ static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_4simulate_oxidation(stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("simulate_oxidation", 0);
 
-  /* "oxidation.pyx":20
- *         del self.thisptr
+  /* "oxidation.pyx":149
  *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):
+ *         """Basic oxidation simulation"""
  *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)             # <<<<<<<<<<<<<<
+ * 
+ *     def simulate_enhanced_oxidation(self, wafer: PyWafer, conditions: PyOxidationConditions):
 */
   try {
     __pyx_v_self->thisptr->simulateOxidation(__pyx_v_wafer->thisptr, __pyx_v_temperature, __pyx_v_time);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 20, __pyx_L1_error)
+    __PYX_ERR(0, 149, __pyx_L1_error)
   }
 
-  /* "oxidation.pyx":19
- *     def __dealloc__(self):
+  /* "oxidation.pyx":147
  *         del self.thisptr
+ * 
  *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):             # <<<<<<<<<<<<<<
+ *         """Basic oxidation simulation"""
  *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
 */
 
@@ -4646,6 +7002,214 @@ static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_4simulate_oxidation(stru
   return __pyx_r;
 }
 
+/* "oxidation.pyx":151
+ *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
+ * 
+ *     def simulate_enhanced_oxidation(self, wafer: PyWafer, conditions: PyOxidationConditions):             # <<<<<<<<<<<<<<
+ *         """Enhanced oxidation simulation with detailed parameters"""
+ *         cdef OxidationResults cpp_results = self.thisptr.simulateEnhancedOxidation(wafer.thisptr, conditions.conditions)
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_7simulate_enhanced_oxidation(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+PyDoc_STRVAR(__pyx_doc_9oxidation_16PyOxidationModel_6simulate_enhanced_oxidation, "Enhanced oxidation simulation with detailed parameters");
+static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_7simulate_enhanced_oxidation = {"simulate_enhanced_oxidation", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_7simulate_enhanced_oxidation, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_9oxidation_16PyOxidationModel_6simulate_enhanced_oxidation};
+static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_7simulate_enhanced_oxidation(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  struct __pyx_obj_8geometry_PyWafer *__pyx_v_wafer = 0;
+  struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_conditions = 0;
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject* values[2] = {0,0};
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("simulate_enhanced_oxidation (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  {
+    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_wafer,&__pyx_mstate_global->__pyx_n_u_conditions,0};
+    const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 151, __pyx_L3_error)
+    if (__pyx_kwds_len > 0) {
+      switch (__pyx_nargs) {
+        case  2:
+        values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 151, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
+        case  1:
+        values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 151, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      const Py_ssize_t kwd_pos_args = __pyx_nargs;
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "simulate_enhanced_oxidation", 0) < 0) __PYX_ERR(0, 151, __pyx_L3_error)
+      for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("simulate_enhanced_oxidation", 1, 2, 2, i); __PYX_ERR(0, 151, __pyx_L3_error) }
+      }
+    } else if (unlikely(__pyx_nargs != 2)) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 151, __pyx_L3_error)
+      values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 151, __pyx_L3_error)
+    }
+    __pyx_v_wafer = ((struct __pyx_obj_8geometry_PyWafer *)values[0]);
+    __pyx_v_conditions = ((struct __pyx_obj_9oxidation_PyOxidationConditions *)values[1]);
+  }
+  goto __pyx_L6_skip;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("simulate_enhanced_oxidation", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 151, __pyx_L3_error)
+  __pyx_L6_skip:;
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_AddTraceback("oxidation.PyOxidationModel.simulate_enhanced_oxidation", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 0, "wafer", 0))) __PYX_ERR(0, 151, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_conditions), __pyx_mstate_global->__pyx_ptype_9oxidation_PyOxidationConditions, 0, "conditions", 0))) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_r = __pyx_pf_9oxidation_16PyOxidationModel_6simulate_enhanced_oxidation(((struct __pyx_obj_9oxidation_PyOxidationModel *)__pyx_v_self), __pyx_v_wafer, __pyx_v_conditions);
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  goto __pyx_L7_cleaned_up;
+  __pyx_L0:;
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __pyx_L7_cleaned_up:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_6simulate_enhanced_oxidation(struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, struct __pyx_obj_8geometry_PyWafer *__pyx_v_wafer, struct __pyx_obj_9oxidation_PyOxidationConditions *__pyx_v_conditions) {
+  struct OxidationResults __pyx_v_cpp_results;
+  struct __pyx_obj_9oxidation_PyOxidationResults *__pyx_v_py_results = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  struct OxidationResults __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  size_t __pyx_t_5;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("simulate_enhanced_oxidation", 0);
+
+  /* "oxidation.pyx":153
+ *     def simulate_enhanced_oxidation(self, wafer: PyWafer, conditions: PyOxidationConditions):
+ *         """Enhanced oxidation simulation with detailed parameters"""
+ *         cdef OxidationResults cpp_results = self.thisptr.simulateEnhancedOxidation(wafer.thisptr, conditions.conditions)             # <<<<<<<<<<<<<<
+ * 
+ *         py_results = PyOxidationResults()
+*/
+  try {
+    __pyx_t_1 = __pyx_v_self->thisptr->simulateEnhancedOxidation(__pyx_v_wafer->thisptr, __pyx_v_conditions->conditions);
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    __PYX_ERR(0, 153, __pyx_L1_error)
+  }
+  __pyx_v_cpp_results = __pyx_t_1;
+
+  /* "oxidation.pyx":155
+ *         cdef OxidationResults cpp_results = self.thisptr.simulateEnhancedOxidation(wafer.thisptr, conditions.conditions)
+ * 
+ *         py_results = PyOxidationResults()             # <<<<<<<<<<<<<<
+ *         py_results.results = cpp_results
+ *         return py_results
+*/
+  __pyx_t_3 = NULL;
+  __Pyx_INCREF((PyObject *)__pyx_mstate_global->__pyx_ptype_9oxidation_PyOxidationResults);
+  __pyx_t_4 = ((PyObject *)__pyx_mstate_global->__pyx_ptype_9oxidation_PyOxidationResults); 
+  __pyx_t_5 = 1;
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_3, NULL};
+    __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF((PyObject *)__pyx_t_2);
+  }
+  __pyx_v_py_results = ((struct __pyx_obj_9oxidation_PyOxidationResults *)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":156
+ * 
+ *         py_results = PyOxidationResults()
+ *         py_results.results = cpp_results             # <<<<<<<<<<<<<<
+ *         return py_results
+ * 
+*/
+  __pyx_v_py_results->results = __pyx_v_cpp_results;
+
+  /* "oxidation.pyx":157
+ *         py_results = PyOxidationResults()
+ *         py_results.results = cpp_results
+ *         return py_results             # <<<<<<<<<<<<<<
+ * 
+ * # Constants for Python use
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF((PyObject *)__pyx_v_py_results);
+  __pyx_r = ((PyObject *)__pyx_v_py_results);
+  goto __pyx_L0;
+
+  /* "oxidation.pyx":151
+ *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
+ * 
+ *     def simulate_enhanced_oxidation(self, wafer: PyWafer, conditions: PyOxidationConditions):             # <<<<<<<<<<<<<<
+ *         """Enhanced oxidation simulation with detailed parameters"""
+ *         cdef OxidationResults cpp_results = self.thisptr.simulateEnhancedOxidation(wafer.thisptr, conditions.conditions)
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("oxidation.PyOxidationModel.simulate_enhanced_oxidation", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XDECREF((PyObject *)__pyx_v_py_results);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
 /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
@@ -4653,15 +7217,15 @@ static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_4simulate_oxidation(stru
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_7__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_9__reduce_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_7__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_7__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_7__reduce_cython__(PyObject *__pyx_v_self, 
+static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_9__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_9__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_9__reduce_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4687,14 +7251,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   const Py_ssize_t __pyx_kwds_len = unlikely(__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
   if (unlikely(__pyx_kwds_len < 0)) return NULL;
   if (unlikely(__pyx_kwds_len > 0)) {__Pyx_RejectKeywords("__reduce_cython__", __pyx_kwds); return NULL;}
-  __pyx_r = __pyx_pf_9oxidation_16PyOxidationModel_6__reduce_cython__(((struct __pyx_obj_9oxidation_PyOxidationModel *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9oxidation_16PyOxidationModel_8__reduce_cython__(((struct __pyx_obj_9oxidation_PyOxidationModel *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_6__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self) {
+static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
@@ -4734,15 +7298,15 @@ static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_6__reduce_cython__(CYTHO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_9__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_11__setstate_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_9__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_9__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_9__setstate_cython__(PyObject *__pyx_v_self, 
+static PyMethodDef __pyx_mdef_9oxidation_16PyOxidationModel_11__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_11__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9oxidation_16PyOxidationModel_11__setstate_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4808,7 +7372,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9oxidation_16PyOxidationModel_8__setstate_cython__(((struct __pyx_obj_9oxidation_PyOxidationModel *)__pyx_v_self), __pyx_v___pyx_state);
+  __pyx_r = __pyx_pf_9oxidation_16PyOxidationModel_10__setstate_cython__(((struct __pyx_obj_9oxidation_PyOxidationModel *)__pyx_v_self), __pyx_v___pyx_state);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4818,7 +7382,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_8__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9oxidation_PyOxidationModel *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
@@ -4850,6 +7414,403 @@ static PyObject *__pyx_pf_9oxidation_16PyOxidationModel_8__setstate_cython__(CYT
   return __pyx_r;
 }
 /* #### Code section: module_exttypes ### */
+
+static PyObject *__pyx_tp_new_9oxidation_PyOxidationConditions(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+  struct __pyx_obj_9oxidation_PyOxidationConditions *p;
+  PyObject *o;
+  #if CYTHON_COMPILING_IN_LIMITED_API
+  allocfunc alloc_func = (allocfunc)PyType_GetSlot(t, Py_tp_alloc);
+  o = alloc_func(t, 0);
+  #else
+  if (likely(!__Pyx_PyType_HasFeature(t, Py_TPFLAGS_IS_ABSTRACT))) {
+    o = (*t->tp_alloc)(t, 0);
+  } else {
+    o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_mstate_global->__pyx_empty_tuple, 0);
+  }
+  if (unlikely(!o)) return 0;
+  #endif
+  p = ((struct __pyx_obj_9oxidation_PyOxidationConditions *)o);
+  __Pyx_default_placement_construct(&(p->conditions));
+  return o;
+}
+
+static void __pyx_tp_dealloc_9oxidation_PyOxidationConditions(PyObject *o) {
+  struct __pyx_obj_9oxidation_PyOxidationConditions *p = (struct __pyx_obj_9oxidation_PyOxidationConditions *)o;
+  #if CYTHON_USE_TP_FINALIZE
+  if (unlikely((PY_VERSION_HEX >= 0x03080000 || __Pyx_PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE)) && __Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && (!PyType_IS_GC(Py_TYPE(o)) || !__Pyx_PyObject_GC_IsFinalized(o))) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_9oxidation_PyOxidationConditions) {
+      if (PyObject_CallFinalizerFromDealloc(o)) return;
+    }
+  }
+  #endif
+  __Pyx_call_destructor(p->conditions);
+  #if CYTHON_USE_TYPE_SLOTS
+  (*Py_TYPE(o)->tp_free)(o);
+  #else
+  {
+    freefunc tp_free = (freefunc)PyType_GetSlot(Py_TYPE(o), Py_tp_free);
+    if (tp_free) tp_free(o);
+  }
+  #endif
+}
+
+static PyObject *__pyx_getprop_9oxidation_21PyOxidationConditions_temperature(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_21PyOxidationConditions_11temperature_1__get__(o);
+}
+
+static int __pyx_setprop_9oxidation_21PyOxidationConditions_temperature(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9oxidation_21PyOxidationConditions_11temperature_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
+static PyObject *__pyx_getprop_9oxidation_21PyOxidationConditions_time(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_21PyOxidationConditions_4time_1__get__(o);
+}
+
+static int __pyx_setprop_9oxidation_21PyOxidationConditions_time(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9oxidation_21PyOxidationConditions_4time_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
+static PyObject *__pyx_getprop_9oxidation_21PyOxidationConditions_pressure(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_21PyOxidationConditions_8pressure_1__get__(o);
+}
+
+static int __pyx_setprop_9oxidation_21PyOxidationConditions_pressure(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9oxidation_21PyOxidationConditions_8pressure_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
+static PyObject *__pyx_getprop_9oxidation_21PyOxidationConditions_atmosphere(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_21PyOxidationConditions_10atmosphere_1__get__(o);
+}
+
+static int __pyx_setprop_9oxidation_21PyOxidationConditions_atmosphere(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9oxidation_21PyOxidationConditions_10atmosphere_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
+static PyObject *__pyx_getprop_9oxidation_21PyOxidationConditions_orientation(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_21PyOxidationConditions_11orientation_1__get__(o);
+}
+
+static int __pyx_setprop_9oxidation_21PyOxidationConditions_orientation(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9oxidation_21PyOxidationConditions_11orientation_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
+static PyMethodDef __pyx_methods_9oxidation_PyOxidationConditions[] = {
+  {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_21PyOxidationConditions_3__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_21PyOxidationConditions_5__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {0, 0, 0, 0}
+};
+
+static struct PyGetSetDef __pyx_getsets_9oxidation_PyOxidationConditions[] = {
+  {"temperature", __pyx_getprop_9oxidation_21PyOxidationConditions_temperature, __pyx_setprop_9oxidation_21PyOxidationConditions_temperature, 0, 0},
+  {"time", __pyx_getprop_9oxidation_21PyOxidationConditions_time, __pyx_setprop_9oxidation_21PyOxidationConditions_time, 0, 0},
+  {"pressure", __pyx_getprop_9oxidation_21PyOxidationConditions_pressure, __pyx_setprop_9oxidation_21PyOxidationConditions_pressure, 0, 0},
+  {"atmosphere", __pyx_getprop_9oxidation_21PyOxidationConditions_atmosphere, __pyx_setprop_9oxidation_21PyOxidationConditions_atmosphere, 0, 0},
+  {"orientation", __pyx_getprop_9oxidation_21PyOxidationConditions_orientation, __pyx_setprop_9oxidation_21PyOxidationConditions_orientation, 0, 0},
+  {0, 0, 0, 0, 0}
+};
+#if CYTHON_USE_TYPE_SPECS
+static PyType_Slot __pyx_type_9oxidation_PyOxidationConditions_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_9oxidation_PyOxidationConditions},
+  {Py_tp_methods, (void *)__pyx_methods_9oxidation_PyOxidationConditions},
+  {Py_tp_getset, (void *)__pyx_getsets_9oxidation_PyOxidationConditions},
+  {Py_tp_init, (void *)__pyx_pw_9oxidation_21PyOxidationConditions_1__init__},
+  {Py_tp_new, (void *)__pyx_tp_new_9oxidation_PyOxidationConditions},
+  {0, 0},
+};
+static PyType_Spec __pyx_type_9oxidation_PyOxidationConditions_spec = {
+  "oxidation.PyOxidationConditions",
+  sizeof(struct __pyx_obj_9oxidation_PyOxidationConditions),
+  0,
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE,
+  __pyx_type_9oxidation_PyOxidationConditions_slots,
+};
+#else
+
+static PyTypeObject __pyx_type_9oxidation_PyOxidationConditions = {
+  PyVarObject_HEAD_INIT(0, 0)
+  "oxidation.""PyOxidationConditions", /*tp_name*/
+  sizeof(struct __pyx_obj_9oxidation_PyOxidationConditions), /*tp_basicsize*/
+  0, /*tp_itemsize*/
+  __pyx_tp_dealloc_9oxidation_PyOxidationConditions, /*tp_dealloc*/
+  #if PY_VERSION_HEX < 0x030800b4
+  0, /*tp_print*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b4
+  0, /*tp_vectorcall_offset*/
+  #endif
+  0, /*tp_getattr*/
+  0, /*tp_setattr*/
+  0, /*tp_as_async*/
+  0, /*tp_repr*/
+  0, /*tp_as_number*/
+  0, /*tp_as_sequence*/
+  0, /*tp_as_mapping*/
+  0, /*tp_hash*/
+  0, /*tp_call*/
+  0, /*tp_str*/
+  0, /*tp_getattro*/
+  0, /*tp_setattro*/
+  0, /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+  0, /*tp_doc*/
+  0, /*tp_traverse*/
+  0, /*tp_clear*/
+  0, /*tp_richcompare*/
+  0, /*tp_weaklistoffset*/
+  0, /*tp_iter*/
+  0, /*tp_iternext*/
+  __pyx_methods_9oxidation_PyOxidationConditions, /*tp_methods*/
+  0, /*tp_members*/
+  __pyx_getsets_9oxidation_PyOxidationConditions, /*tp_getset*/
+  0, /*tp_base*/
+  0, /*tp_dict*/
+  0, /*tp_descr_get*/
+  0, /*tp_descr_set*/
+  #if !CYTHON_USE_TYPE_SPECS
+  0, /*tp_dictoffset*/
+  #endif
+  __pyx_pw_9oxidation_21PyOxidationConditions_1__init__, /*tp_init*/
+  0, /*tp_alloc*/
+  __pyx_tp_new_9oxidation_PyOxidationConditions, /*tp_new*/
+  0, /*tp_free*/
+  0, /*tp_is_gc*/
+  0, /*tp_bases*/
+  0, /*tp_mro*/
+  0, /*tp_cache*/
+  0, /*tp_subclasses*/
+  0, /*tp_weaklist*/
+  0, /*tp_del*/
+  0, /*tp_version_tag*/
+  #if CYTHON_USE_TP_FINALIZE
+  0, /*tp_finalize*/
+  #else
+  NULL, /*tp_finalize*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b1 && (!CYTHON_COMPILING_IN_PYPY || PYPY_VERSION_NUM >= 0x07030800)
+  0, /*tp_vectorcall*/
+  #endif
+  #if __PYX_NEED_TP_PRINT_SLOT == 1
+  0, /*tp_print*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030C0000
+  0, /*tp_watched*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030d00A4
+  0, /*tp_versions_used*/
+  #endif
+  #if CYTHON_COMPILING_IN_PYPY && PY_VERSION_HEX >= 0x03090000 && PY_VERSION_HEX < 0x030a0000
+  0, /*tp_pypy_flags*/
+  #endif
+};
+#endif
+
+static PyObject *__pyx_tp_new_9oxidation_PyOxidationResults(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+  struct __pyx_obj_9oxidation_PyOxidationResults *p;
+  PyObject *o;
+  #if CYTHON_COMPILING_IN_LIMITED_API
+  allocfunc alloc_func = (allocfunc)PyType_GetSlot(t, Py_tp_alloc);
+  o = alloc_func(t, 0);
+  #else
+  if (likely(!__Pyx_PyType_HasFeature(t, Py_TPFLAGS_IS_ABSTRACT))) {
+    o = (*t->tp_alloc)(t, 0);
+  } else {
+    o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_mstate_global->__pyx_empty_tuple, 0);
+  }
+  if (unlikely(!o)) return 0;
+  #endif
+  p = ((struct __pyx_obj_9oxidation_PyOxidationResults *)o);
+  __Pyx_default_placement_construct(&(p->results));
+  return o;
+}
+
+static void __pyx_tp_dealloc_9oxidation_PyOxidationResults(PyObject *o) {
+  struct __pyx_obj_9oxidation_PyOxidationResults *p = (struct __pyx_obj_9oxidation_PyOxidationResults *)o;
+  #if CYTHON_USE_TP_FINALIZE
+  if (unlikely((PY_VERSION_HEX >= 0x03080000 || __Pyx_PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE)) && __Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && (!PyType_IS_GC(Py_TYPE(o)) || !__Pyx_PyObject_GC_IsFinalized(o))) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_9oxidation_PyOxidationResults) {
+      if (PyObject_CallFinalizerFromDealloc(o)) return;
+    }
+  }
+  #endif
+  __Pyx_call_destructor(p->results);
+  #if CYTHON_USE_TYPE_SLOTS
+  (*Py_TYPE(o)->tp_free)(o);
+  #else
+  {
+    freefunc tp_free = (freefunc)PyType_GetSlot(Py_TYPE(o), Py_tp_free);
+    if (tp_free) tp_free(o);
+  }
+  #endif
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_final_thickness(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_15final_thickness_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_growth_rate(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_11growth_rate_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_interface_roughness(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_19interface_roughness_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_stress_level(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_12stress_level_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_uniformity(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_10uniformity_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_thickness_profile(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_17thickness_profile_1__get__(o);
+}
+
+static PyObject *__pyx_getprop_9oxidation_18PyOxidationResults_quality_metrics(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9oxidation_18PyOxidationResults_15quality_metrics_1__get__(o);
+}
+
+static PyMethodDef __pyx_methods_9oxidation_PyOxidationResults[] = {
+  {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_18PyOxidationResults_1__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_18PyOxidationResults_3__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {0, 0, 0, 0}
+};
+
+static struct PyGetSetDef __pyx_getsets_9oxidation_PyOxidationResults[] = {
+  {"final_thickness", __pyx_getprop_9oxidation_18PyOxidationResults_final_thickness, 0, 0, 0},
+  {"growth_rate", __pyx_getprop_9oxidation_18PyOxidationResults_growth_rate, 0, 0, 0},
+  {"interface_roughness", __pyx_getprop_9oxidation_18PyOxidationResults_interface_roughness, 0, 0, 0},
+  {"stress_level", __pyx_getprop_9oxidation_18PyOxidationResults_stress_level, 0, 0, 0},
+  {"uniformity", __pyx_getprop_9oxidation_18PyOxidationResults_uniformity, 0, 0, 0},
+  {"thickness_profile", __pyx_getprop_9oxidation_18PyOxidationResults_thickness_profile, 0, 0, 0},
+  {"quality_metrics", __pyx_getprop_9oxidation_18PyOxidationResults_quality_metrics, 0, 0, 0},
+  {0, 0, 0, 0, 0}
+};
+#if CYTHON_USE_TYPE_SPECS
+static PyType_Slot __pyx_type_9oxidation_PyOxidationResults_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_9oxidation_PyOxidationResults},
+  {Py_tp_methods, (void *)__pyx_methods_9oxidation_PyOxidationResults},
+  {Py_tp_getset, (void *)__pyx_getsets_9oxidation_PyOxidationResults},
+  {Py_tp_new, (void *)__pyx_tp_new_9oxidation_PyOxidationResults},
+  {0, 0},
+};
+static PyType_Spec __pyx_type_9oxidation_PyOxidationResults_spec = {
+  "oxidation.PyOxidationResults",
+  sizeof(struct __pyx_obj_9oxidation_PyOxidationResults),
+  0,
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE,
+  __pyx_type_9oxidation_PyOxidationResults_slots,
+};
+#else
+
+static PyTypeObject __pyx_type_9oxidation_PyOxidationResults = {
+  PyVarObject_HEAD_INIT(0, 0)
+  "oxidation.""PyOxidationResults", /*tp_name*/
+  sizeof(struct __pyx_obj_9oxidation_PyOxidationResults), /*tp_basicsize*/
+  0, /*tp_itemsize*/
+  __pyx_tp_dealloc_9oxidation_PyOxidationResults, /*tp_dealloc*/
+  #if PY_VERSION_HEX < 0x030800b4
+  0, /*tp_print*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b4
+  0, /*tp_vectorcall_offset*/
+  #endif
+  0, /*tp_getattr*/
+  0, /*tp_setattr*/
+  0, /*tp_as_async*/
+  0, /*tp_repr*/
+  0, /*tp_as_number*/
+  0, /*tp_as_sequence*/
+  0, /*tp_as_mapping*/
+  0, /*tp_hash*/
+  0, /*tp_call*/
+  0, /*tp_str*/
+  0, /*tp_getattro*/
+  0, /*tp_setattro*/
+  0, /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+  0, /*tp_doc*/
+  0, /*tp_traverse*/
+  0, /*tp_clear*/
+  0, /*tp_richcompare*/
+  0, /*tp_weaklistoffset*/
+  0, /*tp_iter*/
+  0, /*tp_iternext*/
+  __pyx_methods_9oxidation_PyOxidationResults, /*tp_methods*/
+  0, /*tp_members*/
+  __pyx_getsets_9oxidation_PyOxidationResults, /*tp_getset*/
+  0, /*tp_base*/
+  0, /*tp_dict*/
+  0, /*tp_descr_get*/
+  0, /*tp_descr_set*/
+  #if !CYTHON_USE_TYPE_SPECS
+  0, /*tp_dictoffset*/
+  #endif
+  0, /*tp_init*/
+  0, /*tp_alloc*/
+  __pyx_tp_new_9oxidation_PyOxidationResults, /*tp_new*/
+  0, /*tp_free*/
+  0, /*tp_is_gc*/
+  0, /*tp_bases*/
+  0, /*tp_mro*/
+  0, /*tp_cache*/
+  0, /*tp_subclasses*/
+  0, /*tp_weaklist*/
+  0, /*tp_del*/
+  0, /*tp_version_tag*/
+  #if CYTHON_USE_TP_FINALIZE
+  0, /*tp_finalize*/
+  #else
+  NULL, /*tp_finalize*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030800b1 && (!CYTHON_COMPILING_IN_PYPY || PYPY_VERSION_NUM >= 0x07030800)
+  0, /*tp_vectorcall*/
+  #endif
+  #if __PYX_NEED_TP_PRINT_SLOT == 1
+  0, /*tp_print*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030C0000
+  0, /*tp_watched*/
+  #endif
+  #if PY_VERSION_HEX >= 0x030d00A4
+  0, /*tp_versions_used*/
+  #endif
+  #if CYTHON_COMPILING_IN_PYPY && PY_VERSION_HEX >= 0x03090000 && PY_VERSION_HEX < 0x030a0000
+  0, /*tp_pypy_flags*/
+  #endif
+};
+#endif
 
 static PyObject *__pyx_tp_new_9oxidation_PyOxidationModel(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
@@ -4898,9 +7859,10 @@ static void __pyx_tp_dealloc_9oxidation_PyOxidationModel(PyObject *o) {
 }
 
 static PyMethodDef __pyx_methods_9oxidation_PyOxidationModel[] = {
-  {"simulate_oxidation", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_5simulate_oxidation, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
-  {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_7__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
-  {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_9__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {"simulate_oxidation", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_5simulate_oxidation, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_9oxidation_16PyOxidationModel_4simulate_oxidation},
+  {"simulate_enhanced_oxidation", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_7simulate_enhanced_oxidation, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_9oxidation_16PyOxidationModel_6simulate_enhanced_oxidation},
+  {"__reduce_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_9__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {"__setstate_cython__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_9oxidation_16PyOxidationModel_11__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 #if CYTHON_USE_TYPE_SPECS
@@ -5051,23 +8013,59 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9oxidation_PyOxidationModel_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel)) __PYX_ERR(0, 13, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9oxidation_PyOxidationModel_spec, __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9oxidation_PyOxidationConditions_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions)) __PYX_ERR(0, 51, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9oxidation_PyOxidationConditions_spec, __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
+  #else
+  __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions = &__pyx_type_9oxidation_PyOxidationConditions;
+  #endif
+  #if !CYTHON_COMPILING_IN_LIMITED_API
+  #endif
+  #if !CYTHON_USE_TYPE_SPECS
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
+  #endif
+  #if !CYTHON_COMPILING_IN_LIMITED_API
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions->tp_dictoffset && __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions->tp_getattro = PyObject_GenericGetAttr;
+  }
+  #endif
+  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyOxidationConditions, (PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationConditions) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
+  #if CYTHON_USE_TYPE_SPECS
+  __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9oxidation_PyOxidationResults_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults)) __PYX_ERR(0, 107, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9oxidation_PyOxidationResults_spec, __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults) < 0) __PYX_ERR(0, 107, __pyx_L1_error)
+  #else
+  __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults = &__pyx_type_9oxidation_PyOxidationResults;
+  #endif
+  #if !CYTHON_COMPILING_IN_LIMITED_API
+  #endif
+  #if !CYTHON_USE_TYPE_SPECS
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults) < 0) __PYX_ERR(0, 107, __pyx_L1_error)
+  #endif
+  #if !CYTHON_COMPILING_IN_LIMITED_API
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults->tp_dictoffset && __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults->tp_getattro = PyObject_GenericGetAttr;
+  }
+  #endif
+  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyOxidationResults, (PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults) < 0) __PYX_ERR(0, 107, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationResults) < 0) __PYX_ERR(0, 107, __pyx_L1_error)
+  #if CYTHON_USE_TYPE_SPECS
+  __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_9oxidation_PyOxidationModel_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel)) __PYX_ERR(0, 138, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_9oxidation_PyOxidationModel_spec, __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
   #else
   __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel = &__pyx_type_9oxidation_PyOxidationModel;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel->tp_dictoffset && __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel->tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyOxidationModel, (PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyOxidationModel, (PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_9oxidation_PyOxidationModel) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5564,33 +8562,94 @@ __Pyx_RefNannySetupContext("PyInit_oxidation", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "oxidation.pyx":19
- *     def __dealloc__(self):
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+*/
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_21PyOxidationConditions_3__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationConditions___reduce_c, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reduce_cython, __pyx_t_2) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.conditions must be explicitly requested with @auto_pickle(True)"
+*/
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_21PyOxidationConditions_5__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationConditions___setstate, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_2) < 0) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):
+*/
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_18PyOxidationResults_1__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationResults___reduce_cyth, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reduce_cython, __pyx_t_2) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError, "Pickling of struct members such as self.results must be explicitly requested with @auto_pickle(True)"
+*/
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_18PyOxidationResults_3__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationResults___setstate_cy, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_2) < 0) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":147
  *         del self.thisptr
+ * 
  *     def simulate_oxidation(self, wafer: PyWafer, temperature: float, time: float):             # <<<<<<<<<<<<<<
+ *         """Basic oxidation simulation"""
  *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
 */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_wafer, __pyx_mstate_global->__pyx_n_u_PyWafer) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_temperature, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_time, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_5simulate_oxidation, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel_simulate_oxidat, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_wafer, __pyx_mstate_global->__pyx_n_u_PyWafer) < 0) __PYX_ERR(0, 147, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_temperature, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 147, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_time, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_5simulate_oxidation, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel_simulate_oxidat, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_3, __pyx_t_2);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9oxidation_PyOxidationModel, __pyx_mstate_global->__pyx_n_u_simulate_oxidation, __pyx_t_3) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9oxidation_PyOxidationModel, __pyx_mstate_global->__pyx_n_u_simulate_oxidation, __pyx_t_3) < 0) __PYX_ERR(0, 147, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "oxidation.pyx":151
+ *         self.thisptr.simulateOxidation(wafer.thisptr, temperature, time)
+ * 
+ *     def simulate_enhanced_oxidation(self, wafer: PyWafer, conditions: PyOxidationConditions):             # <<<<<<<<<<<<<<
+ *         """Enhanced oxidation simulation with detailed parameters"""
+ *         cdef OxidationResults cpp_results = self.thisptr.simulateEnhancedOxidation(wafer.thisptr, conditions.conditions)
+*/
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_wafer, __pyx_mstate_global->__pyx_n_u_PyWafer) < 0) __PYX_ERR(0, 151, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_conditions, __pyx_mstate_global->__pyx_n_u_PyOxidationConditions) < 0) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_7simulate_enhanced_oxidation, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel_simulate_enhanc, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_2, __pyx_t_3);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_9oxidation_PyOxidationModel, __pyx_mstate_global->__pyx_n_u_simulate_enhanced_oxidation, __pyx_t_2) < 0) __PYX_ERR(0, 151, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
  * def __setstate_cython__(self, __pyx_state):
 */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_7__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel___reduce_cython, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reduce_cython, __pyx_t_3) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_9__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel___reduce_cython, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reduce_cython, __pyx_t_2) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "(tree fragment)":3
  * def __reduce_cython__(self):
@@ -5598,20 +8657,101 @@ __Pyx_RefNannySetupContext("PyInit_oxidation", 0);
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     raise TypeError, "no default __reduce__ due to non-trivial __cinit__"
 */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_9__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel___setstate_cyth, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_3) < 0) __PYX_ERR(1, 3, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_9oxidation_16PyOxidationModel_11__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyOxidationModel___setstate_cyth, NULL, __pyx_mstate_global->__pyx_n_u_oxidation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_2) < 0) __PYX_ERR(1, 3, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":160
+ * 
+ * # Constants for Python use
+ * DRY_OXYGEN_ATMOSPHERE = DRY_OXYGEN             # <<<<<<<<<<<<<<
+ * WET_OXYGEN_ATMOSPHERE = WET_OXYGEN
+ * STEAM_ATMOSPHERE = STEAM
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__OxidationAtmosphere(DRY_OXYGEN); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_DRY_OXYGEN_ATMOSPHERE, __pyx_t_2) < 0) __PYX_ERR(0, 160, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":161
+ * # Constants for Python use
+ * DRY_OXYGEN_ATMOSPHERE = DRY_OXYGEN
+ * WET_OXYGEN_ATMOSPHERE = WET_OXYGEN             # <<<<<<<<<<<<<<
+ * STEAM_ATMOSPHERE = STEAM
+ * PYROGENIC_ATMOSPHERE = PYROGENIC
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__OxidationAtmosphere(WET_OXYGEN); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_WET_OXYGEN_ATMOSPHERE, __pyx_t_2) < 0) __PYX_ERR(0, 161, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":162
+ * DRY_OXYGEN_ATMOSPHERE = DRY_OXYGEN
+ * WET_OXYGEN_ATMOSPHERE = WET_OXYGEN
+ * STEAM_ATMOSPHERE = STEAM             # <<<<<<<<<<<<<<
+ * PYROGENIC_ATMOSPHERE = PYROGENIC
+ * 
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__OxidationAtmosphere(STEAM); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 162, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_STEAM_ATMOSPHERE, __pyx_t_2) < 0) __PYX_ERR(0, 162, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":163
+ * WET_OXYGEN_ATMOSPHERE = WET_OXYGEN
+ * STEAM_ATMOSPHERE = STEAM
+ * PYROGENIC_ATMOSPHERE = PYROGENIC             # <<<<<<<<<<<<<<
+ * 
+ * ORIENTATION_100_CRYSTAL = ORIENTATION_100
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__OxidationAtmosphere(PYROGENIC); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_PYROGENIC_ATMOSPHERE, __pyx_t_2) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":165
+ * PYROGENIC_ATMOSPHERE = PYROGENIC
+ * 
+ * ORIENTATION_100_CRYSTAL = ORIENTATION_100             # <<<<<<<<<<<<<<
+ * ORIENTATION_110_CRYSTAL = ORIENTATION_110
+ * ORIENTATION_111_CRYSTAL = ORIENTATION_111
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__CrystalOrientation(ORIENTATION_100); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ORIENTATION_100_CRYSTAL, __pyx_t_2) < 0) __PYX_ERR(0, 165, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":166
+ * 
+ * ORIENTATION_100_CRYSTAL = ORIENTATION_100
+ * ORIENTATION_110_CRYSTAL = ORIENTATION_110             # <<<<<<<<<<<<<<
+ * ORIENTATION_111_CRYSTAL = ORIENTATION_111
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__CrystalOrientation(ORIENTATION_110); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 166, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ORIENTATION_110_CRYSTAL, __pyx_t_2) < 0) __PYX_ERR(0, 166, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "oxidation.pyx":167
+ * ORIENTATION_100_CRYSTAL = ORIENTATION_100
+ * ORIENTATION_110_CRYSTAL = ORIENTATION_110
+ * ORIENTATION_111_CRYSTAL = ORIENTATION_111             # <<<<<<<<<<<<<<
+*/
+  __pyx_t_2 = __Pyx_PyLong_From_enum__CrystalOrientation(ORIENTATION_111); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ORIENTATION_111_CRYSTAL, __pyx_t_2) < 0) __PYX_ERR(0, 167, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "oxidation.pyx":1
  * # distutils: language = c++             # <<<<<<<<<<<<<<
  * # distutils: sources = ../cpp/core/wafer.cpp ../cpp/modules/oxidation/oxidation_model.cpp ../cpp/core/utils.cpp
  * 
 */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_test, __pyx_t_3) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /*--- Wrapped vars code ---*/
 
@@ -5673,17 +8813,36 @@ typedef struct {
 static const char * const __pyx_string_tab_encodings[] = { 0 };
 static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_, sizeof(__pyx_k_), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_ */
+  {__pyx_k_DRY_OXYGEN_ATMOSPHERE, sizeof(__pyx_k_DRY_OXYGEN_ATMOSPHERE), 0, 1, 1}, /* PyObject cname: __pyx_n_u_DRY_OXYGEN_ATMOSPHERE */
   {__pyx_k_ImportError, sizeof(__pyx_k_ImportError), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ImportError */
+  {__pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 1, 1}, /* PyObject cname: __pyx_n_u_MemoryError */
   {__pyx_k_Note_that_Cython_is_deliberately, sizeof(__pyx_k_Note_that_Cython_is_deliberately), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_Note_that_Cython_is_deliberately */
+  {__pyx_k_ORIENTATION_100_CRYSTAL, sizeof(__pyx_k_ORIENTATION_100_CRYSTAL), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ORIENTATION_100_CRYSTAL */
+  {__pyx_k_ORIENTATION_110_CRYSTAL, sizeof(__pyx_k_ORIENTATION_110_CRYSTAL), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ORIENTATION_110_CRYSTAL */
+  {__pyx_k_ORIENTATION_111_CRYSTAL, sizeof(__pyx_k_ORIENTATION_111_CRYSTAL), 0, 1, 1}, /* PyObject cname: __pyx_n_u_ORIENTATION_111_CRYSTAL */
+  {__pyx_k_PYROGENIC_ATMOSPHERE, sizeof(__pyx_k_PYROGENIC_ATMOSPHERE), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PYROGENIC_ATMOSPHERE */
+  {__pyx_k_Pickling_of_struct_members_such, sizeof(__pyx_k_Pickling_of_struct_members_such), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_Pickling_of_struct_members_such */
+  {__pyx_k_Pickling_of_struct_members_such_2, sizeof(__pyx_k_Pickling_of_struct_members_such_2), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_Pickling_of_struct_members_such_2 */
+  {__pyx_k_PyOxidationConditions, sizeof(__pyx_k_PyOxidationConditions), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationConditions */
+  {__pyx_k_PyOxidationConditions___reduce_c, sizeof(__pyx_k_PyOxidationConditions___reduce_c), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationConditions___reduce_c */
+  {__pyx_k_PyOxidationConditions___setstate, sizeof(__pyx_k_PyOxidationConditions___setstate), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationConditions___setstate */
   {__pyx_k_PyOxidationModel, sizeof(__pyx_k_PyOxidationModel), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationModel */
   {__pyx_k_PyOxidationModel___reduce_cython, sizeof(__pyx_k_PyOxidationModel___reduce_cython), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationModel___reduce_cython */
   {__pyx_k_PyOxidationModel___setstate_cyth, sizeof(__pyx_k_PyOxidationModel___setstate_cyth), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationModel___setstate_cyth */
+  {__pyx_k_PyOxidationModel_simulate_enhanc, sizeof(__pyx_k_PyOxidationModel_simulate_enhanc), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationModel_simulate_enhanc */
   {__pyx_k_PyOxidationModel_simulate_oxidat, sizeof(__pyx_k_PyOxidationModel_simulate_oxidat), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationModel_simulate_oxidat */
+  {__pyx_k_PyOxidationResults, sizeof(__pyx_k_PyOxidationResults), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationResults */
+  {__pyx_k_PyOxidationResults___reduce_cyth, sizeof(__pyx_k_PyOxidationResults___reduce_cyth), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationResults___reduce_cyth */
+  {__pyx_k_PyOxidationResults___setstate_cy, sizeof(__pyx_k_PyOxidationResults___setstate_cy), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyOxidationResults___setstate_cy */
   {__pyx_k_PyWafer, sizeof(__pyx_k_PyWafer), 0, 1, 1}, /* PyObject cname: __pyx_n_u_PyWafer */
+  {__pyx_k_STEAM_ATMOSPHERE, sizeof(__pyx_k_STEAM_ATMOSPHERE), 0, 1, 1}, /* PyObject cname: __pyx_n_u_STEAM_ATMOSPHERE */
   {__pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 1, 1}, /* PyObject cname: __pyx_n_u_TypeError */
+  {__pyx_k_WET_OXYGEN_ATMOSPHERE, sizeof(__pyx_k_WET_OXYGEN_ATMOSPHERE), 0, 1, 1}, /* PyObject cname: __pyx_n_u_WET_OXYGEN_ATMOSPHERE */
   {__pyx_k_add_note, sizeof(__pyx_k_add_note), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_add_note */
   {__pyx_k_asyncio_coroutines, sizeof(__pyx_k_asyncio_coroutines), 0, 1, 1}, /* PyObject cname: __pyx_n_u_asyncio_coroutines */
   {__pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 1, 1}, /* PyObject cname: __pyx_n_u_cline_in_traceback */
+  {__pyx_k_conditions, sizeof(__pyx_k_conditions), 0, 1, 1}, /* PyObject cname: __pyx_n_u_conditions */
+  {__pyx_k_cpp_results, sizeof(__pyx_k_cpp_results), 0, 1, 1}, /* PyObject cname: __pyx_n_u_cpp_results */
   {__pyx_k_disable, sizeof(__pyx_k_disable), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_disable */
   {__pyx_k_enable, sizeof(__pyx_k_enable), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_enable */
   {__pyx_k_float, sizeof(__pyx_k_float), 0, 1, 1}, /* PyObject cname: __pyx_n_u_float */
@@ -5696,13 +8855,16 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_module, sizeof(__pyx_k_module), 0, 1, 1}, /* PyObject cname: __pyx_n_u_module */
   {__pyx_k_name, sizeof(__pyx_k_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_name */
   {__pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_no_default___reduce___due_to_non */
+  {__pyx_k_none, sizeof(__pyx_k_none), 0, 0, 1}, /* PyObject cname: __pyx_n_b_none */
   {__pyx_k_numpy_core_multiarray_failed_to, sizeof(__pyx_k_numpy_core_multiarray_failed_to), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_numpy_core_multiarray_failed_to */
   {__pyx_k_numpy_core_umath_failed_to_impor, sizeof(__pyx_k_numpy_core_umath_failed_to_impor), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_numpy_core_umath_failed_to_impor */
   {__pyx_k_oxidation, sizeof(__pyx_k_oxidation), 0, 1, 1}, /* PyObject cname: __pyx_n_u_oxidation */
   {__pyx_k_oxidation_pyx, sizeof(__pyx_k_oxidation_pyx), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_oxidation_pyx */
   {__pyx_k_pop, sizeof(__pyx_k_pop), 0, 1, 1}, /* PyObject cname: __pyx_n_u_pop */
+  {__pyx_k_py_results, sizeof(__pyx_k_py_results), 0, 1, 1}, /* PyObject cname: __pyx_n_u_py_results */
   {__pyx_k_pyx_state, sizeof(__pyx_k_pyx_state), 0, 1, 1}, /* PyObject cname: __pyx_n_u_pyx_state */
   {__pyx_k_qualname, sizeof(__pyx_k_qualname), 0, 1, 1}, /* PyObject cname: __pyx_n_u_qualname */
+  {__pyx_k_range, sizeof(__pyx_k_range), 0, 1, 1}, /* PyObject cname: __pyx_n_u_range */
   {__pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 1, 1}, /* PyObject cname: __pyx_n_u_reduce */
   {__pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 1, 1}, /* PyObject cname: __pyx_n_u_reduce_cython */
   {__pyx_k_reduce_ex, sizeof(__pyx_k_reduce_ex), 0, 1, 1}, /* PyObject cname: __pyx_n_u_reduce_ex */
@@ -5710,6 +8872,7 @@ static const __Pyx_StringTabEntry __pyx_string_tab[] = {
   {__pyx_k_set_name, sizeof(__pyx_k_set_name), 0, 1, 1}, /* PyObject cname: __pyx_n_u_set_name */
   {__pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 1, 1}, /* PyObject cname: __pyx_n_u_setstate */
   {__pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 1, 1}, /* PyObject cname: __pyx_n_u_setstate_cython */
+  {__pyx_k_simulate_enhanced_oxidation, sizeof(__pyx_k_simulate_enhanced_oxidation), 0, 1, 1}, /* PyObject cname: __pyx_n_u_simulate_enhanced_oxidation */
   {__pyx_k_simulate_oxidation, sizeof(__pyx_k_simulate_oxidation), 0, 1, 1}, /* PyObject cname: __pyx_n_u_simulate_oxidation */
   {__pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 1, 0}, /* PyObject cname: __pyx_kp_u_stringsource */
   {__pyx_k_temperature, sizeof(__pyx_k_temperature), 0, 1, 1}, /* PyObject cname: __pyx_n_u_temperature */
@@ -5726,6 +8889,8 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry const *t, PyObject **target, c
 static int __Pyx_InitCachedBuiltins(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(1, 79, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_range); if (!__pyx_builtin_range) __PYX_ERR(1, 87, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(2, 984, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
@@ -5759,7 +8924,7 @@ static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
             unsigned int num_kwonly_args : 1;
             unsigned int nlocals : 3;
             unsigned int flags : 10;
-            unsigned int first_line : 5;
+            unsigned int first_line : 8;
             unsigned int line_table_length : 10;
         } __Pyx_PyCode_New_function_description;
 /* NewCodeObj.proto */
@@ -5777,19 +8942,44 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   PyObject* tuple_dedup_map = PyDict_New();
   if (unlikely(!tuple_dedup_map)) return -1;
   {
-    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 19, 28};
-    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_wafer, __pyx_mstate->__pyx_n_u_temperature, __pyx_mstate->__pyx_n_u_time};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_oxidation_pyx, __pyx_mstate->__pyx_n_u_simulate_oxidation, __pyx_k_m1_H_auJm1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
-  }
-  {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1, 9};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_reduce_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_reduce_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 3, 9};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_pyx_state};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_setstate_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_setstate_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1, 9};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_reduce_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 3, 9};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_pyx_state};
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_setstate_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 147, 28};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_wafer, __pyx_mstate->__pyx_n_u_temperature, __pyx_mstate->__pyx_n_u_time};
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_oxidation_pyx, __pyx_mstate->__pyx_n_u_simulate_oxidation, __pyx_k_m1_H_auJm1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 151, 53};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_wafer, __pyx_mstate->__pyx_n_u_conditions, __pyx_mstate->__pyx_n_u_cpp_results, __pyx_mstate->__pyx_n_u_py_results};
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_oxidation_pyx, __pyx_mstate->__pyx_n_u_simulate_enhanced_oxidation, __pyx_k_11Fa_D_8RRSSXXbbllm_q_Q_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1, 9};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_reduce_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 3, 9};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_pyx_state};
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_setstate_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;
@@ -9700,6 +12890,28 @@ bad:
 }
 #endif
 
+/* CIntFromPyVerify */
+#define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
+#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
+#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
+    {\
+        func_type value = func_value;\
+        if (sizeof(target_type) < sizeof(func_type)) {\
+            if (unlikely(value != (func_type) (target_type) value)) {\
+                func_type zero = 0;\
+                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
+                    return (target_type) -1;\
+                if (is_unsigned && unlikely(value < zero))\
+                    goto raise_neg_overflow;\
+                else\
+                    goto raise_overflow;\
+            }\
+        }\
+        return (target_type) value;\
+    }
+
 /* Declarations */
 #if CYTHON_CCOMPLEX && (1) && (!0 || __cplusplus)
   #ifdef __cplusplus
@@ -10008,6 +13220,558 @@ bad:
     #endif
 #endif
 
+/* PyObjectVectorCallKwBuilder */
+#if CYTHON_VECTORCALL
+static int __Pyx_VectorcallBuilder_AddArg(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
+    (void)__Pyx_PyObject_FastCallDict;
+    if (__Pyx_PyTuple_SET_ITEM(builder, n, key) != (0)) return -1;
+    Py_INCREF(key);
+    args[n] = value;
+    return 0;
+}
+CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
+    (void)__Pyx_VectorcallBuilder_AddArgStr;
+    if (unlikely(!PyUnicode_Check(key))) {
+        PyErr_SetString(PyExc_TypeError, "keywords must be strings");
+        return -1;
+    }
+    return __Pyx_VectorcallBuilder_AddArg(key, value, builder, args, n);
+}
+static int __Pyx_VectorcallBuilder_AddArgStr(const char *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
+    PyObject *pyKey = PyUnicode_FromString(key);
+    if (!pyKey) return -1;
+    return __Pyx_VectorcallBuilder_AddArg(pyKey, value, builder, args, n);
+}
+#else // CYTHON_VECTORCALL
+CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, CYTHON_UNUSED PyObject **args, CYTHON_UNUSED int n) {
+    if (unlikely(!PyUnicode_Check(key))) {
+        PyErr_SetString(PyExc_TypeError, "keywords must be strings");
+        return -1;
+    }
+    return PyDict_SetItem(builder, key, value);
+}
+#endif
+
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyLong_From_enum__OxidationAtmosphere(enum OxidationAtmosphere value) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const enum OxidationAtmosphere neg_one = (enum OxidationAtmosphere) -1, const_zero = (enum OxidationAtmosphere) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(enum OxidationAtmosphere) < sizeof(long)) {
+            return PyLong_FromLong((long) value);
+        } else if (sizeof(enum OxidationAtmosphere) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#if defined(HAVE_LONG_LONG) && !CYTHON_COMPILING_IN_PYPY
+        } else if (sizeof(enum OxidationAtmosphere) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(enum OxidationAtmosphere) <= sizeof(long)) {
+            return PyLong_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(enum OxidationAtmosphere) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        unsigned char *bytes = (unsigned char *)&value;
+#if !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x030d00A4
+        if (is_unsigned) {
+            return PyLong_FromUnsignedNativeBytes(bytes, sizeof(value), -1);
+        } else {
+            return PyLong_FromNativeBytes(bytes, sizeof(value), -1);
+        }
+#elif !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX < 0x030d0000
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        return _PyLong_FromByteArray(bytes, sizeof(enum OxidationAtmosphere),
+                                     little, !is_unsigned);
+#else
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        PyObject *from_bytes, *result = NULL, *kwds = NULL;
+        PyObject *py_bytes = NULL, *order_str = NULL;
+        from_bytes = PyObject_GetAttrString((PyObject*)&PyLong_Type, "from_bytes");
+        if (!from_bytes) return NULL;
+        py_bytes = PyBytes_FromStringAndSize((char*)bytes, sizeof(enum OxidationAtmosphere));
+        if (!py_bytes) goto limited_bad;
+        order_str = PyUnicode_FromString(little ? "little" : "big");
+        if (!order_str) goto limited_bad;
+        {
+            PyObject *args[3+(CYTHON_VECTORCALL ? 1 : 0)] = { NULL, py_bytes, order_str };
+            if (!is_unsigned) {
+                kwds = __Pyx_MakeVectorcallBuilderKwds(1);
+                if (!kwds) goto limited_bad;
+                if (__Pyx_VectorcallBuilder_AddArgStr("signed", __Pyx_NewRef(Py_True), kwds, args+3, 0) < 0) goto limited_bad;
+            }
+            result = __Pyx_Object_Vectorcall_CallFromBuilder(from_bytes, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET, kwds);
+        }
+        limited_bad:
+        Py_XDECREF(kwds);
+        Py_XDECREF(order_str);
+        Py_XDECREF(py_bytes);
+        Py_XDECREF(from_bytes);
+        return result;
+#endif
+    }
+}
+
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyLong_From_enum__CrystalOrientation(enum CrystalOrientation value) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const enum CrystalOrientation neg_one = (enum CrystalOrientation) -1, const_zero = (enum CrystalOrientation) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(enum CrystalOrientation) < sizeof(long)) {
+            return PyLong_FromLong((long) value);
+        } else if (sizeof(enum CrystalOrientation) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#if defined(HAVE_LONG_LONG) && !CYTHON_COMPILING_IN_PYPY
+        } else if (sizeof(enum CrystalOrientation) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(enum CrystalOrientation) <= sizeof(long)) {
+            return PyLong_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(enum CrystalOrientation) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        unsigned char *bytes = (unsigned char *)&value;
+#if !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x030d00A4
+        if (is_unsigned) {
+            return PyLong_FromUnsignedNativeBytes(bytes, sizeof(value), -1);
+        } else {
+            return PyLong_FromNativeBytes(bytes, sizeof(value), -1);
+        }
+#elif !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX < 0x030d0000
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        return _PyLong_FromByteArray(bytes, sizeof(enum CrystalOrientation),
+                                     little, !is_unsigned);
+#else
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        PyObject *from_bytes, *result = NULL, *kwds = NULL;
+        PyObject *py_bytes = NULL, *order_str = NULL;
+        from_bytes = PyObject_GetAttrString((PyObject*)&PyLong_Type, "from_bytes");
+        if (!from_bytes) return NULL;
+        py_bytes = PyBytes_FromStringAndSize((char*)bytes, sizeof(enum CrystalOrientation));
+        if (!py_bytes) goto limited_bad;
+        order_str = PyUnicode_FromString(little ? "little" : "big");
+        if (!order_str) goto limited_bad;
+        {
+            PyObject *args[3+(CYTHON_VECTORCALL ? 1 : 0)] = { NULL, py_bytes, order_str };
+            if (!is_unsigned) {
+                kwds = __Pyx_MakeVectorcallBuilderKwds(1);
+                if (!kwds) goto limited_bad;
+                if (__Pyx_VectorcallBuilder_AddArgStr("signed", __Pyx_NewRef(Py_True), kwds, args+3, 0) < 0) goto limited_bad;
+            }
+            result = __Pyx_Object_Vectorcall_CallFromBuilder(from_bytes, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET, kwds);
+        }
+        limited_bad:
+        Py_XDECREF(kwds);
+        Py_XDECREF(order_str);
+        Py_XDECREF(py_bytes);
+        Py_XDECREF(from_bytes);
+        return result;
+#endif
+    }
+}
+
+/* CIntFromPy */
+static CYTHON_INLINE enum OxidationAtmosphere __Pyx_PyLong_As_enum__OxidationAtmosphere(PyObject *x) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const enum OxidationAtmosphere neg_one = (enum OxidationAtmosphere) -1, const_zero = (enum OxidationAtmosphere) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (unlikely(!PyLong_Check(x))) {
+        enum OxidationAtmosphere val;
+        PyObject *tmp = __Pyx_PyNumber_Long(x);
+        if (!tmp) return (enum OxidationAtmosphere) -1;
+        val = __Pyx_PyLong_As_enum__OxidationAtmosphere(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+    if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+        if (unlikely(__Pyx_PyLong_IsNeg(x))) {
+            goto raise_neg_overflow;
+        } else if (__Pyx_PyLong_IsCompact(x)) {
+            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, __Pyx_compact_upylong, __Pyx_PyLong_CompactValueUnsigned(x))
+        } else {
+            const digit* digits = __Pyx_PyLong_Digits(x);
+            assert(__Pyx_PyLong_DigitCount(x) > 1);
+            switch (__Pyx_PyLong_DigitCount(x)) {
+                case 2:
+                    if ((8 * sizeof(enum OxidationAtmosphere) > 1 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 2 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) >= 2 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) (((((enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if ((8 * sizeof(enum OxidationAtmosphere) > 2 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 3 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) >= 3 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) (((((((enum OxidationAtmosphere)digits[2]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if ((8 * sizeof(enum OxidationAtmosphere) > 3 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 4 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) >= 4 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) (((((((((enum OxidationAtmosphere)digits[3]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[2]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0]));
+                        }
+                    }
+                    break;
+            }
+        }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX < 0x030C00A7
+        if (unlikely(Py_SIZE(x) < 0)) {
+            goto raise_neg_overflow;
+        }
+#else
+        {
+            int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+            if (unlikely(result < 0))
+                return (enum OxidationAtmosphere) -1;
+            if (unlikely(result == 1))
+                goto raise_neg_overflow;
+        }
+#endif
+        if ((sizeof(enum OxidationAtmosphere) <= sizeof(unsigned long))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum OxidationAtmosphere, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+        } else if ((sizeof(enum OxidationAtmosphere) <= sizeof(unsigned PY_LONG_LONG))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum OxidationAtmosphere, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+        }
+    } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+        if (__Pyx_PyLong_IsCompact(x)) {
+            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, __Pyx_compact_pylong, __Pyx_PyLong_CompactValue(x))
+        } else {
+            const digit* digits = __Pyx_PyLong_Digits(x);
+            assert(__Pyx_PyLong_DigitCount(x) > 1);
+            switch (__Pyx_PyLong_SignedDigitCount(x)) {
+                case -2:
+                    if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 1 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 2 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 2 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) (((enum OxidationAtmosphere)-1)*(((((enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if ((8 * sizeof(enum OxidationAtmosphere) > 1 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 2 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 2 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) ((((((enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 2 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 3 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 3 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) (((enum OxidationAtmosphere)-1)*(((((((enum OxidationAtmosphere)digits[2]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if ((8 * sizeof(enum OxidationAtmosphere) > 2 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 3 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 3 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) ((((((((enum OxidationAtmosphere)digits[2]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 3 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 4 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 4 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) (((enum OxidationAtmosphere)-1)*(((((((((enum OxidationAtmosphere)digits[3]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[2]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if ((8 * sizeof(enum OxidationAtmosphere) > 3 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 4 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum OxidationAtmosphere, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum OxidationAtmosphere) - 1 > 4 * PyLong_SHIFT)) {
+                            return (enum OxidationAtmosphere) ((((((((((enum OxidationAtmosphere)digits[3]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[2]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[1]) << PyLong_SHIFT) | (enum OxidationAtmosphere)digits[0])));
+                        }
+                    }
+                    break;
+            }
+        }
+#endif
+        if ((sizeof(enum OxidationAtmosphere) <= sizeof(long))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum OxidationAtmosphere, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+        } else if ((sizeof(enum OxidationAtmosphere) <= sizeof(PY_LONG_LONG))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum OxidationAtmosphere, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+        }
+    }
+    {
+        enum OxidationAtmosphere val;
+        int ret = -1;
+#if PY_VERSION_HEX >= 0x030d00A6 && !CYTHON_COMPILING_IN_LIMITED_API
+        Py_ssize_t bytes_copied = PyLong_AsNativeBytes(
+            x, &val, sizeof(val), Py_ASNATIVEBYTES_NATIVE_ENDIAN | (is_unsigned ? Py_ASNATIVEBYTES_UNSIGNED_BUFFER | Py_ASNATIVEBYTES_REJECT_NEGATIVE : 0));
+        if (unlikely(bytes_copied == -1)) {
+        } else if (unlikely(bytes_copied > (Py_ssize_t) sizeof(val))) {
+            goto raise_overflow;
+        } else {
+            ret = 0;
+        }
+#elif PY_VERSION_HEX < 0x030d0000 && !(CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_LIMITED_API) || defined(_PyLong_AsByteArray)
+        int one = 1; int is_little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&val;
+        ret = _PyLong_AsByteArray((PyLongObject *)x,
+                                    bytes, sizeof(val),
+                                    is_little, !is_unsigned);
+#else
+        PyErr_SetString(PyExc_RuntimeError,
+                        "_PyLong_AsByteArray() or PyLong_AsNativeBytes() not available, cannot convert large enums");
+        val = (enum OxidationAtmosphere) -1;
+#endif
+        if (unlikely(ret))
+            return (enum OxidationAtmosphere) -1;
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to enum OxidationAtmosphere");
+    return (enum OxidationAtmosphere) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to enum OxidationAtmosphere");
+    return (enum OxidationAtmosphere) -1;
+}
+
+/* CIntFromPy */
+static CYTHON_INLINE enum CrystalOrientation __Pyx_PyLong_As_enum__CrystalOrientation(PyObject *x) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const enum CrystalOrientation neg_one = (enum CrystalOrientation) -1, const_zero = (enum CrystalOrientation) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (unlikely(!PyLong_Check(x))) {
+        enum CrystalOrientation val;
+        PyObject *tmp = __Pyx_PyNumber_Long(x);
+        if (!tmp) return (enum CrystalOrientation) -1;
+        val = __Pyx_PyLong_As_enum__CrystalOrientation(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+    if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+        if (unlikely(__Pyx_PyLong_IsNeg(x))) {
+            goto raise_neg_overflow;
+        } else if (__Pyx_PyLong_IsCompact(x)) {
+            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, __Pyx_compact_upylong, __Pyx_PyLong_CompactValueUnsigned(x))
+        } else {
+            const digit* digits = __Pyx_PyLong_Digits(x);
+            assert(__Pyx_PyLong_DigitCount(x) > 1);
+            switch (__Pyx_PyLong_DigitCount(x)) {
+                case 2:
+                    if ((8 * sizeof(enum CrystalOrientation) > 1 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 2 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) >= 2 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) (((((enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if ((8 * sizeof(enum CrystalOrientation) > 2 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 3 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) >= 3 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) (((((((enum CrystalOrientation)digits[2]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if ((8 * sizeof(enum CrystalOrientation) > 3 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 4 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) >= 4 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) (((((((((enum CrystalOrientation)digits[3]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[2]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0]));
+                        }
+                    }
+                    break;
+            }
+        }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX < 0x030C00A7
+        if (unlikely(Py_SIZE(x) < 0)) {
+            goto raise_neg_overflow;
+        }
+#else
+        {
+            int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+            if (unlikely(result < 0))
+                return (enum CrystalOrientation) -1;
+            if (unlikely(result == 1))
+                goto raise_neg_overflow;
+        }
+#endif
+        if ((sizeof(enum CrystalOrientation) <= sizeof(unsigned long))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum CrystalOrientation, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+        } else if ((sizeof(enum CrystalOrientation) <= sizeof(unsigned PY_LONG_LONG))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum CrystalOrientation, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+        }
+    } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+        if (__Pyx_PyLong_IsCompact(x)) {
+            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, __Pyx_compact_pylong, __Pyx_PyLong_CompactValue(x))
+        } else {
+            const digit* digits = __Pyx_PyLong_Digits(x);
+            assert(__Pyx_PyLong_DigitCount(x) > 1);
+            switch (__Pyx_PyLong_SignedDigitCount(x)) {
+                case -2:
+                    if ((8 * sizeof(enum CrystalOrientation) - 1 > 1 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 2 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) - 1 > 2 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) (((enum CrystalOrientation)-1)*(((((enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if ((8 * sizeof(enum CrystalOrientation) > 1 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 2 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) - 1 > 2 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) ((((((enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if ((8 * sizeof(enum CrystalOrientation) - 1 > 2 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 3 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) - 1 > 3 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) (((enum CrystalOrientation)-1)*(((((((enum CrystalOrientation)digits[2]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if ((8 * sizeof(enum CrystalOrientation) > 2 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 3 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) - 1 > 3 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) ((((((((enum CrystalOrientation)digits[2]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if ((8 * sizeof(enum CrystalOrientation) - 1 > 3 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 4 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) - 1 > 4 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) (((enum CrystalOrientation)-1)*(((((((((enum CrystalOrientation)digits[3]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[2]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if ((8 * sizeof(enum CrystalOrientation) > 3 * PyLong_SHIFT)) {
+                        if ((8 * sizeof(unsigned long) > 4 * PyLong_SHIFT)) {
+                            __PYX_VERIFY_RETURN_INT(enum CrystalOrientation, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if ((8 * sizeof(enum CrystalOrientation) - 1 > 4 * PyLong_SHIFT)) {
+                            return (enum CrystalOrientation) ((((((((((enum CrystalOrientation)digits[3]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[2]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[1]) << PyLong_SHIFT) | (enum CrystalOrientation)digits[0])));
+                        }
+                    }
+                    break;
+            }
+        }
+#endif
+        if ((sizeof(enum CrystalOrientation) <= sizeof(long))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum CrystalOrientation, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+        } else if ((sizeof(enum CrystalOrientation) <= sizeof(PY_LONG_LONG))) {
+            __PYX_VERIFY_RETURN_INT_EXC(enum CrystalOrientation, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+        }
+    }
+    {
+        enum CrystalOrientation val;
+        int ret = -1;
+#if PY_VERSION_HEX >= 0x030d00A6 && !CYTHON_COMPILING_IN_LIMITED_API
+        Py_ssize_t bytes_copied = PyLong_AsNativeBytes(
+            x, &val, sizeof(val), Py_ASNATIVEBYTES_NATIVE_ENDIAN | (is_unsigned ? Py_ASNATIVEBYTES_UNSIGNED_BUFFER | Py_ASNATIVEBYTES_REJECT_NEGATIVE : 0));
+        if (unlikely(bytes_copied == -1)) {
+        } else if (unlikely(bytes_copied > (Py_ssize_t) sizeof(val))) {
+            goto raise_overflow;
+        } else {
+            ret = 0;
+        }
+#elif PY_VERSION_HEX < 0x030d0000 && !(CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_LIMITED_API) || defined(_PyLong_AsByteArray)
+        int one = 1; int is_little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&val;
+        ret = _PyLong_AsByteArray((PyLongObject *)x,
+                                    bytes, sizeof(val),
+                                    is_little, !is_unsigned);
+#else
+        PyErr_SetString(PyExc_RuntimeError,
+                        "_PyLong_AsByteArray() or PyLong_AsNativeBytes() not available, cannot convert large enums");
+        val = (enum CrystalOrientation) -1;
+#endif
+        if (unlikely(ret))
+            return (enum CrystalOrientation) -1;
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to enum CrystalOrientation");
+    return (enum CrystalOrientation) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to enum CrystalOrientation");
+    return (enum CrystalOrientation) -1;
+}
+
 /* FormatTypeName */
 #if CYTHON_COMPILING_IN_LIMITED_API && __PYX_LIMITED_VERSION_HEX < 0x030d0000
 static __Pyx_TypeName
@@ -10044,38 +13808,6 @@ __Pyx_PyType_GetFullyQualifiedName(PyTypeObject* tp)
         result = __Pyx_NewRef(__pyx_mstate_global->__pyx_kp_u_);
     }
     goto done;
-}
-#endif
-
-/* PyObjectVectorCallKwBuilder */
-#if CYTHON_VECTORCALL
-static int __Pyx_VectorcallBuilder_AddArg(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
-    (void)__Pyx_PyObject_FastCallDict;
-    if (__Pyx_PyTuple_SET_ITEM(builder, n, key) != (0)) return -1;
-    Py_INCREF(key);
-    args[n] = value;
-    return 0;
-}
-CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
-    (void)__Pyx_VectorcallBuilder_AddArgStr;
-    if (unlikely(!PyUnicode_Check(key))) {
-        PyErr_SetString(PyExc_TypeError, "keywords must be strings");
-        return -1;
-    }
-    return __Pyx_VectorcallBuilder_AddArg(key, value, builder, args, n);
-}
-static int __Pyx_VectorcallBuilder_AddArgStr(const char *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
-    PyObject *pyKey = PyUnicode_FromString(key);
-    if (!pyKey) return -1;
-    return __Pyx_VectorcallBuilder_AddArg(pyKey, value, builder, args, n);
-}
-#else // CYTHON_VECTORCALL
-CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, CYTHON_UNUSED PyObject **args, CYTHON_UNUSED int n) {
-    if (unlikely(!PyUnicode_Check(key))) {
-        PyErr_SetString(PyExc_TypeError, "keywords must be strings");
-        return -1;
-    }
-    return PyDict_SetItem(builder, key, value);
 }
 #endif
 
@@ -10149,28 +13881,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value) {
 #endif
     }
 }
-
-/* CIntFromPyVerify */
-#define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
-#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
-#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
-    {\
-        func_type value = func_value;\
-        if (sizeof(target_type) < sizeof(func_type)) {\
-            if (unlikely(value != (func_type) (target_type) value)) {\
-                func_type zero = 0;\
-                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
-                    return (target_type) -1;\
-                if (is_unsigned && unlikely(value < zero))\
-                    goto raise_neg_overflow;\
-                else\
-                    goto raise_overflow;\
-            }\
-        }\
-        return (target_type) value;\
-    }
 
 /* CIntFromPy */
 static CYTHON_INLINE long __Pyx_PyLong_As_long(PyObject *x) {

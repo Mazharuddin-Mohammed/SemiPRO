@@ -3034,14 +3034,6 @@ typedef struct {
   __Pyx_Buf_DimInfo diminfo[8];
 } __Pyx_LocalBuf_ND;
 
-/* MemviewSliceIsContig.proto */
-static int __pyx_memviewslice_is_contig(const __Pyx_memviewslice mvs, char order, int ndim);
-
-/* OverlappingSlices.proto */
-static int __pyx_slices_overlap(__Pyx_memviewslice *slice1,
-                                __Pyx_memviewslice *slice2,
-                                int ndim, size_t itemsize);
-
 /* CppExceptionConversion.proto */
 #ifndef __Pyx_CppExn2PyErr
 #include <new>
@@ -3186,6 +3178,44 @@ static CYTHON_INLINE int __pyx_memview_set_nn___pyx_t_5numpy_float64_t(const cha
     #endif
 #endif
 
+/* MemviewSliceIsContig.proto */
+static int __pyx_memviewslice_is_contig(const __Pyx_memviewslice mvs, char order, int ndim);
+
+/* OverlappingSlices.proto */
+static int __pyx_slices_overlap(__Pyx_memviewslice *slice1,
+                                __Pyx_memviewslice *slice2,
+                                int ndim, size_t itemsize);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE int __Pyx_PyLong_As_int(PyObject *);
+
+/* TypeInfoToFormat.proto */
+struct __pyx_typeinfo_string {
+    char string[3];
+};
+static struct __pyx_typeinfo_string __Pyx_TypeInfoToFormat(const __Pyx_TypeInfo *type);
+
+/* PyObjectVectorCallKwBuilder.proto */
+CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n);
+#if CYTHON_VECTORCALL
+#if PY_VERSION_HEX >= 0x03090000
+#define __Pyx_Object_Vectorcall_CallFromBuilder PyObject_Vectorcall
+#else
+#define __Pyx_Object_Vectorcall_CallFromBuilder _PyObject_Vectorcall
+#endif
+#define __Pyx_MakeVectorcallBuilderKwds(n) PyTuple_New(n)
+static int __Pyx_VectorcallBuilder_AddArg(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n);
+static int __Pyx_VectorcallBuilder_AddArgStr(const char *key, PyObject *value, PyObject *builder, PyObject **args, int n);
+#else
+#define __Pyx_Object_Vectorcall_CallFromBuilder __Pyx_PyObject_FastCallDict
+#define __Pyx_MakeVectorcallBuilderKwds(n) __Pyx_PyDict_NewPresized(n)
+#define __Pyx_VectorcallBuilder_AddArg(key, value, builder, args, n) PyDict_SetItem(builder, key, value)
+#define __Pyx_VectorcallBuilder_AddArgStr(key, value, builder, args, n) PyDict_SetItemString(builder, key, value)
+#endif
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyLong_From_int(int value);
+
 /* MemviewSliceCopyTemplate.proto */
 static __Pyx_memviewslice
 __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
@@ -3218,36 +3248,6 @@ static CYTHON_INLINE int __pyx_sub_acquisition_count_locked(
 #define __PYX_XCLEAR_MEMVIEW(slice, have_gil) __Pyx_XCLEAR_MEMVIEW(slice, have_gil, __LINE__)
 static CYTHON_INLINE void __Pyx_INC_MEMVIEW(__Pyx_memviewslice *, int, int);
 static CYTHON_INLINE void __Pyx_XCLEAR_MEMVIEW(__Pyx_memviewslice *, int, int);
-
-/* TypeInfoToFormat.proto */
-struct __pyx_typeinfo_string {
-    char string[3];
-};
-static struct __pyx_typeinfo_string __Pyx_TypeInfoToFormat(const __Pyx_TypeInfo *type);
-
-/* CIntFromPy.proto */
-static CYTHON_INLINE int __Pyx_PyLong_As_int(PyObject *);
-
-/* PyObjectVectorCallKwBuilder.proto */
-CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n);
-#if CYTHON_VECTORCALL
-#if PY_VERSION_HEX >= 0x03090000
-#define __Pyx_Object_Vectorcall_CallFromBuilder PyObject_Vectorcall
-#else
-#define __Pyx_Object_Vectorcall_CallFromBuilder _PyObject_Vectorcall
-#endif
-#define __Pyx_MakeVectorcallBuilderKwds(n) PyTuple_New(n)
-static int __Pyx_VectorcallBuilder_AddArg(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n);
-static int __Pyx_VectorcallBuilder_AddArgStr(const char *key, PyObject *value, PyObject *builder, PyObject **args, int n);
-#else
-#define __Pyx_Object_Vectorcall_CallFromBuilder __Pyx_PyObject_FastCallDict
-#define __Pyx_MakeVectorcallBuilderKwds(n) __Pyx_PyDict_NewPresized(n)
-#define __Pyx_VectorcallBuilder_AddArg(key, value, builder, args, n) PyDict_SetItem(builder, key, value)
-#define __Pyx_VectorcallBuilder_AddArgStr(key, value, builder, args, n) PyDict_SetItemString(builder, key, value)
-#endif
-
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyLong_From_int(int value);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyLong_As_long(PyObject *);
@@ -3379,13 +3379,6 @@ static CYTHON_INLINE char *__pyx_f_5numpy_7ndarray_4data_data(PyArrayObject *__p
 /* Module declarations from "numpy" */
 
 /* Module declarations from "numpy" */
-
-/* Module declarations from "cython.view" */
-static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
-
-/* Module declarations from "cython.dataclasses" */
-
-/* Module declarations from "cython" */
 
 /* Module declarations from "geometry" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
@@ -19606,12 +19599,12 @@ static CYTHON_INLINE NPY_DATETIMEUNIT __pyx_f_5numpy_get_datetime64_unit(PyObjec
   return __pyx_r;
 }
 
-/* "geometry.pyx":54
- * 
+/* "geometry.pyx":17
+ * # Implementation of PyWafer class (declaration is in .pxd file)
  * cdef class PyWafer:
  *     def __cinit__(self, diameter: float, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
  *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
- *     def initialize_grid(self, x_dim: int, y_dim: int):
+ * 
 */
 
 /* Python wrapper */
@@ -19638,46 +19631,46 @@ static int __pyx_pw_8geometry_7PyWafer_1__cinit__(PyObject *__pyx_v_self, PyObje
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_diameter,&__pyx_mstate_global->__pyx_n_u_thickness,&__pyx_mstate_global->__pyx_n_u_material_id,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_VARARGS(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 54, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 17, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_VARARGS(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 54, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 17, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_VARARGS(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 54, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 17, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_VARARGS(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 54, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 17, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__cinit__", 0) < 0) __PYX_ERR(0, 54, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__cinit__", 0) < 0) __PYX_ERR(0, 17, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, i); __PYX_ERR(0, 54, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, i); __PYX_ERR(0, 17, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_VARARGS(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 54, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 17, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_VARARGS(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 54, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 17, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_VARARGS(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 54, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 17, __pyx_L3_error)
     }
-    __pyx_v_diameter = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_diameter == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 54, __pyx_L3_error)
-    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 54, __pyx_L3_error)
+    __pyx_v_diameter = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_diameter == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L3_error)
+    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L3_error)
     __pyx_v_material_id = ((PyObject*)values[2]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 54, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 17, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -19688,7 +19681,7 @@ static int __pyx_pw_8geometry_7PyWafer_1__cinit__(PyObject *__pyx_v_self, PyObje
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material_id), (&PyUnicode_Type), 0, "material_id", 2))) __PYX_ERR(0, 54, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material_id), (&PyUnicode_Type), 0, "material_id", 2))) __PYX_ERR(0, 17, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer___cinit__(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_diameter, __pyx_v_thickness, __pyx_v_material_id);
 
   /* function exit code */
@@ -19719,31 +19712,31 @@ static int __pyx_pf_8geometry_7PyWafer___cinit__(struct __pyx_obj_8geometry_PyWa
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "geometry.pyx":55
+  /* "geometry.pyx":18
  * cdef class PyWafer:
  *     def __cinit__(self, diameter: float, thickness: float, material_id: str):
  *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))             # <<<<<<<<<<<<<<
+ * 
  *     def initialize_grid(self, x_dim: int, y_dim: int):
- *         self.thisptr.get().initializeGrid(x_dim, y_dim)
 */
-  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material_id); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material_id); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 55, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_3 = new Wafer(__pyx_v_diameter, __pyx_v_thickness, __pyx_t_2);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 55, __pyx_L1_error)
+    __PYX_ERR(0, 18, __pyx_L1_error)
   }
   __pyx_v_self->thisptr = std::shared_ptr<Wafer> (__pyx_t_3);
 
-  /* "geometry.pyx":54
- * 
+  /* "geometry.pyx":17
+ * # Implementation of PyWafer class (declaration is in .pxd file)
  * cdef class PyWafer:
  *     def __cinit__(self, diameter: float, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
  *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
- *     def initialize_grid(self, x_dim: int, y_dim: int):
+ * 
 */
 
   /* function exit code */
@@ -19758,12 +19751,12 @@ static int __pyx_pf_8geometry_7PyWafer___cinit__(struct __pyx_obj_8geometry_PyWa
   return __pyx_r;
 }
 
-/* "geometry.pyx":56
- *     def __cinit__(self, diameter: float, thickness: float, material_id: str):
+/* "geometry.pyx":20
  *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
+ * 
  *     def initialize_grid(self, x_dim: int, y_dim: int):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)
- *     def apply_layer(self, thickness: float, material_id: str):
+ * 
 */
 
 /* Python wrapper */
@@ -19806,39 +19799,39 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_x_dim,&__pyx_mstate_global->__pyx_n_u_y_dim,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 56, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 20, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 56, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 20, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 56, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 20, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "initialize_grid", 0) < 0) __PYX_ERR(0, 56, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "initialize_grid", 0) < 0) __PYX_ERR(0, 20, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 2, 2, i); __PYX_ERR(0, 56, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 2, 2, i); __PYX_ERR(0, 20, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 56, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 20, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 56, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 20, __pyx_L3_error)
     }
     __pyx_v_x_dim = ((PyObject*)values[0]);
     __pyx_v_y_dim = ((PyObject*)values[1]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 56, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 20, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -19849,8 +19842,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x_dim), (&PyLong_Type), 0, "x_dim", 2))) __PYX_ERR(0, 56, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_y_dim), (&PyLong_Type), 0, "y_dim", 2))) __PYX_ERR(0, 56, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x_dim), (&PyLong_Type), 0, "x_dim", 2))) __PYX_ERR(0, 20, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_y_dim), (&PyLong_Type), 0, "y_dim", 2))) __PYX_ERR(0, 20, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_2initialize_grid(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_x_dim, __pyx_v_y_dim);
 
   /* function exit code */
@@ -19880,28 +19873,28 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_2initialize_grid(struct __pyx_obj_8
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("initialize_grid", 0);
 
-  /* "geometry.pyx":57
- *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
+  /* "geometry.pyx":21
+ * 
  *     def initialize_grid(self, x_dim: int, y_dim: int):
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)             # <<<<<<<<<<<<<<
+ * 
  *     def apply_layer(self, thickness: float, material_id: str):
- *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
 */
-  __pyx_t_1 = __Pyx_PyLong_As_int(__pyx_v_x_dim); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 57, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyLong_As_int(__pyx_v_y_dim); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyLong_As_int(__pyx_v_x_dim); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyLong_As_int(__pyx_v_y_dim); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 21, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->initializeGrid(__pyx_t_1, __pyx_t_2);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 57, __pyx_L1_error)
+    __PYX_ERR(0, 21, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":56
- *     def __cinit__(self, diameter: float, thickness: float, material_id: str):
+  /* "geometry.pyx":20
  *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
+ * 
  *     def initialize_grid(self, x_dim: int, y_dim: int):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)
- *     def apply_layer(self, thickness: float, material_id: str):
+ * 
 */
 
   /* function exit code */
@@ -19916,12 +19909,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_2initialize_grid(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "geometry.pyx":58
- *     def initialize_grid(self, x_dim: int, y_dim: int):
+/* "geometry.pyx":23
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)
+ * 
  *     def apply_layer(self, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
- *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
+ * 
 */
 
 /* Python wrapper */
@@ -19964,39 +19957,39 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_thickness,&__pyx_mstate_global->__pyx_n_u_material_id,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 58, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 23, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 58, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 23, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 58, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 23, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "apply_layer", 0) < 0) __PYX_ERR(0, 58, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "apply_layer", 0) < 0) __PYX_ERR(0, 23, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 2, 2, i); __PYX_ERR(0, 58, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 2, 2, i); __PYX_ERR(0, 23, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 58, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 23, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 58, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 23, __pyx_L3_error)
     }
-    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 58, __pyx_L3_error)
+    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 23, __pyx_L3_error)
     __pyx_v_material_id = ((PyObject*)values[1]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 58, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 23, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20007,7 +20000,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material_id), (&PyUnicode_Type), 0, "material_id", 2))) __PYX_ERR(0, 58, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material_id), (&PyUnicode_Type), 0, "material_id", 2))) __PYX_ERR(0, 23, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_4apply_layer(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_thickness, __pyx_v_material_id);
 
   /* function exit code */
@@ -20037,30 +20030,30 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_4apply_layer(struct __pyx_obj_8geom
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("apply_layer", 0);
 
-  /* "geometry.pyx":59
- *         self.thisptr.get().initializeGrid(x_dim, y_dim)
+  /* "geometry.pyx":24
+ * 
  *     def apply_layer(self, thickness: float, material_id: str):
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))             # <<<<<<<<<<<<<<
+ * 
  *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
- *         self.thisptr.get().setDopantProfile(&profile[0])
 */
-  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material_id); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material_id); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_v_self->thisptr.get()->applyLayer(__pyx_v_thickness, __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_2));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 59, __pyx_L1_error)
+    __PYX_ERR(0, 24, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":58
- *     def initialize_grid(self, x_dim: int, y_dim: int):
+  /* "geometry.pyx":23
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)
+ * 
  *     def apply_layer(self, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
- *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
+ * 
 */
 
   /* function exit code */
@@ -20076,12 +20069,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_4apply_layer(struct __pyx_obj_8geom
   return __pyx_r;
 }
 
-/* "geometry.pyx":60
- *     def apply_layer(self, thickness: float, material_id: str):
+/* "geometry.pyx":26
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
+ * 
  *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setDopantProfile(&profile[0])
- *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
+ * 
 */
 
 /* Python wrapper */
@@ -20123,32 +20116,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_profile,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 60, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 26, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 60, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 26, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_dopant_profile", 0) < 0) __PYX_ERR(0, 60, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_dopant_profile", 0) < 0) __PYX_ERR(0, 26, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_dopant_profile", 1, 1, 1, i); __PYX_ERR(0, 60, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_dopant_profile", 1, 1, 1, i); __PYX_ERR(0, 26, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 60, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 26, __pyx_L3_error)
     }
     __pyx_v_profile = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_dopant_profile", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 60, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_dopant_profile", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 26, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20159,7 +20152,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_profile), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "profile", 0))) __PYX_ERR(0, 60, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_profile), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "profile", 0))) __PYX_ERR(0, 26, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_6set_dopant_profile(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_profile);
 
   /* function exit code */
@@ -20196,16 +20189,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_6set_dopant_profile(struct __pyx_ob
   __pyx_pybuffernd_profile.rcbuffer = &__pyx_pybuffer_profile;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_profile.rcbuffer->pybuffer, (PyObject*)__pyx_v_profile, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 60, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_profile.rcbuffer->pybuffer, (PyObject*)__pyx_v_profile, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 26, __pyx_L1_error)
   }
   __pyx_pybuffernd_profile.diminfo[0].strides = __pyx_pybuffernd_profile.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_profile.diminfo[0].shape = __pyx_pybuffernd_profile.rcbuffer->pybuffer.shape[0];
 
-  /* "geometry.pyx":61
- *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
+  /* "geometry.pyx":27
+ * 
  *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
  *         self.thisptr.get().setDopantProfile(&profile[0])             # <<<<<<<<<<<<<<
+ * 
  *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
- *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = -1;
@@ -20215,21 +20208,21 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_6set_dopant_profile(struct __pyx_ob
   } else if (unlikely(__pyx_t_1 >= __pyx_pybuffernd_profile.diminfo[0].shape)) __pyx_t_2 = 0;
   if (unlikely(__pyx_t_2 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_2);
-    __PYX_ERR(0, 61, __pyx_L1_error)
+    __PYX_ERR(0, 27, __pyx_L1_error)
   }
   try {
     __pyx_v_self->thisptr.get()->setDopantProfile((&(*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_profile.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_profile.diminfo[0].strides))));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 61, __pyx_L1_error)
+    __PYX_ERR(0, 27, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":60
- *     def apply_layer(self, thickness: float, material_id: str):
+  /* "geometry.pyx":26
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
+ * 
  *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setDopantProfile(&profile[0])
- *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
+ * 
 */
 
   /* function exit code */
@@ -20253,12 +20246,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_6set_dopant_profile(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "geometry.pyx":62
- *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
+/* "geometry.pyx":29
  *         self.thisptr.get().setDopantProfile(&profile[0])
+ * 
  *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
- *     def add_film_layer(self, thickness: float, material: str):
+ * 
 */
 
 /* Python wrapper */
@@ -20300,32 +20293,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_pattern,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 62, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 29, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 62, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 29, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_photoresist_pattern", 0) < 0) __PYX_ERR(0, 62, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_photoresist_pattern", 0) < 0) __PYX_ERR(0, 29, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_photoresist_pattern", 1, 1, 1, i); __PYX_ERR(0, 62, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_photoresist_pattern", 1, 1, 1, i); __PYX_ERR(0, 29, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 62, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 29, __pyx_L3_error)
     }
     __pyx_v_pattern = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_photoresist_pattern", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 62, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_photoresist_pattern", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 29, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20336,7 +20329,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pattern), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "pattern", 0))) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pattern), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "pattern", 0))) __PYX_ERR(0, 29, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_8set_photoresist_pattern(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_pattern);
 
   /* function exit code */
@@ -20376,16 +20369,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_8set_photoresist_pattern(struct __p
   __pyx_pybuffernd_pattern.rcbuffer = &__pyx_pybuffer_pattern;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_pattern.rcbuffer->pybuffer, (PyObject*)__pyx_v_pattern, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 62, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_pattern.rcbuffer->pybuffer, (PyObject*)__pyx_v_pattern, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 29, __pyx_L1_error)
   }
   __pyx_pybuffernd_pattern.diminfo[0].strides = __pyx_pybuffernd_pattern.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_pattern.diminfo[0].shape = __pyx_pybuffernd_pattern.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_pattern.diminfo[1].strides = __pyx_pybuffernd_pattern.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_pattern.diminfo[1].shape = __pyx_pybuffernd_pattern.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":63
- *         self.thisptr.get().setDopantProfile(&profile[0])
+  /* "geometry.pyx":30
+ * 
  *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def add_film_layer(self, thickness: float, material: str):
- *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -20400,23 +20393,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_8set_photoresist_pattern(struct __p
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_pattern.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 63, __pyx_L1_error)
+    __PYX_ERR(0, 30, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_pattern)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 63, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_pattern)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_pattern)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_pattern)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 30, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->setPhotoresistPattern((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_pattern.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_pattern.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_pattern.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 63, __pyx_L1_error)
+    __PYX_ERR(0, 30, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":62
- *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
+  /* "geometry.pyx":29
  *         self.thisptr.get().setDopantProfile(&profile[0])
+ * 
  *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
- *     def add_film_layer(self, thickness: float, material: str):
+ * 
 */
 
   /* function exit code */
@@ -20440,12 +20433,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_8set_photoresist_pattern(struct __p
   return __pyx_r;
 }
 
-/* "geometry.pyx":64
- *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
+/* "geometry.pyx":32
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
+ * 
  *     def add_film_layer(self, thickness: float, material: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
- *     def add_metal_layer(self, thickness: float, metal: str):
+ * 
 */
 
 /* Python wrapper */
@@ -20488,39 +20481,39 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_thickness,&__pyx_mstate_global->__pyx_n_u_material,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 64, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 32, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 64, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 32, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 64, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 32, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "add_film_layer", 0) < 0) __PYX_ERR(0, 64, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "add_film_layer", 0) < 0) __PYX_ERR(0, 32, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("add_film_layer", 1, 2, 2, i); __PYX_ERR(0, 64, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("add_film_layer", 1, 2, 2, i); __PYX_ERR(0, 32, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 64, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 32, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 64, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 32, __pyx_L3_error)
     }
-    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 64, __pyx_L3_error)
+    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 32, __pyx_L3_error)
     __pyx_v_material = ((PyObject*)values[1]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("add_film_layer", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 64, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("add_film_layer", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 32, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20531,7 +20524,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material), (&PyUnicode_Type), 0, "material", 2))) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material), (&PyUnicode_Type), 0, "material", 2))) __PYX_ERR(0, 32, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_10add_film_layer(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_thickness, __pyx_v_material);
 
   /* function exit code */
@@ -20561,30 +20554,30 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_10add_film_layer(struct __pyx_obj_8
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_film_layer", 0);
 
-  /* "geometry.pyx":65
- *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
+  /* "geometry.pyx":33
+ * 
  *     def add_film_layer(self, thickness: float, material: str):
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))             # <<<<<<<<<<<<<<
+ * 
  *     def add_metal_layer(self, thickness: float, metal: str):
- *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
 */
-  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_v_self->thisptr.get()->addFilmLayer(__pyx_v_thickness, __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_2));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 65, __pyx_L1_error)
+    __PYX_ERR(0, 33, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":64
- *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
+  /* "geometry.pyx":32
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
+ * 
  *     def add_film_layer(self, thickness: float, material: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
- *     def add_metal_layer(self, thickness: float, metal: str):
+ * 
 */
 
   /* function exit code */
@@ -20600,12 +20593,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_10add_film_layer(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "geometry.pyx":66
- *     def add_film_layer(self, thickness: float, material: str):
+/* "geometry.pyx":35
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
+ * 
  *     def add_metal_layer(self, thickness: float, metal: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
- *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):
+ * 
 */
 
 /* Python wrapper */
@@ -20648,39 +20641,39 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_thickness,&__pyx_mstate_global->__pyx_n_u_metal,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 66, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 35, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 66, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 35, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 66, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 35, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "add_metal_layer", 0) < 0) __PYX_ERR(0, 66, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "add_metal_layer", 0) < 0) __PYX_ERR(0, 35, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("add_metal_layer", 1, 2, 2, i); __PYX_ERR(0, 66, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("add_metal_layer", 1, 2, 2, i); __PYX_ERR(0, 35, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 66, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 35, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 66, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 35, __pyx_L3_error)
     }
-    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 66, __pyx_L3_error)
+    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 35, __pyx_L3_error)
     __pyx_v_metal = ((PyObject*)values[1]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("add_metal_layer", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 66, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("add_metal_layer", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 35, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20691,7 +20684,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_metal), (&PyUnicode_Type), 0, "metal", 2))) __PYX_ERR(0, 66, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_metal), (&PyUnicode_Type), 0, "metal", 2))) __PYX_ERR(0, 35, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_12add_metal_layer(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_thickness, __pyx_v_metal);
 
   /* function exit code */
@@ -20721,30 +20714,30 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_12add_metal_layer(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_metal_layer", 0);
 
-  /* "geometry.pyx":67
- *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
+  /* "geometry.pyx":36
+ * 
  *     def add_metal_layer(self, thickness: float, metal: str):
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))             # <<<<<<<<<<<<<<
+ * 
  *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):
- *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
 */
-  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_metal); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_metal); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_v_self->thisptr.get()->addMetalLayer(__pyx_v_thickness, __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_2));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 67, __pyx_L1_error)
+    __PYX_ERR(0, 36, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":66
- *     def add_film_layer(self, thickness: float, material: str):
+  /* "geometry.pyx":35
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
+ * 
  *     def add_metal_layer(self, thickness: float, metal: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
- *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):
+ * 
 */
 
   /* function exit code */
@@ -20760,9 +20753,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_12add_metal_layer(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "geometry.pyx":68
- *     def add_metal_layer(self, thickness: float, metal: str):
+/* "geometry.pyx":38
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
+ * 
  *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):             # <<<<<<<<<<<<<<
  *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
  *         for bond in wire_bonds:
@@ -20809,46 +20802,46 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_substrate_thickness,&__pyx_mstate_global->__pyx_n_u_substrate_material,&__pyx_mstate_global->__pyx_n_u_wire_bonds,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 68, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 38, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 68, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 38, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 68, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 38, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 68, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 38, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "add_packaging", 0) < 0) __PYX_ERR(0, 68, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "add_packaging", 0) < 0) __PYX_ERR(0, 38, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("add_packaging", 1, 3, 3, i); __PYX_ERR(0, 68, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("add_packaging", 1, 3, 3, i); __PYX_ERR(0, 38, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 68, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 38, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 68, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 38, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 68, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 38, __pyx_L3_error)
     }
-    __pyx_v_substrate_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_substrate_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L3_error)
+    __pyx_v_substrate_thickness = __Pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_substrate_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 38, __pyx_L3_error)
     __pyx_v_substrate_material = ((PyObject*)values[1]);
     __pyx_v_wire_bonds = ((PyObject*)values[2]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("add_packaging", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 68, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("add_packaging", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 38, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -20859,8 +20852,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_substrate_material), (&PyUnicode_Type), 0, "substrate_material", 2))) __PYX_ERR(0, 68, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wire_bonds), (&PyList_Type), 0, "wire_bonds", 2))) __PYX_ERR(0, 68, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_substrate_material), (&PyUnicode_Type), 0, "substrate_material", 2))) __PYX_ERR(0, 38, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wire_bonds), (&PyList_Type), 0, "wire_bonds", 2))) __PYX_ERR(0, 38, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_14add_packaging(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_substrate_thickness, __pyx_v_substrate_material, __pyx_v_wire_bonds);
 
   /* function exit code */
@@ -20908,7 +20901,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_packaging", 0);
 
-  /* "geometry.pyx":70
+  /* "geometry.pyx":40
  *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):
  *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
  *         for bond in wire_bonds:             # <<<<<<<<<<<<<<
@@ -20921,18 +20914,18 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
     {
       Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
       #if !CYTHON_ASSUME_SAFE_SIZE
-      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 70, __pyx_L1_error)
+      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 40, __pyx_L1_error)
       #endif
       if (__pyx_t_2 >= __pyx_temp) break;
     }
     __pyx_t_3 = __Pyx_PyList_GetItemRef(__pyx_t_1, __pyx_t_2);
     ++__pyx_t_2;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 70, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 40, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XDECREF_SET(__pyx_v_bond, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "geometry.pyx":71
+    /* "geometry.pyx":41
  *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
  *         for bond in wire_bonds:
  *             x1, y1, x2, y2 = bond             # <<<<<<<<<<<<<<
@@ -20945,7 +20938,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
       if (unlikely(size != 4)) {
         if (size > 4) __Pyx_RaiseTooManyValuesError(4);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 71, __pyx_L1_error)
+        __PYX_ERR(0, 41, __pyx_L1_error)
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -20959,16 +20952,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
         __Pyx_INCREF(__pyx_t_6);
       } else {
         __pyx_t_3 = __Pyx_PyList_GetItemRef(sequence, 0);
-        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_3);
         __pyx_t_4 = __Pyx_PyList_GetItemRef(sequence, 1);
-        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 41, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_4);
         __pyx_t_5 = __Pyx_PyList_GetItemRef(sequence, 2);
-        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 41, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_5);
         __pyx_t_6 = __Pyx_PyList_GetItemRef(sequence, 3);
-        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 71, __pyx_L1_error)
+        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 41, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_6);
       }
       #else
@@ -20976,7 +20969,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
         Py_ssize_t i;
         PyObject** temps[4] = {&__pyx_t_3,&__pyx_t_4,&__pyx_t_5,&__pyx_t_6};
         for (i=0; i < 4; i++) {
-          PyObject* item = __Pyx_PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 71, __pyx_L1_error)
+          PyObject* item = __Pyx_PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 41, __pyx_L1_error)
           __Pyx_GOTREF(item);
           *(temps[i]) = item;
         }
@@ -20985,7 +20978,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
     } else {
       Py_ssize_t index = -1;
       PyObject** temps[4] = {&__pyx_t_3,&__pyx_t_4,&__pyx_t_5,&__pyx_t_6};
-      __pyx_t_7 = PyObject_GetIter(__pyx_v_bond); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __pyx_t_7 = PyObject_GetIter(__pyx_v_bond); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 41, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_t_8 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_7);
       for (index=0; index < 4; index++) {
@@ -20993,7 +20986,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
         __Pyx_GOTREF(item);
         *(temps[index]) = item;
       }
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 4) < 0) __PYX_ERR(0, 71, __pyx_L1_error)
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_8(__pyx_t_7), 4) < 0) __PYX_ERR(0, 41, __pyx_L1_error)
       __pyx_t_8 = NULL;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L6_unpacking_done;
@@ -21001,7 +20994,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 71, __pyx_L1_error)
+      __PYX_ERR(0, 41, __pyx_L1_error)
       __pyx_L6_unpacking_done:;
     }
     __Pyx_XDECREF_SET(__pyx_v_x1, __pyx_t_3);
@@ -21013,43 +21006,43 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
     __Pyx_XDECREF_SET(__pyx_v_y2, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "geometry.pyx":72
+    /* "geometry.pyx":42
  *         for bond in wire_bonds:
  *             x1, y1, x2, y2 = bond
  *             cpp_bonds.push_back(pair[pair[int, int], pair[int, int]](pair[int, int](x1, y1), pair[int, int](x2, y2)))             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addPackaging(substrate_thickness, substrate_material.encode('utf-8'), cpp_bonds)
- *     def set_electrical_properties(self, properties: list):
+ * 
 */
-    __pyx_t_9 = __Pyx_PyLong_As_int(__pyx_v_x1); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 72, __pyx_L1_error)
-    __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_v_y1); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 72, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyLong_As_int(__pyx_v_x1); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_v_y1); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 42, __pyx_L1_error)
     try {
       __pyx_t_11 = std::pair<int,int> (__pyx_t_9, __pyx_t_10);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 72, __pyx_L1_error)
+      __PYX_ERR(0, 42, __pyx_L1_error)
     }
-    __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_v_x2); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 72, __pyx_L1_error)
-    __pyx_t_9 = __Pyx_PyLong_As_int(__pyx_v_y2); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 72, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyLong_As_int(__pyx_v_x2); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyLong_As_int(__pyx_v_y2); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 42, __pyx_L1_error)
     try {
       __pyx_t_12 = std::pair<int,int> (__pyx_t_10, __pyx_t_9);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 72, __pyx_L1_error)
+      __PYX_ERR(0, 42, __pyx_L1_error)
     }
     try {
       __pyx_t_13 = std::pair<std::pair<int,int> ,std::pair<int,int> > (__pyx_t_11, __pyx_t_12);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 72, __pyx_L1_error)
+      __PYX_ERR(0, 42, __pyx_L1_error)
     }
     try {
       __pyx_v_cpp_bonds.push_back(__pyx_t_13);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 72, __pyx_L1_error)
+      __PYX_ERR(0, 42, __pyx_L1_error)
     }
 
-    /* "geometry.pyx":70
+    /* "geometry.pyx":40
  *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):
  *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
  *         for bond in wire_bonds:             # <<<<<<<<<<<<<<
@@ -21059,27 +21052,27 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "geometry.pyx":73
+  /* "geometry.pyx":43
  *             x1, y1, x2, y2 = bond
  *             cpp_bonds.push_back(pair[pair[int, int], pair[int, int]](pair[int, int](x1, y1), pair[int, int](x2, y2)))
  *         self.thisptr.get().addPackaging(substrate_thickness, substrate_material.encode('utf-8'), cpp_bonds)             # <<<<<<<<<<<<<<
+ * 
  *     def set_electrical_properties(self, properties: list):
- *         cdef vector[pair[string, double]] cpp_props
 */
-  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_substrate_material); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_substrate_material); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_14 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_t_14 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_v_self->thisptr.get()->addPackaging(__pyx_v_substrate_thickness, __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_14), __pyx_v_cpp_bonds);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 73, __pyx_L1_error)
+    __PYX_ERR(0, 43, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":68
- *     def add_metal_layer(self, thickness: float, metal: str):
+  /* "geometry.pyx":38
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
+ * 
  *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):             # <<<<<<<<<<<<<<
  *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
  *         for bond in wire_bonds:
@@ -21108,9 +21101,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_14add_packaging(struct __pyx_obj_8g
   return __pyx_r;
 }
 
-/* "geometry.pyx":74
- *             cpp_bonds.push_back(pair[pair[int, int], pair[int, int]](pair[int, int](x1, y1), pair[int, int](x2, y2)))
+/* "geometry.pyx":45
  *         self.thisptr.get().addPackaging(substrate_thickness, substrate_material.encode('utf-8'), cpp_bonds)
+ * 
  *     def set_electrical_properties(self, properties: list):             # <<<<<<<<<<<<<<
  *         cdef vector[pair[string, double]] cpp_props
  *         for prop in properties:
@@ -21155,32 +21148,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_properties,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 74, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 45, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 74, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 45, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_electrical_properties", 0) < 0) __PYX_ERR(0, 74, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_electrical_properties", 0) < 0) __PYX_ERR(0, 45, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_electrical_properties", 1, 1, 1, i); __PYX_ERR(0, 74, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_electrical_properties", 1, 1, 1, i); __PYX_ERR(0, 45, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 74, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 45, __pyx_L3_error)
     }
     __pyx_v_properties = ((PyObject*)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_electrical_properties", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 74, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_electrical_properties", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 45, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -21191,7 +21184,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_properties), (&PyList_Type), 0, "properties", 2))) __PYX_ERR(0, 74, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_properties), (&PyList_Type), 0, "properties", 2))) __PYX_ERR(0, 45, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_16set_electrical_properties(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_properties);
 
   /* function exit code */
@@ -21233,7 +21226,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("set_electrical_properties", 0);
 
-  /* "geometry.pyx":76
+  /* "geometry.pyx":47
  *     def set_electrical_properties(self, properties: list):
  *         cdef vector[pair[string, double]] cpp_props
  *         for prop in properties:             # <<<<<<<<<<<<<<
@@ -21246,18 +21239,18 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
     {
       Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
       #if !CYTHON_ASSUME_SAFE_SIZE
-      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 76, __pyx_L1_error)
+      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 47, __pyx_L1_error)
       #endif
       if (__pyx_t_2 >= __pyx_temp) break;
     }
     __pyx_t_3 = __Pyx_PyList_GetItemRef(__pyx_t_1, __pyx_t_2);
     ++__pyx_t_2;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 76, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 47, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XDECREF_SET(__pyx_v_prop, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "geometry.pyx":77
+    /* "geometry.pyx":48
  *         cdef vector[pair[string, double]] cpp_props
  *         for prop in properties:
  *             name, value = prop             # <<<<<<<<<<<<<<
@@ -21270,7 +21263,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 77, __pyx_L1_error)
+        __PYX_ERR(0, 48, __pyx_L1_error)
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -21280,28 +21273,28 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
         __Pyx_INCREF(__pyx_t_4);
       } else {
         __pyx_t_3 = __Pyx_PyList_GetItemRef(sequence, 0);
-        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 77, __pyx_L1_error)
+        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_3);
         __pyx_t_4 = __Pyx_PyList_GetItemRef(sequence, 1);
-        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 77, __pyx_L1_error)
+        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_4);
       }
       #else
-      __pyx_t_3 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 77, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_4 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 77, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       #endif
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_5 = PyObject_GetIter(__pyx_v_prop); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
+      __pyx_t_5 = PyObject_GetIter(__pyx_v_prop); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 48, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __pyx_t_6 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_5);
       index = 0; __pyx_t_3 = __pyx_t_6(__pyx_t_5); if (unlikely(!__pyx_t_3)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_3);
       index = 1; __pyx_t_4 = __pyx_t_6(__pyx_t_5); if (unlikely(!__pyx_t_4)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_4);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_6(__pyx_t_5), 2) < 0) __PYX_ERR(0, 77, __pyx_L1_error)
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_6(__pyx_t_5), 2) < 0) __PYX_ERR(0, 48, __pyx_L1_error)
       __pyx_t_6 = NULL;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       goto __pyx_L6_unpacking_done;
@@ -21309,7 +21302,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_t_6 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 77, __pyx_L1_error)
+      __PYX_ERR(0, 48, __pyx_L1_error)
       __pyx_L6_unpacking_done:;
     }
     __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_3);
@@ -21317,12 +21310,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
     __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "geometry.pyx":78
+    /* "geometry.pyx":49
  *         for prop in properties:
  *             name, value = prop
  *             cpp_props.push_back(pair[string, double](name.encode('utf-8'), value))             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setElectricalProperties(cpp_props)
- *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):
+ * 
 */
     __pyx_t_3 = __pyx_v_name;
     __Pyx_INCREF(__pyx_t_3);
@@ -21331,26 +21324,26 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
       PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_utf_8};
       __pyx_t_4 = __Pyx_PyObject_FastCallMethod(__pyx_mstate_global->__pyx_n_u_encode, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 49, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
     }
-    __pyx_t_8 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_4); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_8 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_4); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_9 = __Pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_9 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 49, __pyx_L1_error)
     try {
       __pyx_t_10 = std::pair<std::string,double> (__pyx_t_8, __pyx_t_9);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 78, __pyx_L1_error)
+      __PYX_ERR(0, 49, __pyx_L1_error)
     }
     try {
       __pyx_v_cpp_props.push_back(__pyx_t_10);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 78, __pyx_L1_error)
+      __PYX_ERR(0, 49, __pyx_L1_error)
     }
 
-    /* "geometry.pyx":76
+    /* "geometry.pyx":47
  *     def set_electrical_properties(self, properties: list):
  *         cdef vector[pair[string, double]] cpp_props
  *         for prop in properties:             # <<<<<<<<<<<<<<
@@ -21360,23 +21353,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "geometry.pyx":79
+  /* "geometry.pyx":50
  *             name, value = prop
  *             cpp_props.push_back(pair[string, double](name.encode('utf-8'), value))
  *         self.thisptr.get().setElectricalProperties(cpp_props)             # <<<<<<<<<<<<<<
+ * 
  *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):
- *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
 */
   try {
     __pyx_v_self->thisptr.get()->setElectricalProperties(__pyx_v_cpp_props);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 79, __pyx_L1_error)
+    __PYX_ERR(0, 50, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":74
- *             cpp_bonds.push_back(pair[pair[int, int], pair[int, int]](pair[int, int](x1, y1), pair[int, int](x2, y2)))
+  /* "geometry.pyx":45
  *         self.thisptr.get().addPackaging(substrate_thickness, substrate_material.encode('utf-8'), cpp_bonds)
+ * 
  *     def set_electrical_properties(self, properties: list):             # <<<<<<<<<<<<<<
  *         cdef vector[pair[string, double]] cpp_props
  *         for prop in properties:
@@ -21401,12 +21394,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_16set_electrical_properties(struct 
   return __pyx_r;
 }
 
-/* "geometry.pyx":80
- *             cpp_props.push_back(pair[string, double](name.encode('utf-8'), value))
+/* "geometry.pyx":52
  *         self.thisptr.get().setElectricalProperties(cpp_props)
+ * 
  *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
- *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
+ * 
 */
 
 /* Python wrapper */
@@ -21448,32 +21441,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_profile,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 80, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 52, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 80, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 52, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_temperature_profile", 0) < 0) __PYX_ERR(0, 80, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_temperature_profile", 0) < 0) __PYX_ERR(0, 52, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_temperature_profile", 1, 1, 1, i); __PYX_ERR(0, 80, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_temperature_profile", 1, 1, 1, i); __PYX_ERR(0, 52, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 80, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 52, __pyx_L3_error)
     }
     __pyx_v_profile = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_temperature_profile", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 80, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_temperature_profile", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 52, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -21484,7 +21477,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_profile), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "profile", 0))) __PYX_ERR(0, 80, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_profile), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "profile", 0))) __PYX_ERR(0, 52, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_18set_temperature_profile(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_profile);
 
   /* function exit code */
@@ -21524,16 +21517,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_18set_temperature_profile(struct __
   __pyx_pybuffernd_profile.rcbuffer = &__pyx_pybuffer_profile;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_profile.rcbuffer->pybuffer, (PyObject*)__pyx_v_profile, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 80, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_profile.rcbuffer->pybuffer, (PyObject*)__pyx_v_profile, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 52, __pyx_L1_error)
   }
   __pyx_pybuffernd_profile.diminfo[0].strides = __pyx_pybuffernd_profile.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_profile.diminfo[0].shape = __pyx_pybuffernd_profile.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_profile.diminfo[1].strides = __pyx_pybuffernd_profile.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_profile.diminfo[1].shape = __pyx_pybuffernd_profile.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":81
- *         self.thisptr.get().setElectricalProperties(cpp_props)
+  /* "geometry.pyx":53
+ * 
  *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
- *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -21548,23 +21541,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_18set_temperature_profile(struct __
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_profile.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 81, __pyx_L1_error)
+    __PYX_ERR(0, 53, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_profile)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 81, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_profile)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_profile)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_profile)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 53, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->setTemperatureProfile((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_profile.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_profile.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_profile.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 81, __pyx_L1_error)
+    __PYX_ERR(0, 53, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":80
- *             cpp_props.push_back(pair[string, double](name.encode('utf-8'), value))
+  /* "geometry.pyx":52
  *         self.thisptr.get().setElectricalProperties(cpp_props)
+ * 
  *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
- *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
+ * 
 */
 
   /* function exit code */
@@ -21588,12 +21581,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_18set_temperature_profile(struct __
   return __pyx_r;
 }
 
-/* "geometry.pyx":82
- *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):
+/* "geometry.pyx":55
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
+ * 
  *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
- *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
+ * 
 */
 
 /* Python wrapper */
@@ -21635,32 +21628,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_conductivity,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 82, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 55, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 82, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 55, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_thermal_conductivity", 0) < 0) __PYX_ERR(0, 82, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_thermal_conductivity", 0) < 0) __PYX_ERR(0, 55, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_thermal_conductivity", 1, 1, 1, i); __PYX_ERR(0, 82, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_thermal_conductivity", 1, 1, 1, i); __PYX_ERR(0, 55, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 82, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 55, __pyx_L3_error)
     }
     __pyx_v_conductivity = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_thermal_conductivity", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 82, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_thermal_conductivity", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 55, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -21671,7 +21664,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_conductivity), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "conductivity", 0))) __PYX_ERR(0, 82, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_conductivity), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "conductivity", 0))) __PYX_ERR(0, 55, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_20set_thermal_conductivity(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_conductivity);
 
   /* function exit code */
@@ -21711,16 +21704,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_20set_thermal_conductivity(struct _
   __pyx_pybuffernd_conductivity.rcbuffer = &__pyx_pybuffer_conductivity;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_conductivity.rcbuffer->pybuffer, (PyObject*)__pyx_v_conductivity, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 82, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_conductivity.rcbuffer->pybuffer, (PyObject*)__pyx_v_conductivity, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 55, __pyx_L1_error)
   }
   __pyx_pybuffernd_conductivity.diminfo[0].strides = __pyx_pybuffernd_conductivity.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_conductivity.diminfo[0].shape = __pyx_pybuffernd_conductivity.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_conductivity.diminfo[1].strides = __pyx_pybuffernd_conductivity.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_conductivity.diminfo[1].shape = __pyx_pybuffernd_conductivity.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":83
- *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
+  /* "geometry.pyx":56
+ * 
  *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
- *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -21735,23 +21728,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_20set_thermal_conductivity(struct _
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_conductivity.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 83, __pyx_L1_error)
+    __PYX_ERR(0, 56, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_conductivity)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 83, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_conductivity)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 83, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_conductivity)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_conductivity)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 56, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->setThermalConductivity((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_conductivity.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_conductivity.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_conductivity.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 83, __pyx_L1_error)
+    __PYX_ERR(0, 56, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":82
- *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):
+  /* "geometry.pyx":55
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
+ * 
  *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
- *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
+ * 
 */
 
   /* function exit code */
@@ -21775,12 +21768,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_20set_thermal_conductivity(struct _
   return __pyx_r;
 }
 
-/* "geometry.pyx":84
- *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
+/* "geometry.pyx":58
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
+ * 
  *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
- *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
+ * 
 */
 
 /* Python wrapper */
@@ -21822,32 +21815,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_mttf,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 84, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 58, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 84, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 58, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_electromigration_mttf", 0) < 0) __PYX_ERR(0, 84, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_electromigration_mttf", 0) < 0) __PYX_ERR(0, 58, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_electromigration_mttf", 1, 1, 1, i); __PYX_ERR(0, 84, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_electromigration_mttf", 1, 1, 1, i); __PYX_ERR(0, 58, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 84, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 58, __pyx_L3_error)
     }
     __pyx_v_mttf = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_electromigration_mttf", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 84, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_electromigration_mttf", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 58, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -21858,7 +21851,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_mttf), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "mttf", 0))) __PYX_ERR(0, 84, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_mttf), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "mttf", 0))) __PYX_ERR(0, 58, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_22set_electromigration_mttf(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_mttf);
 
   /* function exit code */
@@ -21898,16 +21891,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_22set_electromigration_mttf(struct 
   __pyx_pybuffernd_mttf.rcbuffer = &__pyx_pybuffer_mttf;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_mttf.rcbuffer->pybuffer, (PyObject*)__pyx_v_mttf, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 84, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_mttf.rcbuffer->pybuffer, (PyObject*)__pyx_v_mttf, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 58, __pyx_L1_error)
   }
   __pyx_pybuffernd_mttf.diminfo[0].strides = __pyx_pybuffernd_mttf.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_mttf.diminfo[0].shape = __pyx_pybuffernd_mttf.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_mttf.diminfo[1].strides = __pyx_pybuffernd_mttf.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_mttf.diminfo[1].shape = __pyx_pybuffernd_mttf.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":85
- *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
+  /* "geometry.pyx":59
+ * 
  *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
- *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -21922,23 +21915,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_22set_electromigration_mttf(struct 
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_mttf.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 85, __pyx_L1_error)
+    __PYX_ERR(0, 59, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_mttf)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 85, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_mttf)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 85, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_mttf)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_mttf)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 59, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->setElectromigrationMTTF((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_mttf.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_mttf.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_mttf.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 85, __pyx_L1_error)
+    __PYX_ERR(0, 59, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":84
- *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
+  /* "geometry.pyx":58
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
+ * 
  *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
- *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
+ * 
 */
 
   /* function exit code */
@@ -21962,12 +21955,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_22set_electromigration_mttf(struct 
   return __pyx_r;
 }
 
-/* "geometry.pyx":86
- *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
+/* "geometry.pyx":61
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
+ * 
  *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
- *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
+ * 
 */
 
 /* Python wrapper */
@@ -22009,32 +22002,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_stress,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 86, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 61, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 86, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 61, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_thermal_stress", 0) < 0) __PYX_ERR(0, 86, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_thermal_stress", 0) < 0) __PYX_ERR(0, 61, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_thermal_stress", 1, 1, 1, i); __PYX_ERR(0, 86, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_thermal_stress", 1, 1, 1, i); __PYX_ERR(0, 61, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 86, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 61, __pyx_L3_error)
     }
     __pyx_v_stress = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_thermal_stress", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 86, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_thermal_stress", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 61, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -22045,7 +22038,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_stress), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "stress", 0))) __PYX_ERR(0, 86, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_stress), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "stress", 0))) __PYX_ERR(0, 61, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_24set_thermal_stress(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_stress);
 
   /* function exit code */
@@ -22085,16 +22078,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_24set_thermal_stress(struct __pyx_o
   __pyx_pybuffernd_stress.rcbuffer = &__pyx_pybuffer_stress;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_stress.rcbuffer->pybuffer, (PyObject*)__pyx_v_stress, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 86, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_stress.rcbuffer->pybuffer, (PyObject*)__pyx_v_stress, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 61, __pyx_L1_error)
   }
   __pyx_pybuffernd_stress.diminfo[0].strides = __pyx_pybuffernd_stress.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_stress.diminfo[0].shape = __pyx_pybuffernd_stress.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_stress.diminfo[1].strides = __pyx_pybuffernd_stress.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_stress.diminfo[1].shape = __pyx_pybuffernd_stress.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":87
- *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
+  /* "geometry.pyx":62
+ * 
  *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
- *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -22109,23 +22102,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_24set_thermal_stress(struct __pyx_o
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_stress.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 87, __pyx_L1_error)
+    __PYX_ERR(0, 62, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_stress)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 87, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_stress)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_stress)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_stress)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 62, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->setThermalStress((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_stress.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_stress.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_stress.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 87, __pyx_L1_error)
+    __PYX_ERR(0, 62, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":86
- *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
+  /* "geometry.pyx":61
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
+ * 
  *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
- *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
+ * 
 */
 
   /* function exit code */
@@ -22149,12 +22142,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_24set_thermal_stress(struct __pyx_o
   return __pyx_r;
 }
 
-/* "geometry.pyx":88
- *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
+/* "geometry.pyx":64
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
+ * 
  *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
- *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
+ * 
 */
 
 /* Python wrapper */
@@ -22196,32 +22189,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_field,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 88, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 64, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 88, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 64, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_dielectric_field", 0) < 0) __PYX_ERR(0, 88, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "set_dielectric_field", 0) < 0) __PYX_ERR(0, 64, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_dielectric_field", 1, 1, 1, i); __PYX_ERR(0, 88, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("set_dielectric_field", 1, 1, 1, i); __PYX_ERR(0, 64, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 88, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 64, __pyx_L3_error)
     }
     __pyx_v_field = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_dielectric_field", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 88, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_dielectric_field", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 64, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -22232,7 +22225,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_field), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "field", 0))) __PYX_ERR(0, 88, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_field), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "field", 0))) __PYX_ERR(0, 64, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_26set_dielectric_field(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_field);
 
   /* function exit code */
@@ -22272,16 +22265,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_26set_dielectric_field(struct __pyx
   __pyx_pybuffernd_field.rcbuffer = &__pyx_pybuffer_field;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_field.rcbuffer->pybuffer, (PyObject*)__pyx_v_field, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 88, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_field.rcbuffer->pybuffer, (PyObject*)__pyx_v_field, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 64, __pyx_L1_error)
   }
   __pyx_pybuffernd_field.diminfo[0].strides = __pyx_pybuffernd_field.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_field.diminfo[0].shape = __pyx_pybuffernd_field.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_field.diminfo[1].strides = __pyx_pybuffernd_field.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_field.diminfo[1].shape = __pyx_pybuffernd_field.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":89
- *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
+  /* "geometry.pyx":65
+ * 
  *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
- *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -22296,23 +22289,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_26set_dielectric_field(struct __pyx
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_field.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 89, __pyx_L1_error)
+    __PYX_ERR(0, 65, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_field)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 89, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_field)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 89, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_field)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_field)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 65, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->setDielectricField((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_field.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_field.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_field.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 89, __pyx_L1_error)
+    __PYX_ERR(0, 65, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":88
- *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
+  /* "geometry.pyx":64
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
+ * 
  *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
- *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
+ * 
 */
 
   /* function exit code */
@@ -22336,12 +22329,12 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_26set_dielectric_field(struct __pyx
   return __pyx_r;
 }
 
-/* "geometry.pyx":90
- *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
+/* "geometry.pyx":67
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
+ * 
  *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
- *     def get_grid(self):
+ * 
 */
 
 /* Python wrapper */
@@ -22383,32 +22376,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_grid,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 90, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 67, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 90, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 67, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "update_grid", 0) < 0) __PYX_ERR(0, 90, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "update_grid", 0) < 0) __PYX_ERR(0, 67, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("update_grid", 1, 1, 1, i); __PYX_ERR(0, 90, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("update_grid", 1, 1, 1, i); __PYX_ERR(0, 67, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 90, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 67, __pyx_L3_error)
     }
     __pyx_v_grid = ((PyArrayObject *)values[0]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("update_grid", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 90, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("update_grid", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 67, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -22419,7 +22412,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_grid), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "grid", 0))) __PYX_ERR(0, 90, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_grid), __pyx_mstate_global->__pyx_ptype_5numpy_ndarray, 1, "grid", 0))) __PYX_ERR(0, 67, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_7PyWafer_28update_grid(((struct __pyx_obj_8geometry_PyWafer *)__pyx_v_self), __pyx_v_grid);
 
   /* function exit code */
@@ -22459,16 +22452,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_28update_grid(struct __pyx_obj_8geo
   __pyx_pybuffernd_grid.rcbuffer = &__pyx_pybuffer_grid;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_grid.rcbuffer->pybuffer, (PyObject*)__pyx_v_grid, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 90, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_grid.rcbuffer->pybuffer, (PyObject*)__pyx_v_grid, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 67, __pyx_L1_error)
   }
   __pyx_pybuffernd_grid.diminfo[0].strides = __pyx_pybuffernd_grid.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_grid.diminfo[0].shape = __pyx_pybuffernd_grid.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_grid.diminfo[1].strides = __pyx_pybuffernd_grid.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_grid.diminfo[1].shape = __pyx_pybuffernd_grid.rcbuffer->pybuffer.shape[1];
 
-  /* "geometry.pyx":91
- *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
+  /* "geometry.pyx":68
+ * 
  *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])             # <<<<<<<<<<<<<<
+ * 
  *     def get_grid(self):
- *         cdef int rows, cols
 */
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
@@ -22483,23 +22476,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_28update_grid(struct __pyx_obj_8geo
   } else if (unlikely(__pyx_t_2 >= __pyx_pybuffernd_grid.diminfo[1].shape)) __pyx_t_3 = 1;
   if (unlikely(__pyx_t_3 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    __PYX_ERR(0, 91, __pyx_L1_error)
+    __PYX_ERR(0, 68, __pyx_L1_error)
   }
-  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_grid)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 91, __pyx_L1_error)
-  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_grid)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_grid)); if (unlikely(__pyx_t_4 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_grid)); if (unlikely(__pyx_t_5 == ((npy_intp *)0) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr.get()->updateGrid((&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_grid.rcbuffer->pybuffer.buf, __pyx_t_1, __pyx_pybuffernd_grid.diminfo[0].strides, __pyx_t_2, __pyx_pybuffernd_grid.diminfo[1].strides))), (__pyx_t_4[0]), (__pyx_t_5[1]));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 91, __pyx_L1_error)
+    __PYX_ERR(0, 68, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":90
- *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
+  /* "geometry.pyx":67
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
+ * 
  *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
- *     def get_grid(self):
+ * 
 */
 
   /* function exit code */
@@ -22523,9 +22516,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_28update_grid(struct __pyx_obj_8geo
   return __pyx_r;
 }
 
-/* "geometry.pyx":92
- *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
+/* "geometry.pyx":70
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
+ * 
  *     def get_grid(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
@@ -22593,49 +22586,49 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_30get_grid(struct __pyx_obj_8geomet
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_grid", 0);
 
-  /* "geometry.pyx":94
+  /* "geometry.pyx":72
  *     def get_grid(self):
  *         cdef int rows, cols
  *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)             # <<<<<<<<<<<<<<
  *         return np.asarray(<np.float64_t[:rows, :cols]> grid_ptr)
- *     def get_dopant_profile(self):
+ * 
 */
   try {
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getGrid((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 94, __pyx_L1_error)
+    __PYX_ERR(0, 72, __pyx_L1_error)
   }
   __pyx_v_grid_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":95
+  /* "geometry.pyx":73
  *         cdef int rows, cols
  *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> grid_ptr)             # <<<<<<<<<<<<<<
+ * 
  *     def get_dopant_profile(self):
- *         cdef int size
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_grid_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 95, __pyx_L1_error)
+    __PYX_ERR(0, 73, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 73, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_grid_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_grid_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -22657,16 +22650,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_30get_grid(struct __pyx_obj_8geomet
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 95, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":92
- *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
+  /* "geometry.pyx":70
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
+ * 
  *     def get_grid(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
@@ -22688,9 +22681,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_30get_grid(struct __pyx_obj_8geomet
   return __pyx_r;
 }
 
-/* "geometry.pyx":96
- *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
+/* "geometry.pyx":75
  *         return np.asarray(<np.float64_t[:rows, :cols]> grid_ptr)
+ * 
  *     def get_dopant_profile(self):             # <<<<<<<<<<<<<<
  *         cdef int size
  *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
@@ -22757,49 +22750,49 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_32get_dopant_profile(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_dopant_profile", 0);
 
-  /* "geometry.pyx":98
+  /* "geometry.pyx":77
  *     def get_dopant_profile(self):
  *         cdef int size
  *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)             # <<<<<<<<<<<<<<
  *         return np.asarray(<np.float64_t[:size]> profile_ptr)
- *     def get_photoresist_pattern(self):
+ * 
 */
   try {
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getDopantProfile((&__pyx_v_size));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 98, __pyx_L1_error)
+    __PYX_ERR(0, 77, __pyx_L1_error)
   }
   __pyx_v_profile_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":99
+  /* "geometry.pyx":78
  *         cdef int size
  *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
  *         return np.asarray(<np.float64_t[:size]> profile_ptr)             # <<<<<<<<<<<<<<
+ * 
  *     def get_photoresist_pattern(self):
- *         cdef int rows, cols
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_profile_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 99, __pyx_L1_error)
+    __PYX_ERR(0, 78, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_size)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_size)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 78, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_profile_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_profile_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -22821,16 +22814,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_32get_dopant_profile(struct __pyx_o
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 99, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":96
- *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
+  /* "geometry.pyx":75
  *         return np.asarray(<np.float64_t[:rows, :cols]> grid_ptr)
+ * 
  *     def get_dopant_profile(self):             # <<<<<<<<<<<<<<
  *         cdef int size
  *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
@@ -22852,9 +22845,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_32get_dopant_profile(struct __pyx_o
   return __pyx_r;
 }
 
-/* "geometry.pyx":100
- *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
+/* "geometry.pyx":80
  *         return np.asarray(<np.float64_t[:size]> profile_ptr)
+ * 
  *     def get_photoresist_pattern(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
@@ -22922,7 +22915,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_34get_photoresist_pattern(struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_photoresist_pattern", 0);
 
-  /* "geometry.pyx":102
+  /* "geometry.pyx":82
  *     def get_photoresist_pattern(self):
  *         cdef int rows, cols
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)             # <<<<<<<<<<<<<<
@@ -22933,11 +22926,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_34get_photoresist_pattern(struct __
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getPhotoresistPattern((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 102, __pyx_L1_error)
+    __PYX_ERR(0, 82, __pyx_L1_error)
   }
   __pyx_v_pattern_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":103
+  /* "geometry.pyx":83
  *         cdef int rows, cols
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> pattern_ptr)             # <<<<<<<<<<<<<<
@@ -22946,25 +22939,25 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_34get_photoresist_pattern(struct __
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_pattern_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 103, __pyx_L1_error)
+    __PYX_ERR(0, 83, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 83, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_pattern_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_pattern_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -22986,16 +22979,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_34get_photoresist_pattern(struct __
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 103, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 83, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":100
- *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
+  /* "geometry.pyx":80
  *         return np.asarray(<np.float64_t[:size]> profile_ptr)
+ * 
  *     def get_photoresist_pattern(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
@@ -23017,7 +23010,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_34get_photoresist_pattern(struct __
   return __pyx_r;
 }
 
-/* "geometry.pyx":104
+/* "geometry.pyx":84
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> pattern_ptr)
  *     def get_film_layers(self):             # <<<<<<<<<<<<<<
@@ -23084,7 +23077,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_36get_film_layers(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_film_layers", 0);
 
-  /* "geometry.pyx":105
+  /* "geometry.pyx":85
  *         return np.asarray(<np.float64_t[:rows, :cols]> pattern_ptr)
  *     def get_film_layers(self):
  *         layers = self.thisptr.get().getFilmLayers()             # <<<<<<<<<<<<<<
@@ -23095,11 +23088,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_36get_film_layers(struct __pyx_obj_
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getFilmLayers();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 105, __pyx_L1_error)
+    __PYX_ERR(0, 85, __pyx_L1_error)
   }
   __pyx_v_layers = __pyx_t_1;
 
-  /* "geometry.pyx":106
+  /* "geometry.pyx":86
  *     def get_film_layers(self):
  *         layers = self.thisptr.get().getFilmLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]             # <<<<<<<<<<<<<<
@@ -23108,25 +23101,25 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_36get_film_layers(struct __pyx_obj_
 */
   __Pyx_XDECREF(__pyx_r);
   { /* enter inner scope */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = __pyx_v_layers.begin();
     for (; __pyx_t_3 != __pyx_v_layers.end(); ++__pyx_t_3) {
       __pyx_t_4 = *__pyx_t_3;
       __pyx_7genexpr__pyx_v_layer = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_4);
-      __pyx_t_5 = PyFloat_FromDouble(__pyx_7genexpr__pyx_v_layer.first); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 106, __pyx_L1_error)
+      __pyx_t_5 = PyFloat_FromDouble(__pyx_7genexpr__pyx_v_layer.first); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = __Pyx_decode_cpp_string(__pyx_7genexpr__pyx_v_layer.second, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 106, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_decode_cpp_string(__pyx_7genexpr__pyx_v_layer.second, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 106, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_5);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 106, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 86, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_6);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 106, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 86, __pyx_L1_error);
       __pyx_t_5 = 0;
       __pyx_t_6 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 106, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     }
   } /* exit inner scope */
@@ -23134,7 +23127,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_36get_film_layers(struct __pyx_obj_
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":104
+  /* "geometry.pyx":84
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> pattern_ptr)
  *     def get_film_layers(self):             # <<<<<<<<<<<<<<
@@ -23156,7 +23149,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_36get_film_layers(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "geometry.pyx":107
+/* "geometry.pyx":87
  *         layers = self.thisptr.get().getFilmLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_metal_layers(self):             # <<<<<<<<<<<<<<
@@ -23223,7 +23216,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_38get_metal_layers(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_metal_layers", 0);
 
-  /* "geometry.pyx":108
+  /* "geometry.pyx":88
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_metal_layers(self):
  *         layers = self.thisptr.get().getMetalLayers()             # <<<<<<<<<<<<<<
@@ -23234,11 +23227,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_38get_metal_layers(struct __pyx_obj
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getMetalLayers();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 108, __pyx_L1_error)
+    __PYX_ERR(0, 88, __pyx_L1_error)
   }
   __pyx_v_layers = __pyx_t_1;
 
-  /* "geometry.pyx":109
+  /* "geometry.pyx":89
  *     def get_metal_layers(self):
  *         layers = self.thisptr.get().getMetalLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]             # <<<<<<<<<<<<<<
@@ -23247,25 +23240,25 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_38get_metal_layers(struct __pyx_obj
 */
   __Pyx_XDECREF(__pyx_r);
   { /* enter inner scope */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 89, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = __pyx_v_layers.begin();
     for (; __pyx_t_3 != __pyx_v_layers.end(); ++__pyx_t_3) {
       __pyx_t_4 = *__pyx_t_3;
       __pyx_8genexpr1__pyx_v_layer = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_4);
-      __pyx_t_5 = PyFloat_FromDouble(__pyx_8genexpr1__pyx_v_layer.first); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 109, __pyx_L1_error)
+      __pyx_t_5 = PyFloat_FromDouble(__pyx_8genexpr1__pyx_v_layer.first); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 89, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = __Pyx_decode_cpp_string(__pyx_8genexpr1__pyx_v_layer.second, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 109, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_decode_cpp_string(__pyx_8genexpr1__pyx_v_layer.second, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 89, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 109, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 89, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_5);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 109, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 89, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_6);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 109, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 89, __pyx_L1_error);
       __pyx_t_5 = 0;
       __pyx_t_6 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 109, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 89, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     }
   } /* exit inner scope */
@@ -23273,7 +23266,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_38get_metal_layers(struct __pyx_obj
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":107
+  /* "geometry.pyx":87
  *         layers = self.thisptr.get().getFilmLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_metal_layers(self):             # <<<<<<<<<<<<<<
@@ -23295,7 +23288,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_38get_metal_layers(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "geometry.pyx":110
+/* "geometry.pyx":90
  *         layers = self.thisptr.get().getMetalLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_packaging_substrate(self):             # <<<<<<<<<<<<<<
@@ -23358,7 +23351,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_40get_packaging_substrate(struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_packaging_substrate", 0);
 
-  /* "geometry.pyx":111
+  /* "geometry.pyx":91
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_packaging_substrate(self):
  *         substrate = self.thisptr.get().getPackagingSubstrate()             # <<<<<<<<<<<<<<
@@ -23369,11 +23362,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_40get_packaging_substrate(struct __
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getPackagingSubstrate();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 111, __pyx_L1_error)
+    __PYX_ERR(0, 91, __pyx_L1_error)
   }
   __pyx_v_substrate = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_1);
 
-  /* "geometry.pyx":112
+  /* "geometry.pyx":92
  *     def get_packaging_substrate(self):
  *         substrate = self.thisptr.get().getPackagingSubstrate()
  *         return (substrate.first, substrate.second.decode('utf-8'))             # <<<<<<<<<<<<<<
@@ -23381,23 +23374,23 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_40get_packaging_substrate(struct __
  *         bonds = self.thisptr.get().getWireBonds()
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_substrate.first); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_substrate.first); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_decode_cpp_string(__pyx_v_substrate.second, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_decode_cpp_string(__pyx_v_substrate.second, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_2);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2) != (0)) __PYX_ERR(0, 112, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2) != (0)) __PYX_ERR(0, 92, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_3);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3) != (0)) __PYX_ERR(0, 112, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3) != (0)) __PYX_ERR(0, 92, __pyx_L1_error);
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":110
+  /* "geometry.pyx":90
  *         layers = self.thisptr.get().getMetalLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_packaging_substrate(self):             # <<<<<<<<<<<<<<
@@ -23418,7 +23411,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_40get_packaging_substrate(struct __
   return __pyx_r;
 }
 
-/* "geometry.pyx":113
+/* "geometry.pyx":93
  *         substrate = self.thisptr.get().getPackagingSubstrate()
  *         return (substrate.first, substrate.second.decode('utf-8'))
  *     def get_wire_bonds(self):             # <<<<<<<<<<<<<<
@@ -23486,7 +23479,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_42get_wire_bonds(struct __pyx_obj_8
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_wire_bonds", 0);
 
-  /* "geometry.pyx":114
+  /* "geometry.pyx":94
  *         return (substrate.first, substrate.second.decode('utf-8'))
  *     def get_wire_bonds(self):
  *         bonds = self.thisptr.get().getWireBonds()             # <<<<<<<<<<<<<<
@@ -23497,11 +23490,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_42get_wire_bonds(struct __pyx_obj_8
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getWireBonds();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 114, __pyx_L1_error)
+    __PYX_ERR(0, 94, __pyx_L1_error)
   }
   __pyx_v_bonds = __pyx_t_1;
 
-  /* "geometry.pyx":115
+  /* "geometry.pyx":95
  *     def get_wire_bonds(self):
  *         bonds = self.thisptr.get().getWireBonds()
  *         return [((bond.first.first, bond.first.second), (bond.second.first, bond.second.second)) for bond in bonds]             # <<<<<<<<<<<<<<
@@ -23510,45 +23503,45 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_42get_wire_bonds(struct __pyx_obj_8
 */
   __Pyx_XDECREF(__pyx_r);
   { /* enter inner scope */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 95, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = __pyx_v_bonds.begin();
     for (; __pyx_t_3 != __pyx_v_bonds.end(); ++__pyx_t_3) {
       __pyx_t_4 = *__pyx_t_3;
       __pyx_8genexpr2__pyx_v_bond = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_4);
-      __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.first.first); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.first.first); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.first.second); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.first.second); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_5);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 115, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 95, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_6);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 115, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 95, __pyx_L1_error);
       __pyx_t_5 = 0;
       __pyx_t_6 = 0;
-      __pyx_t_6 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.second.first); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.second.first); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.second.second); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyLong_From_int(__pyx_8genexpr2__pyx_v_bond.second.second); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GIVEREF(__pyx_t_6);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6) != (0)) __PYX_ERR(0, 115, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6) != (0)) __PYX_ERR(0, 95, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_5);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_t_5) != (0)) __PYX_ERR(0, 115, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_t_5) != (0)) __PYX_ERR(0, 95, __pyx_L1_error);
       __pyx_t_6 = 0;
       __pyx_t_5 = 0;
-      __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 115, __pyx_L1_error)
+      __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GIVEREF(__pyx_t_7);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_7) != (0)) __PYX_ERR(0, 115, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_7) != (0)) __PYX_ERR(0, 95, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_8);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_8) != (0)) __PYX_ERR(0, 115, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_8) != (0)) __PYX_ERR(0, 95, __pyx_L1_error);
       __pyx_t_7 = 0;
       __pyx_t_8 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 115, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 95, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
   } /* exit inner scope */
@@ -23556,7 +23549,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_42get_wire_bonds(struct __pyx_obj_8
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":113
+  /* "geometry.pyx":93
  *         substrate = self.thisptr.get().getPackagingSubstrate()
  *         return (substrate.first, substrate.second.decode('utf-8'))
  *     def get_wire_bonds(self):             # <<<<<<<<<<<<<<
@@ -23579,7 +23572,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_42get_wire_bonds(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "geometry.pyx":116
+/* "geometry.pyx":96
  *         bonds = self.thisptr.get().getWireBonds()
  *         return [((bond.first.first, bond.first.second), (bond.second.first, bond.second.second)) for bond in bonds]
  *     def get_electrical_properties(self):             # <<<<<<<<<<<<<<
@@ -23646,7 +23639,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_44get_electrical_properties(struct 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_electrical_properties", 0);
 
-  /* "geometry.pyx":117
+  /* "geometry.pyx":97
  *         return [((bond.first.first, bond.first.second), (bond.second.first, bond.second.second)) for bond in bonds]
  *     def get_electrical_properties(self):
  *         props = self.thisptr.get().getElectricalProperties()             # <<<<<<<<<<<<<<
@@ -23657,11 +23650,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_44get_electrical_properties(struct 
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getElectricalProperties();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 117, __pyx_L1_error)
+    __PYX_ERR(0, 97, __pyx_L1_error)
   }
   __pyx_v_props = __pyx_t_1;
 
-  /* "geometry.pyx":118
+  /* "geometry.pyx":98
  *     def get_electrical_properties(self):
  *         props = self.thisptr.get().getElectricalProperties()
  *         return [(prop.first.decode('utf-8'), prop.second) for prop in props]             # <<<<<<<<<<<<<<
@@ -23670,25 +23663,25 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_44get_electrical_properties(struct 
 */
   __Pyx_XDECREF(__pyx_r);
   { /* enter inner scope */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = __pyx_v_props.begin();
     for (; __pyx_t_3 != __pyx_v_props.end(); ++__pyx_t_3) {
       __pyx_t_4 = *__pyx_t_3;
       __pyx_8genexpr3__pyx_v_prop = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_4);
-      __pyx_t_5 = __Pyx_decode_cpp_string(__pyx_8genexpr3__pyx_v_prop.first, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_decode_cpp_string(__pyx_8genexpr3__pyx_v_prop.first, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = PyFloat_FromDouble(__pyx_8genexpr3__pyx_v_prop.second); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 118, __pyx_L1_error)
+      __pyx_t_6 = PyFloat_FromDouble(__pyx_8genexpr3__pyx_v_prop.second); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_5);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 118, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5) != (0)) __PYX_ERR(0, 98, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_6);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 118, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6) != (0)) __PYX_ERR(0, 98, __pyx_L1_error);
       __pyx_t_5 = 0;
       __pyx_t_6 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 118, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 98, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     }
   } /* exit inner scope */
@@ -23696,7 +23689,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_44get_electrical_properties(struct 
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":116
+  /* "geometry.pyx":96
  *         bonds = self.thisptr.get().getWireBonds()
  *         return [((bond.first.first, bond.first.second), (bond.second.first, bond.second.second)) for bond in bonds]
  *     def get_electrical_properties(self):             # <<<<<<<<<<<<<<
@@ -23718,7 +23711,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_44get_electrical_properties(struct 
   return __pyx_r;
 }
 
-/* "geometry.pyx":119
+/* "geometry.pyx":99
  *         props = self.thisptr.get().getElectricalProperties()
  *         return [(prop.first.decode('utf-8'), prop.second) for prop in props]
  *     def get_temperature_profile(self):             # <<<<<<<<<<<<<<
@@ -23788,49 +23781,49 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_46get_temperature_profile(struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_temperature_profile", 0);
 
-  /* "geometry.pyx":121
+  /* "geometry.pyx":101
  *     def get_temperature_profile(self):
  *         cdef int rows, cols
  *         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)             # <<<<<<<<<<<<<<
  *         return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)
- *     def get_thermal_conductivity(self):
+ * 
 */
   try {
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getTemperatureProfile((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 121, __pyx_L1_error)
+    __PYX_ERR(0, 101, __pyx_L1_error)
   }
   __pyx_v_profile_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":122
+  /* "geometry.pyx":102
  *         cdef int rows, cols
  *         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)             # <<<<<<<<<<<<<<
+ * 
  *     def get_thermal_conductivity(self):
- *         cdef int rows, cols
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_profile_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 122, __pyx_L1_error)
+    __PYX_ERR(0, 102, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 102, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_profile_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 122, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_profile_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -23852,14 +23845,14 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_46get_temperature_profile(struct __
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 122, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":119
+  /* "geometry.pyx":99
  *         props = self.thisptr.get().getElectricalProperties()
  *         return [(prop.first.decode('utf-8'), prop.second) for prop in props]
  *     def get_temperature_profile(self):             # <<<<<<<<<<<<<<
@@ -23883,9 +23876,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_46get_temperature_profile(struct __
   return __pyx_r;
 }
 
-/* "geometry.pyx":123
- *         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)
+/* "geometry.pyx":104
  *         return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)
+ * 
  *     def get_thermal_conductivity(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
@@ -23953,49 +23946,49 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_48get_thermal_conductivity(struct _
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_thermal_conductivity", 0);
 
-  /* "geometry.pyx":125
+  /* "geometry.pyx":106
  *     def get_thermal_conductivity(self):
  *         cdef int rows, cols
  *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)             # <<<<<<<<<<<<<<
  *         return np.asarray(<np.float64_t[:rows, :cols]> conductivity_ptr)
- *     def get_electromigration_mttf(self):
+ * 
 */
   try {
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getThermalConductivity((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 125, __pyx_L1_error)
+    __PYX_ERR(0, 106, __pyx_L1_error)
   }
   __pyx_v_conductivity_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":126
+  /* "geometry.pyx":107
  *         cdef int rows, cols
  *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> conductivity_ptr)             # <<<<<<<<<<<<<<
+ * 
  *     def get_electromigration_mttf(self):
- *         cdef int rows, cols
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_conductivity_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 126, __pyx_L1_error)
+    __PYX_ERR(0, 107, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 107, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_conductivity_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_conductivity_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 107, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24017,16 +24010,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_48get_thermal_conductivity(struct _
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 107, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":123
- *         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)
+  /* "geometry.pyx":104
  *         return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)
+ * 
  *     def get_thermal_conductivity(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
@@ -24048,9 +24041,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_48get_thermal_conductivity(struct _
   return __pyx_r;
 }
 
-/* "geometry.pyx":127
- *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
+/* "geometry.pyx":109
  *         return np.asarray(<np.float64_t[:rows, :cols]> conductivity_ptr)
+ * 
  *     def get_electromigration_mttf(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
@@ -24118,49 +24111,49 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_50get_electromigration_mttf(struct 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_electromigration_mttf", 0);
 
-  /* "geometry.pyx":129
+  /* "geometry.pyx":111
  *     def get_electromigration_mttf(self):
  *         cdef int rows, cols
  *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)             # <<<<<<<<<<<<<<
  *         return np.asarray(<np.float64_t[:rows, :cols]> mttf_ptr)
- *     def get_thermal_stress(self):
+ * 
 */
   try {
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getElectromigrationMTTF((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 129, __pyx_L1_error)
+    __PYX_ERR(0, 111, __pyx_L1_error)
   }
   __pyx_v_mttf_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":130
+  /* "geometry.pyx":112
  *         cdef int rows, cols
  *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> mttf_ptr)             # <<<<<<<<<<<<<<
+ * 
  *     def get_thermal_stress(self):
- *         cdef int rows, cols
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 112, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 112, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_mttf_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 130, __pyx_L1_error)
+    __PYX_ERR(0, 112, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 112, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 112, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 112, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_mttf_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_mttf_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 112, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24182,16 +24175,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_50get_electromigration_mttf(struct 
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":127
- *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
+  /* "geometry.pyx":109
  *         return np.asarray(<np.float64_t[:rows, :cols]> conductivity_ptr)
+ * 
  *     def get_electromigration_mttf(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
@@ -24213,9 +24206,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_50get_electromigration_mttf(struct 
   return __pyx_r;
 }
 
-/* "geometry.pyx":131
- *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
+/* "geometry.pyx":114
  *         return np.asarray(<np.float64_t[:rows, :cols]> mttf_ptr)
+ * 
  *     def get_thermal_stress(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
@@ -24283,49 +24276,49 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_52get_thermal_stress(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_thermal_stress", 0);
 
-  /* "geometry.pyx":133
+  /* "geometry.pyx":116
  *     def get_thermal_stress(self):
  *         cdef int rows, cols
  *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)             # <<<<<<<<<<<<<<
  *         return np.asarray(<np.float64_t[:rows, :cols]> stress_ptr)
- *     def get_dielectric_field(self):
+ * 
 */
   try {
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getThermalStress((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 133, __pyx_L1_error)
+    __PYX_ERR(0, 116, __pyx_L1_error)
   }
   __pyx_v_stress_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":134
+  /* "geometry.pyx":117
  *         cdef int rows, cols
  *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> stress_ptr)             # <<<<<<<<<<<<<<
+ * 
  *     def get_dielectric_field(self):
- *         cdef int rows, cols
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_stress_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 134, __pyx_L1_error)
+    __PYX_ERR(0, 117, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 117, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_stress_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_stress_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24347,16 +24340,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_52get_thermal_stress(struct __pyx_o
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 117, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":131
- *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
+  /* "geometry.pyx":114
  *         return np.asarray(<np.float64_t[:rows, :cols]> mttf_ptr)
+ * 
  *     def get_thermal_stress(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
@@ -24378,9 +24371,9 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_52get_thermal_stress(struct __pyx_o
   return __pyx_r;
 }
 
-/* "geometry.pyx":135
- *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
+/* "geometry.pyx":119
  *         return np.asarray(<np.float64_t[:rows, :cols]> stress_ptr)
+ * 
  *     def get_dielectric_field(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
@@ -24448,7 +24441,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_54get_dielectric_field(struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_dielectric_field", 0);
 
-  /* "geometry.pyx":137
+  /* "geometry.pyx":121
  *     def get_dielectric_field(self):
  *         cdef int rows, cols
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)             # <<<<<<<<<<<<<<
@@ -24459,11 +24452,11 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_54get_dielectric_field(struct __pyx
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getDielectricField((&__pyx_v_rows), (&__pyx_v_cols));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 137, __pyx_L1_error)
+    __PYX_ERR(0, 121, __pyx_L1_error)
   }
   __pyx_v_field_ptr = __pyx_t_1;
 
-  /* "geometry.pyx":138
+  /* "geometry.pyx":122
  *         cdef int rows, cols
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> field_ptr)             # <<<<<<<<<<<<<<
@@ -24472,25 +24465,25 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_54get_dielectric_field(struct __pyx
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_3 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 122, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_asarray); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 122, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (!__pyx_v_field_ptr) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 138, __pyx_L1_error)
+    __PYX_ERR(0, 122, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __pyx_t_7 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 122, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __pyx_t_4 = Py_BuildValue("("  __PYX_BUILD_PY_SSIZE_T  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_rows), ((Py_ssize_t)__pyx_v_cols)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 122, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_LIMITED_API
-  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __pyx_t_8 = PyBytes_AsString(__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 122, __pyx_L1_error)
   #else
   __pyx_t_8 = PyBytes_AS_STRING(__pyx_t_7);
   #endif
-  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_field_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __pyx_t_6 = __pyx_array_new(__pyx_t_4, sizeof(__pyx_t_5numpy_float64_t), __pyx_t_8, "c", (char *) __pyx_v_field_ptr); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 122, __pyx_L1_error)
   __Pyx_GOTREF((PyObject *)__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -24512,16 +24505,16 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_54get_dielectric_field(struct __pyx
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF((PyObject *)__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 138, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 122, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
   }
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":135
- *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
+  /* "geometry.pyx":119
  *         return np.asarray(<np.float64_t[:rows, :cols]> stress_ptr)
+ * 
  *     def get_dielectric_field(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
@@ -24543,7 +24536,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_54get_dielectric_field(struct __pyx
   return __pyx_r;
 }
 
-/* "geometry.pyx":139
+/* "geometry.pyx":123
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> field_ptr)
  *     def get_material_id(self):             # <<<<<<<<<<<<<<
@@ -24603,7 +24596,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_56get_material_id(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_material_id", 0);
 
-  /* "geometry.pyx":140
+  /* "geometry.pyx":124
  *         return np.asarray(<np.float64_t[:rows, :cols]> field_ptr)
  *     def get_material_id(self):
  *         return self.thisptr.get().getMaterialId().decode('utf-8')             # <<<<<<<<<<<<<<
@@ -24615,15 +24608,15 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_56get_material_id(struct __pyx_obj_
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getMaterialId();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 140, __pyx_L1_error)
+    __PYX_ERR(0, 124, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_decode_cpp_string(__PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_1), 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_decode_cpp_string(__PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_1), 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 124, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":139
+  /* "geometry.pyx":123
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> field_ptr)
  *     def get_material_id(self):             # <<<<<<<<<<<<<<
@@ -24642,7 +24635,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_56get_material_id(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "geometry.pyx":141
+/* "geometry.pyx":125
  *     def get_material_id(self):
  *         return self.thisptr.get().getMaterialId().decode('utf-8')
  *     def get_diameter(self):             # <<<<<<<<<<<<<<
@@ -24702,7 +24695,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_58get_diameter(struct __pyx_obj_8ge
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_diameter", 0);
 
-  /* "geometry.pyx":142
+  /* "geometry.pyx":126
  *         return self.thisptr.get().getMaterialId().decode('utf-8')
  *     def get_diameter(self):
  *         return self.thisptr.get().getDiameter()             # <<<<<<<<<<<<<<
@@ -24714,15 +24707,15 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_58get_diameter(struct __pyx_obj_8ge
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getDiameter();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 142, __pyx_L1_error)
+    __PYX_ERR(0, 126, __pyx_L1_error)
   }
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":141
+  /* "geometry.pyx":125
  *     def get_material_id(self):
  *         return self.thisptr.get().getMaterialId().decode('utf-8')
  *     def get_diameter(self):             # <<<<<<<<<<<<<<
@@ -24741,7 +24734,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_58get_diameter(struct __pyx_obj_8ge
   return __pyx_r;
 }
 
-/* "geometry.pyx":143
+/* "geometry.pyx":127
  *     def get_diameter(self):
  *         return self.thisptr.get().getDiameter()
  *     def get_thickness(self):             # <<<<<<<<<<<<<<
@@ -24801,7 +24794,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_60get_thickness(struct __pyx_obj_8g
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_thickness", 0);
 
-  /* "geometry.pyx":144
+  /* "geometry.pyx":128
  *         return self.thisptr.get().getDiameter()
  *     def get_thickness(self):
  *         return self.thisptr.get().getThickness()             # <<<<<<<<<<<<<<
@@ -24813,15 +24806,15 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_60get_thickness(struct __pyx_obj_8g
     __pyx_t_1 = __pyx_v_self->thisptr.get()->getThickness();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 144, __pyx_L1_error)
+    __PYX_ERR(0, 128, __pyx_L1_error)
   }
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "geometry.pyx":143
+  /* "geometry.pyx":127
  *     def get_diameter(self):
  *         return self.thisptr.get().getDiameter()
  *     def get_thickness(self):             # <<<<<<<<<<<<<<
@@ -25044,7 +25037,7 @@ static PyObject *__pyx_pf_8geometry_7PyWafer_64__setstate_cython__(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "geometry.pyx":147
+/* "geometry.pyx":131
  * 
  * cdef class PyGeometryManager:
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -25084,7 +25077,7 @@ static int __pyx_pf_8geometry_17PyGeometryManager___cinit__(struct __pyx_obj_8ge
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
 
-  /* "geometry.pyx":148
+  /* "geometry.pyx":132
  * cdef class PyGeometryManager:
  *     def __cinit__(self):
  *         self.thisptr = new GeometryManager()             # <<<<<<<<<<<<<<
@@ -25095,11 +25088,11 @@ static int __pyx_pf_8geometry_17PyGeometryManager___cinit__(struct __pyx_obj_8ge
     __pyx_t_1 = new GeometryManager();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 148, __pyx_L1_error)
+    __PYX_ERR(0, 132, __pyx_L1_error)
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "geometry.pyx":147
+  /* "geometry.pyx":131
  * 
  * cdef class PyGeometryManager:
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -25117,7 +25110,7 @@ static int __pyx_pf_8geometry_17PyGeometryManager___cinit__(struct __pyx_obj_8ge
   return __pyx_r;
 }
 
-/* "geometry.pyx":149
+/* "geometry.pyx":133
  *     def __cinit__(self):
  *         self.thisptr = new GeometryManager()
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -25140,7 +25133,7 @@ static void __pyx_pw_8geometry_17PyGeometryManager_3__dealloc__(PyObject *__pyx_
 
 static void __pyx_pf_8geometry_17PyGeometryManager_2__dealloc__(struct __pyx_obj_8geometry_PyGeometryManager *__pyx_v_self) {
 
-  /* "geometry.pyx":150
+  /* "geometry.pyx":134
  *         self.thisptr = new GeometryManager()
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -25149,7 +25142,7 @@ static void __pyx_pf_8geometry_17PyGeometryManager_2__dealloc__(struct __pyx_obj
 */
   delete __pyx_v_self->thisptr;
 
-  /* "geometry.pyx":149
+  /* "geometry.pyx":133
  *     def __cinit__(self):
  *         self.thisptr = new GeometryManager()
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -25160,7 +25153,7 @@ static void __pyx_pf_8geometry_17PyGeometryManager_2__dealloc__(struct __pyx_obj
   /* function exit code */
 }
 
-/* "geometry.pyx":151
+/* "geometry.pyx":135
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):             # <<<<<<<<<<<<<<
@@ -25209,38 +25202,38 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_wafer,&__pyx_mstate_global->__pyx_n_u_x_dim,&__pyx_mstate_global->__pyx_n_u_y_dim,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 151, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 135, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 151, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 135, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 151, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 135, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 151, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 135, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "initialize_grid", 0) < 0) __PYX_ERR(0, 151, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "initialize_grid", 0) < 0) __PYX_ERR(0, 135, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 3, 3, i); __PYX_ERR(0, 151, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 3, 3, i); __PYX_ERR(0, 135, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 151, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 135, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 151, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 135, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 151, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 135, __pyx_L3_error)
     }
     __pyx_v_wafer = ((struct __pyx_obj_8geometry_PyWafer *)values[0]);
     __pyx_v_x_dim = ((PyObject*)values[1]);
@@ -25248,7 +25241,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 151, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("initialize_grid", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 135, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -25259,9 +25252,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 1, "wafer", 0))) __PYX_ERR(0, 151, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x_dim), (&PyLong_Type), 0, "x_dim", 2))) __PYX_ERR(0, 151, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_y_dim), (&PyLong_Type), 0, "y_dim", 2))) __PYX_ERR(0, 151, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 1, "wafer", 0))) __PYX_ERR(0, 135, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x_dim), (&PyLong_Type), 0, "x_dim", 2))) __PYX_ERR(0, 135, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_y_dim), (&PyLong_Type), 0, "y_dim", 2))) __PYX_ERR(0, 135, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_17PyGeometryManager_4initialize_grid(((struct __pyx_obj_8geometry_PyGeometryManager *)__pyx_v_self), __pyx_v_wafer, __pyx_v_x_dim, __pyx_v_y_dim);
 
   /* function exit code */
@@ -25291,23 +25284,23 @@ static PyObject *__pyx_pf_8geometry_17PyGeometryManager_4initialize_grid(struct 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("initialize_grid", 0);
 
-  /* "geometry.pyx":152
+  /* "geometry.pyx":136
  *         del self.thisptr
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):
  *         self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)             # <<<<<<<<<<<<<<
  *     def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):
  *         self.thisptr.applyLayer(wafer.thisptr, thickness, material_id.encode('utf-8'))
 */
-  __pyx_t_1 = __Pyx_PyLong_As_int(__pyx_v_x_dim); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 152, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyLong_As_int(__pyx_v_y_dim); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 152, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyLong_As_int(__pyx_v_x_dim); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 136, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyLong_As_int(__pyx_v_y_dim); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 136, __pyx_L1_error)
   try {
     __pyx_v_self->thisptr->initializeGrid(__pyx_v_wafer->thisptr, __pyx_t_1, __pyx_t_2);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 152, __pyx_L1_error)
+    __PYX_ERR(0, 136, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":151
+  /* "geometry.pyx":135
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):             # <<<<<<<<<<<<<<
@@ -25327,7 +25320,7 @@ static PyObject *__pyx_pf_8geometry_17PyGeometryManager_4initialize_grid(struct 
   return __pyx_r;
 }
 
-/* "geometry.pyx":153
+/* "geometry.pyx":137
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):
  *         self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)
  *     def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
@@ -25375,46 +25368,46 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_wafer,&__pyx_mstate_global->__pyx_n_u_thickness,&__pyx_mstate_global->__pyx_n_u_material_id,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 153, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 137, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 153, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 137, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 153, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 137, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 153, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 137, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "apply_layer", 0) < 0) __PYX_ERR(0, 153, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "apply_layer", 0) < 0) __PYX_ERR(0, 137, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 3, 3, i); __PYX_ERR(0, 153, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 3, 3, i); __PYX_ERR(0, 137, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 153, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 137, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 153, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 137, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 153, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 137, __pyx_L3_error)
     }
     __pyx_v_wafer = ((struct __pyx_obj_8geometry_PyWafer *)values[0]);
-    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 153, __pyx_L3_error)
+    __pyx_v_thickness = __Pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_thickness == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 137, __pyx_L3_error)
     __pyx_v_material_id = ((PyObject*)values[2]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 153, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("apply_layer", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 137, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -25425,8 +25418,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 1, "wafer", 0))) __PYX_ERR(0, 153, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material_id), (&PyUnicode_Type), 0, "material_id", 2))) __PYX_ERR(0, 153, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_wafer), __pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, 1, "wafer", 0))) __PYX_ERR(0, 137, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_material_id), (&PyUnicode_Type), 0, "material_id", 2))) __PYX_ERR(0, 137, __pyx_L1_error)
   __pyx_r = __pyx_pf_8geometry_17PyGeometryManager_6apply_layer(((struct __pyx_obj_8geometry_PyGeometryManager *)__pyx_v_self), __pyx_v_wafer, __pyx_v_thickness, __pyx_v_material_id);
 
   /* function exit code */
@@ -25456,23 +25449,23 @@ static PyObject *__pyx_pf_8geometry_17PyGeometryManager_6apply_layer(struct __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("apply_layer", 0);
 
-  /* "geometry.pyx":154
+  /* "geometry.pyx":138
  *         self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)
  *     def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):
  *         self.thisptr.applyLayer(wafer.thisptr, thickness, material_id.encode('utf-8'))             # <<<<<<<<<<<<<<
 */
-  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material_id); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_AsUTF8String(__pyx_v_material_id); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 138, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 154, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_6libcpp_6string_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 138, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_v_self->thisptr->applyLayer(__pyx_v_wafer->thisptr, __pyx_v_thickness, __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_2));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 154, __pyx_L1_error)
+    __PYX_ERR(0, 138, __pyx_L1_error)
   }
 
-  /* "geometry.pyx":153
+  /* "geometry.pyx":137
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):
  *         self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)
  *     def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
@@ -26969,41 +26962,41 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_8geometry_PyWafer = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8geometry_PyWafer_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8geometry_PyWafer)) __PYX_ERR(0, 53, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8geometry_PyWafer_spec, __pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8geometry_PyWafer = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8geometry_PyWafer_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8geometry_PyWafer)) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8geometry_PyWafer_spec, __pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   #else
   __pyx_mstate->__pyx_ptype_8geometry_PyWafer = &__pyx_type_8geometry_PyWafer;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 53, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8geometry_PyWafer->tp_dictoffset && __pyx_mstate->__pyx_ptype_8geometry_PyWafer->tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_mstate->__pyx_ptype_8geometry_PyWafer->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyWafer, (PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 53, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 53, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyWafer, (PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyWafer) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8geometry_PyGeometryManager_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager)) __PYX_ERR(0, 146, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8geometry_PyGeometryManager_spec, __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8geometry_PyGeometryManager_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager)) __PYX_ERR(0, 130, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8geometry_PyGeometryManager_spec, __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 130, __pyx_L1_error)
   #else
   __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager = &__pyx_type_8geometry_PyGeometryManager;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 130, __pyx_L1_error)
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager->tp_dictoffset && __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager->tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
-  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyGeometryManager, (PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_PyGeometryManager, (PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 130, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject *) __pyx_mstate->__pyx_ptype_8geometry_PyGeometryManager) < 0) __PYX_ERR(0, 130, __pyx_L1_error)
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
   #if CYTHON_USE_TYPE_SPECS
@@ -28136,408 +28129,408 @@ __Pyx_RefNannySetupContext("PyInit_geometry", 0);
  * from libcpp.pair cimport pair
  * cimport numpy as np
  * import numpy as np             # <<<<<<<<<<<<<<
- * from cython cimport view
  * 
+ * # Import declarations from .pxd file
 */
   __pyx_t_5 = __Pyx_ImportDottedModule(__pyx_mstate_global->__pyx_n_u_numpy, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_5) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":56
- *     def __cinit__(self, diameter: float, thickness: float, material_id: str):
+  /* "geometry.pyx":20
  *         self.thisptr = shared_ptr[Wafer](new Wafer(diameter, thickness, material_id.encode('utf-8')))
+ * 
  *     def initialize_grid(self, x_dim: int, y_dim: int):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)
- *     def apply_layer(self, thickness: float, material_id: str):
+ * 
 */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_x_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 56, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_y_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 56, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_3initialize_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_initialize_grid, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 56, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_x_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 20, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_y_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_3initialize_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_initialize_grid, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_4, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_initialize_grid, __pyx_t_4) < 0) __PYX_ERR(0, 56, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_initialize_grid, __pyx_t_4) < 0) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "geometry.pyx":58
- *     def initialize_grid(self, x_dim: int, y_dim: int):
+  /* "geometry.pyx":23
  *         self.thisptr.get().initializeGrid(x_dim, y_dim)
+ * 
  *     def apply_layer(self, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
- *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
+ * 
 */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_material_id, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_5apply_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_apply_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 58, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_material_id, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_5apply_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_apply_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_apply_layer, __pyx_t_5) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_apply_layer, __pyx_t_5) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":60
- *     def apply_layer(self, thickness: float, material_id: str):
+  /* "geometry.pyx":26
  *         self.thisptr.get().applyLayer(thickness, material_id.encode('utf-8'))
+ * 
  *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setDopantProfile(&profile[0])
- *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_7set_dopant_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_dopant_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 60, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_7set_dopant_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_dopant_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_dopant_profile, __pyx_t_5) < 0) __PYX_ERR(0, 60, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_dopant_profile, __pyx_t_5) < 0) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":62
- *     def set_dopant_profile(self, np.ndarray[np.float64_t, ndim=1] profile):
+  /* "geometry.pyx":29
  *         self.thisptr.get().setDopantProfile(&profile[0])
+ * 
  *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
- *     def add_film_layer(self, thickness: float, material: str):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_9set_photoresist_pattern, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_photoresist_pattern, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_9set_photoresist_pattern, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_photoresist_pattern, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 29, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_photoresist_pattern, __pyx_t_5) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_photoresist_pattern, __pyx_t_5) < 0) __PYX_ERR(0, 29, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":64
- *     def set_photoresist_pattern(self, np.ndarray[np.float64_t, ndim=2] pattern):
+  /* "geometry.pyx":32
  *         self.thisptr.get().setPhotoresistPattern(&pattern[0, 0], pattern.shape[0], pattern.shape[1])
+ * 
  *     def add_film_layer(self, thickness: float, material: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
- *     def add_metal_layer(self, thickness: float, metal: str):
+ * 
 */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_material, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_11add_film_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_add_film_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_material, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_11add_film_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_add_film_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_4, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_add_film_layer, __pyx_t_4) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_add_film_layer, __pyx_t_4) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "geometry.pyx":66
- *     def add_film_layer(self, thickness: float, material: str):
+  /* "geometry.pyx":35
  *         self.thisptr.get().addFilmLayer(thickness, material.encode('utf-8'))
+ * 
  *     def add_metal_layer(self, thickness: float, metal: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
- *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):
+ * 
 */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 66, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_metal, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 66, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_13add_metal_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_add_metal_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 66, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 35, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_metal, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_13add_metal_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_add_metal_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_add_metal_layer, __pyx_t_5) < 0) __PYX_ERR(0, 66, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_add_metal_layer, __pyx_t_5) < 0) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":68
- *     def add_metal_layer(self, thickness: float, metal: str):
+  /* "geometry.pyx":38
  *         self.thisptr.get().addMetalLayer(thickness, metal.encode('utf-8'))
+ * 
  *     def add_packaging(self, substrate_thickness: float, substrate_material: str, wire_bonds: list):             # <<<<<<<<<<<<<<
  *         cdef vector[pair[pair[int, int], pair[int, int]]] cpp_bonds
  *         for bond in wire_bonds:
 */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_substrate_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 68, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_substrate_material, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 68, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_wire_bonds, __pyx_mstate_global->__pyx_n_u_list) < 0) __PYX_ERR(0, 68, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_15add_packaging, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_add_packaging, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 68, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_substrate_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_substrate_material, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_wire_bonds, __pyx_mstate_global->__pyx_n_u_list) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_15add_packaging, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_add_packaging, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_4, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_add_packaging, __pyx_t_4) < 0) __PYX_ERR(0, 68, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_add_packaging, __pyx_t_4) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "geometry.pyx":74
- *             cpp_bonds.push_back(pair[pair[int, int], pair[int, int]](pair[int, int](x1, y1), pair[int, int](x2, y2)))
+  /* "geometry.pyx":45
  *         self.thisptr.get().addPackaging(substrate_thickness, substrate_material.encode('utf-8'), cpp_bonds)
+ * 
  *     def set_electrical_properties(self, properties: list):             # <<<<<<<<<<<<<<
  *         cdef vector[pair[string, double]] cpp_props
  *         for prop in properties:
 */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_properties, __pyx_mstate_global->__pyx_n_u_list) < 0) __PYX_ERR(0, 74, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_17set_electrical_properties, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_electrical_propertie, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_properties, __pyx_mstate_global->__pyx_n_u_list) < 0) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_17set_electrical_properties, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_electrical_propertie, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_electrical_properties, __pyx_t_5) < 0) __PYX_ERR(0, 74, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_electrical_properties, __pyx_t_5) < 0) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":80
- *             cpp_props.push_back(pair[string, double](name.encode('utf-8'), value))
+  /* "geometry.pyx":52
  *         self.thisptr.get().setElectricalProperties(cpp_props)
+ * 
  *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
- *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_19set_temperature_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_temperature_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_19set_temperature_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_temperature_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_temperature_profile, __pyx_t_5) < 0) __PYX_ERR(0, 80, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_temperature_profile, __pyx_t_5) < 0) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":82
- *     def set_temperature_profile(self, np.ndarray[np.float64_t, ndim=2] profile):
+  /* "geometry.pyx":55
  *         self.thisptr.get().setTemperatureProfile(&profile[0, 0], profile.shape[0], profile.shape[1])
+ * 
  *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
- *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_21set_thermal_conductivity, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_thermal_conductivity, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_21set_thermal_conductivity, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_thermal_conductivity, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_thermal_conductivity, __pyx_t_5) < 0) __PYX_ERR(0, 82, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_thermal_conductivity, __pyx_t_5) < 0) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":84
- *     def set_thermal_conductivity(self, np.ndarray[np.float64_t, ndim=2] conductivity):
+  /* "geometry.pyx":58
  *         self.thisptr.get().setThermalConductivity(&conductivity[0, 0], conductivity.shape[0], conductivity.shape[1])
+ * 
  *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
- *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_23set_electromigration_mttf, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_electromigration_mtt, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 84, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_23set_electromigration_mttf, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_electromigration_mtt, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_electromigration_mttf, __pyx_t_5) < 0) __PYX_ERR(0, 84, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_electromigration_mttf, __pyx_t_5) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":86
- *     def set_electromigration_mttf(self, np.ndarray[np.float64_t, ndim=2] mttf):
+  /* "geometry.pyx":61
  *         self.thisptr.get().setElectromigrationMTTF(&mttf[0, 0], mttf.shape[0], mttf.shape[1])
+ * 
  *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
- *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_25set_thermal_stress, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_thermal_stress, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_25set_thermal_stress, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_thermal_stress, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_thermal_stress, __pyx_t_5) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_thermal_stress, __pyx_t_5) < 0) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":88
- *     def set_thermal_stress(self, np.ndarray[np.float64_t, ndim=2] stress):
+  /* "geometry.pyx":64
  *         self.thisptr.get().setThermalStress(&stress[0, 0], stress.shape[0], stress.shape[1])
+ * 
  *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
- *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_27set_dielectric_field, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_dielectric_field, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_27set_dielectric_field, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_set_dielectric_field, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_dielectric_field, __pyx_t_5) < 0) __PYX_ERR(0, 88, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_set_dielectric_field, __pyx_t_5) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":90
- *     def set_dielectric_field(self, np.ndarray[np.float64_t, ndim=2] field):
+  /* "geometry.pyx":67
  *         self.thisptr.get().setDielectricField(&field[0, 0], field.shape[0], field.shape[1])
+ * 
  *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):             # <<<<<<<<<<<<<<
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
- *     def get_grid(self):
+ * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_29update_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_update_grid, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_29update_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_update_grid, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_update_grid, __pyx_t_5) < 0) __PYX_ERR(0, 90, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_update_grid, __pyx_t_5) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":92
- *     def update_grid(self, np.ndarray[np.float64_t, ndim=2] grid):
+  /* "geometry.pyx":70
  *         self.thisptr.get().updateGrid(&grid[0, 0], grid.shape[0], grid.shape[1])
+ * 
  *     def get_grid(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_31get_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_grid, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_31get_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_grid, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_grid, __pyx_t_5) < 0) __PYX_ERR(0, 92, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_grid, __pyx_t_5) < 0) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":96
- *         cdef double* grid_ptr = self.thisptr.get().getGrid(&rows, &cols)
+  /* "geometry.pyx":75
  *         return np.asarray(<np.float64_t[:rows, :cols]> grid_ptr)
+ * 
  *     def get_dopant_profile(self):             # <<<<<<<<<<<<<<
  *         cdef int size
  *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_33get_dopant_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_dopant_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 96, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_33get_dopant_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_dopant_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_dopant_profile, __pyx_t_5) < 0) __PYX_ERR(0, 96, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_dopant_profile, __pyx_t_5) < 0) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":100
- *         cdef double* profile_ptr = self.thisptr.get().getDopantProfile(&size)
+  /* "geometry.pyx":80
  *         return np.asarray(<np.float64_t[:size]> profile_ptr)
+ * 
  *     def get_photoresist_pattern(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_35get_photoresist_pattern, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_photoresist_pattern, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[16])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 100, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_35get_photoresist_pattern, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_photoresist_pattern, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[16])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_photoresist_pattern, __pyx_t_5) < 0) __PYX_ERR(0, 100, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_photoresist_pattern, __pyx_t_5) < 0) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":104
+  /* "geometry.pyx":84
  *         cdef double* pattern_ptr = self.thisptr.get().getPhotoresistPattern(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> pattern_ptr)
  *     def get_film_layers(self):             # <<<<<<<<<<<<<<
  *         layers = self.thisptr.get().getFilmLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_37get_film_layers, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_film_layers, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[17])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_37get_film_layers, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_film_layers, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[17])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_film_layers, __pyx_t_5) < 0) __PYX_ERR(0, 104, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_film_layers, __pyx_t_5) < 0) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":107
+  /* "geometry.pyx":87
  *         layers = self.thisptr.get().getFilmLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_metal_layers(self):             # <<<<<<<<<<<<<<
  *         layers = self.thisptr.get().getMetalLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_39get_metal_layers, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_metal_layers, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[18])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_39get_metal_layers, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_metal_layers, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[18])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_metal_layers, __pyx_t_5) < 0) __PYX_ERR(0, 107, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_metal_layers, __pyx_t_5) < 0) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":110
+  /* "geometry.pyx":90
  *         layers = self.thisptr.get().getMetalLayers()
  *         return [(layer.first, layer.second.decode('utf-8')) for layer in layers]
  *     def get_packaging_substrate(self):             # <<<<<<<<<<<<<<
  *         substrate = self.thisptr.get().getPackagingSubstrate()
  *         return (substrate.first, substrate.second.decode('utf-8'))
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_41get_packaging_substrate, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_packaging_substrate, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[19])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_41get_packaging_substrate, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_packaging_substrate, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[19])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_packaging_substrate, __pyx_t_5) < 0) __PYX_ERR(0, 110, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_packaging_substrate, __pyx_t_5) < 0) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":113
+  /* "geometry.pyx":93
  *         substrate = self.thisptr.get().getPackagingSubstrate()
  *         return (substrate.first, substrate.second.decode('utf-8'))
  *     def get_wire_bonds(self):             # <<<<<<<<<<<<<<
  *         bonds = self.thisptr.get().getWireBonds()
  *         return [((bond.first.first, bond.first.second), (bond.second.first, bond.second.second)) for bond in bonds]
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_43get_wire_bonds, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_wire_bonds, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[20])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_43get_wire_bonds, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_wire_bonds, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[20])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_wire_bonds, __pyx_t_5) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_wire_bonds, __pyx_t_5) < 0) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":116
+  /* "geometry.pyx":96
  *         bonds = self.thisptr.get().getWireBonds()
  *         return [((bond.first.first, bond.first.second), (bond.second.first, bond.second.second)) for bond in bonds]
  *     def get_electrical_properties(self):             # <<<<<<<<<<<<<<
  *         props = self.thisptr.get().getElectricalProperties()
  *         return [(prop.first.decode('utf-8'), prop.second) for prop in props]
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_45get_electrical_properties, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_electrical_propertie, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[21])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_45get_electrical_properties, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_electrical_propertie, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[21])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 96, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_electrical_properties, __pyx_t_5) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_electrical_properties, __pyx_t_5) < 0) __PYX_ERR(0, 96, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":119
+  /* "geometry.pyx":99
  *         props = self.thisptr.get().getElectricalProperties()
  *         return [(prop.first.decode('utf-8'), prop.second) for prop in props]
  *     def get_temperature_profile(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_47get_temperature_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_temperature_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[22])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_47get_temperature_profile, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_temperature_profile, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[22])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 99, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_temperature_profile, __pyx_t_5) < 0) __PYX_ERR(0, 119, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_temperature_profile, __pyx_t_5) < 0) __PYX_ERR(0, 99, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":123
- *         cdef double* profile_ptr = self.thisptr.get().getTemperatureProfile(&rows, &cols)
+  /* "geometry.pyx":104
  *         return np.asarray(<np.float64_t[:rows, :cols]> profile_ptr)
+ * 
  *     def get_thermal_conductivity(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_49get_thermal_conductivity, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_thermal_conductivity, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[23])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_49get_thermal_conductivity, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_thermal_conductivity, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[23])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_thermal_conductivity, __pyx_t_5) < 0) __PYX_ERR(0, 123, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_thermal_conductivity, __pyx_t_5) < 0) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":127
- *         cdef double* conductivity_ptr = self.thisptr.get().getThermalConductivity(&rows, &cols)
+  /* "geometry.pyx":109
  *         return np.asarray(<np.float64_t[:rows, :cols]> conductivity_ptr)
+ * 
  *     def get_electromigration_mttf(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_51get_electromigration_mttf, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_electromigration_mtt, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[24])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_51get_electromigration_mttf, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_electromigration_mtt, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[24])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 109, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_electromigration_mttf, __pyx_t_5) < 0) __PYX_ERR(0, 127, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_electromigration_mttf, __pyx_t_5) < 0) __PYX_ERR(0, 109, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":131
- *         cdef double* mttf_ptr = self.thisptr.get().getElectromigrationMTTF(&rows, &cols)
+  /* "geometry.pyx":114
  *         return np.asarray(<np.float64_t[:rows, :cols]> mttf_ptr)
+ * 
  *     def get_thermal_stress(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_53get_thermal_stress, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_thermal_stress, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[25])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_53get_thermal_stress, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_thermal_stress, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[25])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 114, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_thermal_stress, __pyx_t_5) < 0) __PYX_ERR(0, 131, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_thermal_stress, __pyx_t_5) < 0) __PYX_ERR(0, 114, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":135
- *         cdef double* stress_ptr = self.thisptr.get().getThermalStress(&rows, &cols)
+  /* "geometry.pyx":119
  *         return np.asarray(<np.float64_t[:rows, :cols]> stress_ptr)
+ * 
  *     def get_dielectric_field(self):             # <<<<<<<<<<<<<<
  *         cdef int rows, cols
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_55get_dielectric_field, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_dielectric_field, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[26])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_55get_dielectric_field, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_dielectric_field, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[26])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_dielectric_field, __pyx_t_5) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_dielectric_field, __pyx_t_5) < 0) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":139
+  /* "geometry.pyx":123
  *         cdef double* field_ptr = self.thisptr.get().getDielectricField(&rows, &cols)
  *         return np.asarray(<np.float64_t[:rows, :cols]> field_ptr)
  *     def get_material_id(self):             # <<<<<<<<<<<<<<
  *         return self.thisptr.get().getMaterialId().decode('utf-8')
  *     def get_diameter(self):
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_57get_material_id, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_material_id, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[27])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_57get_material_id, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_material_id, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[27])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_material_id, __pyx_t_5) < 0) __PYX_ERR(0, 139, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_material_id, __pyx_t_5) < 0) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":141
+  /* "geometry.pyx":125
  *     def get_material_id(self):
  *         return self.thisptr.get().getMaterialId().decode('utf-8')
  *     def get_diameter(self):             # <<<<<<<<<<<<<<
  *         return self.thisptr.get().getDiameter()
  *     def get_thickness(self):
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_59get_diameter, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_diameter, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[28])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 141, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_59get_diameter, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_diameter, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[28])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_diameter, __pyx_t_5) < 0) __PYX_ERR(0, 141, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_diameter, __pyx_t_5) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":143
+  /* "geometry.pyx":127
  *     def get_diameter(self):
  *         return self.thisptr.get().getDiameter()
  *     def get_thickness(self):             # <<<<<<<<<<<<<<
  *         return self.thisptr.get().getThickness()
  * 
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_61get_thickness, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_thickness, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[29])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_7PyWafer_61get_thickness, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyWafer_get_thickness, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[29])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_thickness, __pyx_t_5) < 0) __PYX_ERR(0, 143, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyWafer, __pyx_mstate_global->__pyx_n_u_get_thickness, __pyx_t_5) < 0) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "(tree fragment)":1
@@ -28561,39 +28554,39 @@ __Pyx_RefNannySetupContext("PyInit_geometry", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_5) < 0) __PYX_ERR(1, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "geometry.pyx":151
+  /* "geometry.pyx":135
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):             # <<<<<<<<<<<<<<
  *         self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)
  *     def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):
 */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_x_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 151, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_y_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 151, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_17PyGeometryManager_5initialize_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyGeometryManager_initialize_gri, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[32])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_x_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_y_dim, __pyx_mstate_global->__pyx_n_u_int) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_17PyGeometryManager_5initialize_grid, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyGeometryManager_initialize_gri, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[32])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_4, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyGeometryManager, __pyx_mstate_global->__pyx_n_u_initialize_grid, __pyx_t_4) < 0) __PYX_ERR(0, 151, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyGeometryManager, __pyx_mstate_global->__pyx_n_u_initialize_grid, __pyx_t_4) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "geometry.pyx":153
+  /* "geometry.pyx":137
  *     def initialize_grid(self, PyWafer wafer, x_dim: int, y_dim: int):
  *         self.thisptr.initializeGrid(wafer.thisptr, x_dim, y_dim)
  *     def apply_layer(self, PyWafer wafer, thickness: float, material_id: str):             # <<<<<<<<<<<<<<
  *         self.thisptr.applyLayer(wafer.thisptr, thickness, material_id.encode('utf-8'))
 */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 153, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 137, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_material_id, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_17PyGeometryManager_7apply_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyGeometryManager_apply_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[33])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_thickness, __pyx_mstate_global->__pyx_n_u_float) < 0) __PYX_ERR(0, 137, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_material_id, __pyx_mstate_global->__pyx_n_u_str) < 0) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8geometry_17PyGeometryManager_7apply_layer, __Pyx_CYFUNCTION_CCLASS, __pyx_mstate_global->__pyx_n_u_PyGeometryManager_apply_layer, NULL, __pyx_mstate_global->__pyx_n_u_geometry, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[33])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyGeometryManager, __pyx_mstate_global->__pyx_n_u_apply_layer, __pyx_t_5) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict(__pyx_mstate_global->__pyx_ptype_8geometry_PyGeometryManager, __pyx_mstate_global->__pyx_n_u_apply_layer, __pyx_t_5) < 0) __PYX_ERR(0, 137, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "(tree fragment)":1
@@ -29053,152 +29046,152 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   PyObject* tuple_dedup_map = PyDict_New();
   if (unlikely(!tuple_dedup_map)) return -1;
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 56, 24};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 20, 24};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_x_dim, __pyx_mstate->__pyx_n_u_y_dim};
     __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_initialize_grid, __pyx_k_HD, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 58, 31};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 23, 31};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_thickness, __pyx_mstate->__pyx_n_u_material_id};
     __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_apply_layer, __pyx_k_9_HD_Qk_G1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 60, 24};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 26, 24};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_profile};
     __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_dopant_profile, __pyx_k_A_HD_1AWAQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 62, 46};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 29, 46};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_pattern};
     __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_photoresist_pattern, __pyx_k_A_HD_0_T_atSZZ_aab, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 64, 31};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 32, 31};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_thickness, __pyx_mstate->__pyx_n_u_material};
     __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_add_film_layer, __pyx_k_9_HD_q_87_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 66, 30};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 35, 30};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_thickness, __pyx_mstate->__pyx_n_u_metal};
     __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_add_metal_layer, __pyx_k_q_HD_E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 10, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 68, 95};
+    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 10, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 38, 95};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_substrate_thickness, __pyx_mstate->__pyx_n_u_substrate_material, __pyx_mstate->__pyx_n_u_wire_bonds, __pyx_mstate->__pyx_n_u_cpp_bonds, __pyx_mstate->__pyx_n_u_bond, __pyx_mstate->__pyx_n_u_x1, __pyx_mstate->__pyx_n_u_y1, __pyx_mstate->__pyx_n_u_x2, __pyx_mstate->__pyx_n_u_y2};
     __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_add_packaging, __pyx_k_11LL_HA_D_Q_Zu_DE_STTXXaakkllpp, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 74, 57};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 45, 57};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_properties, __pyx_mstate->__pyx_n_u_cpp_props, __pyx_mstate->__pyx_n_u_prop, __pyx_mstate->__pyx_n_u_name, __pyx_mstate->__pyx_n_u_value};
     __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_electrical_properties, __pyx_k_4A_HA_Zu_4AT_1_HD_2_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 80, 46};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 52, 46};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_profile};
     __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_temperature_profile, __pyx_k_A_HD_0_T_atSZZ_aab, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 82, 49};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 55, 49};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_conductivity};
     __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_thermal_conductivity, __pyx_k_A_HD_1_q_4_SYYZZ_jjppqqr, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 84, 45};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 58, 45};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_mttf};
     __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_electromigration_mttf, __pyx_k_A_HD_2_1D_D_F_4tSYYZZ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 86, 45};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 61, 45};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_stress};
     __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_thermal_stress, __pyx_k_A_HD_1AV1Ct6_q_FRXXYYZ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 88, 45};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 64, 45};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_field};
     __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_set_dielectric_field, __pyx_k_A_HD_QauAS_E_q_EQWWXXY, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 90, 41};
+    const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 67, 41};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_grid};
     __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_update_grid, __pyx_k_A_HD_Qat1Ct4vQd_fAQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 92, 42};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 70, 42};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_grid_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_grid, __pyx_k_A_HD_1F_1_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 96, 37};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 75, 37};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_size, __pyx_mstate->__pyx_n_u_profile_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_dopant_profile, __pyx_k_A_4xt25Faq_r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 100, 45};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 80, 45};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_pattern_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[16] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_photoresist_pattern, __pyx_k_A_4xt25K1AVSTTU_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[16])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 104, 42};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 84, 42};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_layers, __pyx_mstate->__pyx_n_u_layer};
     __pyx_mstate_global->__pyx_codeobj_tab[17] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_film_layers, __pyx_k_A_XT_r_he7_D, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[17])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 107, 42};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 87, 42};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_layers, __pyx_mstate->__pyx_n_u_layer};
     __pyx_mstate_global->__pyx_codeobj_tab[18] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_metal_layers, __pyx_k_A_XT_r_he7_D_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[18])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 110, 35};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 90, 35};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_substrate};
     __pyx_mstate_global->__pyx_codeobj_tab[19] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_packaging_substrate, __pyx_k_A_D_B_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[19])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 113, 59};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 93, 59};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_bonds, __pyx_mstate->__pyx_n_u_bond};
     __pyx_mstate_global->__pyx_codeobj_tab[20] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_wire_bonds, __pyx_k_A_HD_q_r_fHD_k_WHDPWWaaeemmn, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[20])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 116, 43};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 96, 43};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_props, __pyx_mstate->__pyx_n_u_prop};
     __pyx_mstate_global->__pyx_codeobj_tab[21] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_electrical_properties, __pyx_k_A_HD_r_V7_T_ha, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[21])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 119, 45};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 99, 45};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_profile_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[22] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_temperature_profile, __pyx_k_A_4xt25K1AVSTTU_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[22])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 123, 48};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 104, 48};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_conductivity_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[23] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_thermal_conductivity, __pyx_k_A_HD_QQRRSSYYZZ_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[23])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 127, 45};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 109, 45};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_mttf_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[24] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_electromigration_mttf, __pyx_k_A_HD_2J_1FRSST_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[24])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 131, 43};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 114, 43};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_stress_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[25] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_thermal_stress, __pyx_k_A_hd_4EQavQa_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[25])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 135, 43};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 119, 43};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_rows, __pyx_mstate->__pyx_n_u_cols, __pyx_mstate->__pyx_n_u_field_ptr};
     __pyx_mstate_global->__pyx_codeobj_tab[26] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_dielectric_field, __pyx_k_A_XT_3Faq_aq_r_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[26])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 139, 23};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 123, 23};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
     __pyx_mstate_global->__pyx_codeobj_tab[27] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_material_id, __pyx_k_A_t84r_r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[27])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 141, 17};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 125, 17};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
     __pyx_mstate_global->__pyx_codeobj_tab[28] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_diameter, __pyx_k_A_t84r_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[28])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 143, 17};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 127, 17};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
     __pyx_mstate_global->__pyx_codeobj_tab[29] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_get_thickness, __pyx_k_A_t84r_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[29])) goto bad;
   }
@@ -29213,12 +29206,12 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
     __pyx_mstate_global->__pyx_codeobj_tab[31] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_setstate_cython, __pyx_k_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[31])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 151, 24};
+    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 135, 24};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_wafer, __pyx_mstate->__pyx_n_u_x_dim, __pyx_mstate->__pyx_n_u_y_dim};
     __pyx_mstate_global->__pyx_codeobj_tab[32] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_initialize_grid, __pyx_k_4L_HO1E_7, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[32])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 153, 31};
+    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 137, 31};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_wafer, __pyx_mstate->__pyx_n_u_thickness, __pyx_mstate->__pyx_n_u_material_id};
     __pyx_mstate_global->__pyx_codeobj_tab[33] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_geometry_pyx, __pyx_mstate->__pyx_n_u_apply_layer, __pyx_k_44H_HKq_Z_WAQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[33])) goto bad;
   }
@@ -35223,64 +35216,6 @@ bad:
 }
 #endif
 
-/* MemviewSliceIsContig */
-  static int
-__pyx_memviewslice_is_contig(const __Pyx_memviewslice mvs, char order, int ndim)
-{
-    int i, index, step, start;
-    Py_ssize_t itemsize = mvs.memview->view.itemsize;
-    if (order == 'F') {
-        step = 1;
-        start = 0;
-    } else {
-        step = -1;
-        start = ndim - 1;
-    }
-    for (i = 0; i < ndim; i++) {
-        index = start + step * i;
-        if (mvs.suboffsets[index] >= 0 || mvs.strides[index] != itemsize)
-            return 0;
-        itemsize *= mvs.shape[index];
-    }
-    return 1;
-}
-
-/* OverlappingSlices */
-  static void
-__pyx_get_array_memory_extents(__Pyx_memviewslice *slice,
-                               void **out_start, void **out_end,
-                               int ndim, size_t itemsize)
-{
-    char *start, *end;
-    int i;
-    start = end = slice->data;
-    for (i = 0; i < ndim; i++) {
-        Py_ssize_t stride = slice->strides[i];
-        Py_ssize_t extent = slice->shape[i];
-        if (extent == 0) {
-            *out_start = *out_end = start;
-            return;
-        } else {
-            if (stride > 0)
-                end += stride * (extent - 1);
-            else
-                start += stride * (extent - 1);
-        }
-    }
-    *out_start = start;
-    *out_end = end + itemsize;
-}
-static int
-__pyx_slices_overlap(__Pyx_memviewslice *slice1,
-                     __Pyx_memviewslice *slice2,
-                     int ndim, size_t itemsize)
-{
-    void *start1, *end1, *start2, *end2;
-    __pyx_get_array_memory_extents(slice1, &start1, &end1, ndim, itemsize);
-    __pyx_get_array_memory_extents(slice2, &start2, &end2, ndim, itemsize);
-    return (start1 < end2) && (start2 < end1);
-}
-
 /* CIntFromPyVerify */
   #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
@@ -35623,256 +35558,62 @@ static CYTHON_INLINE int __pyx_memview_set_nn___pyx_t_5numpy_float64_t(const cha
     #endif
 #endif
 
-/* MemviewSliceCopyTemplate */
-  static __Pyx_memviewslice
-__pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
-                                 const char *mode, int ndim,
-                                 size_t sizeof_dtype, int contig_flag,
-                                 int dtype_is_object)
-{
-    __Pyx_RefNannyDeclarations
-    int i;
-    __Pyx_memviewslice new_mvs = { 0, 0, { 0 }, { 0 }, { 0 } };
-    struct __pyx_memoryview_obj *from_memview = from_mvs->memview;
-    Py_buffer *buf = &from_memview->view;
-    PyObject *shape_tuple = NULL;
-    PyObject *temp_int = NULL;
-    struct __pyx_array_obj *array_obj = NULL;
-    struct __pyx_memoryview_obj *memview_obj = NULL;
-    __Pyx_RefNannySetupContext("__pyx_memoryview_copy_new_contig", 0);
-    for (i = 0; i < ndim; i++) {
-        if (unlikely(from_mvs->suboffsets[i] >= 0)) {
-            PyErr_Format(PyExc_ValueError, "Cannot copy memoryview slice with "
-                                           "indirect dimensions (axis %d)", i);
-            goto fail;
-        }
-    }
-    shape_tuple = PyTuple_New(ndim);
-    if (unlikely(!shape_tuple)) {
-        goto fail;
-    }
-    __Pyx_GOTREF(shape_tuple);
-    for(i = 0; i < ndim; i++) {
-        temp_int = PyLong_FromSsize_t(from_mvs->shape[i]);
-        if(unlikely(!temp_int)) {
-            goto fail;
-        } else {
-#if CYTHON_ASSUME_SAFE_MACROS
-            PyTuple_SET_ITEM(shape_tuple, i, temp_int);
-#else
-            if (PyTuple_SetItem(shape_tuple, i, temp_int) < 0) {
-                goto fail;
-            }
-#endif
-            temp_int = NULL;
-        }
-    }
-    array_obj = __pyx_array_new(shape_tuple, sizeof_dtype, buf->format, mode, NULL);
-    if (unlikely(!array_obj)) {
-        goto fail;
-    }
-    __Pyx_GOTREF(array_obj);
-    memview_obj = (struct __pyx_memoryview_obj *) __pyx_memoryview_new(
-                                    (PyObject *) array_obj, contig_flag,
-                                    dtype_is_object,
-                                    from_mvs->memview->typeinfo);
-    if (unlikely(!memview_obj))
-        goto fail;
-    if (unlikely(__Pyx_init_memviewslice(memview_obj, ndim, &new_mvs, 1) < 0))
-        goto fail;
-    if (unlikely(__pyx_memoryview_copy_contents(*from_mvs, new_mvs, ndim, ndim,
-                                                dtype_is_object) < 0))
-        goto fail;
-    goto no_fail;
-fail:
-    __Pyx_XDECREF((PyObject *) new_mvs.memview);
-    new_mvs.memview = NULL;
-    new_mvs.data = NULL;
-no_fail:
-    __Pyx_XDECREF(shape_tuple);
-    __Pyx_XDECREF(temp_int);
-    __Pyx_XDECREF((PyObject *) array_obj);
-    __Pyx_RefNannyFinishContext();
-    return new_mvs;
-}
-
-/* MemviewSliceInit */
+/* MemviewSliceIsContig */
   static int
-__Pyx_init_memviewslice(struct __pyx_memoryview_obj *memview,
-                        int ndim,
-                        __Pyx_memviewslice *memviewslice,
-                        int memview_is_new_reference)
+__pyx_memviewslice_is_contig(const __Pyx_memviewslice mvs, char order, int ndim)
 {
-    __Pyx_RefNannyDeclarations
-    int i, retval=-1;
-    Py_buffer *buf = &memview->view;
-    __Pyx_RefNannySetupContext("init_memviewslice", 0);
-    if (unlikely(memviewslice->memview || memviewslice->data)) {
-        PyErr_SetString(PyExc_ValueError,
-            "memviewslice is already initialized!");
-        goto fail;
-    }
-    if (buf->strides) {
-        for (i = 0; i < ndim; i++) {
-            memviewslice->strides[i] = buf->strides[i];
-        }
+    int i, index, step, start;
+    Py_ssize_t itemsize = mvs.memview->view.itemsize;
+    if (order == 'F') {
+        step = 1;
+        start = 0;
     } else {
-        Py_ssize_t stride = buf->itemsize;
-        for (i = ndim - 1; i >= 0; i--) {
-            memviewslice->strides[i] = stride;
-            stride *= buf->shape[i];
-        }
+        step = -1;
+        start = ndim - 1;
     }
     for (i = 0; i < ndim; i++) {
-        memviewslice->shape[i]   = buf->shape[i];
-        if (buf->suboffsets) {
-            memviewslice->suboffsets[i] = buf->suboffsets[i];
-        } else {
-            memviewslice->suboffsets[i] = -1;
-        }
+        index = start + step * i;
+        if (mvs.suboffsets[index] >= 0 || mvs.strides[index] != itemsize)
+            return 0;
+        itemsize *= mvs.shape[index];
     }
-    memviewslice->memview = memview;
-    memviewslice->data = (char *)buf->buf;
-    if (__pyx_add_acquisition_count(memview) == 0 && !memview_is_new_reference) {
-        Py_INCREF((PyObject*)memview);
-    }
-    retval = 0;
-    goto no_fail;
-fail:
-    memviewslice->memview = 0;
-    memviewslice->data = 0;
-    retval = -1;
-no_fail:
-    __Pyx_RefNannyFinishContext();
-    return retval;
-}
-#ifndef Py_NO_RETURN
-#define Py_NO_RETURN
-#endif
-static void __pyx_fatalerror(const char *fmt, ...) Py_NO_RETURN {
-    va_list vargs;
-    char msg[200];
-#if PY_VERSION_HEX >= 0x030A0000 || defined(HAVE_STDARG_PROTOTYPES)
-    va_start(vargs, fmt);
-#else
-    va_start(vargs);
-#endif
-    vsnprintf(msg, 200, fmt, vargs);
-    va_end(vargs);
-    Py_FatalError(msg);
-}
-static CYTHON_INLINE int
-__pyx_add_acquisition_count_locked(__pyx_atomic_int_type *acquisition_count,
-                                   PyThread_type_lock lock)
-{
-    int result;
-    PyThread_acquire_lock(lock, 1);
-    result = (*acquisition_count)++;
-    PyThread_release_lock(lock);
-    return result;
-}
-static CYTHON_INLINE int
-__pyx_sub_acquisition_count_locked(__pyx_atomic_int_type *acquisition_count,
-                                   PyThread_type_lock lock)
-{
-    int result;
-    PyThread_acquire_lock(lock, 1);
-    result = (*acquisition_count)--;
-    PyThread_release_lock(lock);
-    return result;
-}
-static CYTHON_INLINE void
-__Pyx_INC_MEMVIEW(__Pyx_memviewslice *memslice, int have_gil, int lineno)
-{
-    __pyx_nonatomic_int_type old_acquisition_count;
-    struct __pyx_memoryview_obj *memview = memslice->memview;
-    if (unlikely(!memview || (PyObject *) memview == Py_None)) {
-        return;
-    }
-    old_acquisition_count = __pyx_add_acquisition_count(memview);
-    if (unlikely(old_acquisition_count <= 0)) {
-        if (likely(old_acquisition_count == 0)) {
-            if (have_gil) {
-                Py_INCREF((PyObject *) memview);
-            } else {
-                PyGILState_STATE _gilstate = PyGILState_Ensure();
-                Py_INCREF((PyObject *) memview);
-                PyGILState_Release(_gilstate);
-            }
-        } else {
-            __pyx_fatalerror("Acquisition count is %d (line %d)",
-                             old_acquisition_count+1, lineno);
-        }
-    }
-}
-static CYTHON_INLINE void __Pyx_XCLEAR_MEMVIEW(__Pyx_memviewslice *memslice,
-                                             int have_gil, int lineno) {
-    __pyx_nonatomic_int_type old_acquisition_count;
-    struct __pyx_memoryview_obj *memview = memslice->memview;
-    if (unlikely(!memview || (PyObject *) memview == Py_None)) {
-        memslice->memview = NULL;
-        return;
-    }
-    old_acquisition_count = __pyx_sub_acquisition_count(memview);
-    memslice->data = NULL;
-    if (likely(old_acquisition_count > 1)) {
-        memslice->memview = NULL;
-    } else if (likely(old_acquisition_count == 1)) {
-        if (have_gil) {
-            Py_CLEAR(memslice->memview);
-        } else {
-            PyGILState_STATE _gilstate = PyGILState_Ensure();
-            Py_CLEAR(memslice->memview);
-            PyGILState_Release(_gilstate);
-        }
-    } else {
-        __pyx_fatalerror("Acquisition count is %d (line %d)",
-                         old_acquisition_count-1, lineno);
-    }
+    return 1;
 }
 
-/* TypeInfoToFormat */
-  static struct __pyx_typeinfo_string __Pyx_TypeInfoToFormat(const __Pyx_TypeInfo *type) {
-    struct __pyx_typeinfo_string result = { {0} };
-    char *buf = (char *) result.string;
-    size_t size = type->size;
-    switch (type->typegroup) {
-        case 'H':
-            *buf = 'c';
-            break;
-        case 'I':
-        case 'U':
-            if (size == 1)
-                *buf = (type->is_unsigned) ? 'B' : 'b';
-            else if (size == 2)
-                *buf = (type->is_unsigned) ? 'H' : 'h';
-            else if (size == 4)
-                *buf = (type->is_unsigned) ? 'I' : 'i';
-            else if (size == 8)
-                *buf = (type->is_unsigned) ? 'Q' : 'q';
-            break;
-        case 'P':
-            *buf = 'P';
-            break;
-        case 'C':
-         {
-            __Pyx_TypeInfo complex_type = *type;
-            complex_type.typegroup = 'R';
-            complex_type.size /= 2;
-            *buf++ = 'Z';
-            *buf = __Pyx_TypeInfoToFormat(&complex_type).string[0];
-            break;
-         }
-        case 'R':
-            if (size == 4)
-                *buf = 'f';
-            else if (size == 8)
-                *buf = 'd';
+/* OverlappingSlices */
+  static void
+__pyx_get_array_memory_extents(__Pyx_memviewslice *slice,
+                               void **out_start, void **out_end,
+                               int ndim, size_t itemsize)
+{
+    char *start, *end;
+    int i;
+    start = end = slice->data;
+    for (i = 0; i < ndim; i++) {
+        Py_ssize_t stride = slice->strides[i];
+        Py_ssize_t extent = slice->shape[i];
+        if (extent == 0) {
+            *out_start = *out_end = start;
+            return;
+        } else {
+            if (stride > 0)
+                end += stride * (extent - 1);
             else
-                *buf = 'g';
-            break;
+                start += stride * (extent - 1);
+        }
     }
-    return result;
+    *out_start = start;
+    *out_end = end + itemsize;
+}
+static int
+__pyx_slices_overlap(__Pyx_memviewslice *slice1,
+                     __Pyx_memviewslice *slice2,
+                     int ndim, size_t itemsize)
+{
+    void *start1, *end1, *start2, *end2;
+    __pyx_get_array_memory_extents(slice1, &start1, &end1, ndim, itemsize);
+    __pyx_get_array_memory_extents(slice2, &start2, &end2, ndim, itemsize);
+    return (start1 < end2) && (start2 < end1);
 }
 
 /* CIntFromPy */
@@ -36129,6 +35870,50 @@ raise_neg_overflow:
     return (int) -1;
 }
 
+/* TypeInfoToFormat */
+  static struct __pyx_typeinfo_string __Pyx_TypeInfoToFormat(const __Pyx_TypeInfo *type) {
+    struct __pyx_typeinfo_string result = { {0} };
+    char *buf = (char *) result.string;
+    size_t size = type->size;
+    switch (type->typegroup) {
+        case 'H':
+            *buf = 'c';
+            break;
+        case 'I':
+        case 'U':
+            if (size == 1)
+                *buf = (type->is_unsigned) ? 'B' : 'b';
+            else if (size == 2)
+                *buf = (type->is_unsigned) ? 'H' : 'h';
+            else if (size == 4)
+                *buf = (type->is_unsigned) ? 'I' : 'i';
+            else if (size == 8)
+                *buf = (type->is_unsigned) ? 'Q' : 'q';
+            break;
+        case 'P':
+            *buf = 'P';
+            break;
+        case 'C':
+         {
+            __Pyx_TypeInfo complex_type = *type;
+            complex_type.typegroup = 'R';
+            complex_type.size /= 2;
+            *buf++ = 'Z';
+            *buf = __Pyx_TypeInfoToFormat(&complex_type).string[0];
+            break;
+         }
+        case 'R':
+            if (size == 4)
+                *buf = 'f';
+            else if (size == 8)
+                *buf = 'd';
+            else
+                *buf = 'g';
+            break;
+    }
+    return result;
+}
+
 /* PyObjectVectorCallKwBuilder */
   #if CYTHON_VECTORCALL
 static int __Pyx_VectorcallBuilder_AddArg(PyObject *key, PyObject *value, PyObject *builder, PyObject **args, int n) {
@@ -36229,6 +36014,214 @@ CYTHON_UNUSED static int __Pyx_VectorcallBuilder_AddArg_Check(PyObject *key, PyO
         Py_XDECREF(from_bytes);
         return result;
 #endif
+    }
+}
+
+/* MemviewSliceCopyTemplate */
+  static __Pyx_memviewslice
+__pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
+                                 const char *mode, int ndim,
+                                 size_t sizeof_dtype, int contig_flag,
+                                 int dtype_is_object)
+{
+    __Pyx_RefNannyDeclarations
+    int i;
+    __Pyx_memviewslice new_mvs = { 0, 0, { 0 }, { 0 }, { 0 } };
+    struct __pyx_memoryview_obj *from_memview = from_mvs->memview;
+    Py_buffer *buf = &from_memview->view;
+    PyObject *shape_tuple = NULL;
+    PyObject *temp_int = NULL;
+    struct __pyx_array_obj *array_obj = NULL;
+    struct __pyx_memoryview_obj *memview_obj = NULL;
+    __Pyx_RefNannySetupContext("__pyx_memoryview_copy_new_contig", 0);
+    for (i = 0; i < ndim; i++) {
+        if (unlikely(from_mvs->suboffsets[i] >= 0)) {
+            PyErr_Format(PyExc_ValueError, "Cannot copy memoryview slice with "
+                                           "indirect dimensions (axis %d)", i);
+            goto fail;
+        }
+    }
+    shape_tuple = PyTuple_New(ndim);
+    if (unlikely(!shape_tuple)) {
+        goto fail;
+    }
+    __Pyx_GOTREF(shape_tuple);
+    for(i = 0; i < ndim; i++) {
+        temp_int = PyLong_FromSsize_t(from_mvs->shape[i]);
+        if(unlikely(!temp_int)) {
+            goto fail;
+        } else {
+#if CYTHON_ASSUME_SAFE_MACROS
+            PyTuple_SET_ITEM(shape_tuple, i, temp_int);
+#else
+            if (PyTuple_SetItem(shape_tuple, i, temp_int) < 0) {
+                goto fail;
+            }
+#endif
+            temp_int = NULL;
+        }
+    }
+    array_obj = __pyx_array_new(shape_tuple, sizeof_dtype, buf->format, mode, NULL);
+    if (unlikely(!array_obj)) {
+        goto fail;
+    }
+    __Pyx_GOTREF(array_obj);
+    memview_obj = (struct __pyx_memoryview_obj *) __pyx_memoryview_new(
+                                    (PyObject *) array_obj, contig_flag,
+                                    dtype_is_object,
+                                    from_mvs->memview->typeinfo);
+    if (unlikely(!memview_obj))
+        goto fail;
+    if (unlikely(__Pyx_init_memviewslice(memview_obj, ndim, &new_mvs, 1) < 0))
+        goto fail;
+    if (unlikely(__pyx_memoryview_copy_contents(*from_mvs, new_mvs, ndim, ndim,
+                                                dtype_is_object) < 0))
+        goto fail;
+    goto no_fail;
+fail:
+    __Pyx_XDECREF((PyObject *) new_mvs.memview);
+    new_mvs.memview = NULL;
+    new_mvs.data = NULL;
+no_fail:
+    __Pyx_XDECREF(shape_tuple);
+    __Pyx_XDECREF(temp_int);
+    __Pyx_XDECREF((PyObject *) array_obj);
+    __Pyx_RefNannyFinishContext();
+    return new_mvs;
+}
+
+/* MemviewSliceInit */
+  static int
+__Pyx_init_memviewslice(struct __pyx_memoryview_obj *memview,
+                        int ndim,
+                        __Pyx_memviewslice *memviewslice,
+                        int memview_is_new_reference)
+{
+    __Pyx_RefNannyDeclarations
+    int i, retval=-1;
+    Py_buffer *buf = &memview->view;
+    __Pyx_RefNannySetupContext("init_memviewslice", 0);
+    if (unlikely(memviewslice->memview || memviewslice->data)) {
+        PyErr_SetString(PyExc_ValueError,
+            "memviewslice is already initialized!");
+        goto fail;
+    }
+    if (buf->strides) {
+        for (i = 0; i < ndim; i++) {
+            memviewslice->strides[i] = buf->strides[i];
+        }
+    } else {
+        Py_ssize_t stride = buf->itemsize;
+        for (i = ndim - 1; i >= 0; i--) {
+            memviewslice->strides[i] = stride;
+            stride *= buf->shape[i];
+        }
+    }
+    for (i = 0; i < ndim; i++) {
+        memviewslice->shape[i]   = buf->shape[i];
+        if (buf->suboffsets) {
+            memviewslice->suboffsets[i] = buf->suboffsets[i];
+        } else {
+            memviewslice->suboffsets[i] = -1;
+        }
+    }
+    memviewslice->memview = memview;
+    memviewslice->data = (char *)buf->buf;
+    if (__pyx_add_acquisition_count(memview) == 0 && !memview_is_new_reference) {
+        Py_INCREF((PyObject*)memview);
+    }
+    retval = 0;
+    goto no_fail;
+fail:
+    memviewslice->memview = 0;
+    memviewslice->data = 0;
+    retval = -1;
+no_fail:
+    __Pyx_RefNannyFinishContext();
+    return retval;
+}
+#ifndef Py_NO_RETURN
+#define Py_NO_RETURN
+#endif
+static void __pyx_fatalerror(const char *fmt, ...) Py_NO_RETURN {
+    va_list vargs;
+    char msg[200];
+#if PY_VERSION_HEX >= 0x030A0000 || defined(HAVE_STDARG_PROTOTYPES)
+    va_start(vargs, fmt);
+#else
+    va_start(vargs);
+#endif
+    vsnprintf(msg, 200, fmt, vargs);
+    va_end(vargs);
+    Py_FatalError(msg);
+}
+static CYTHON_INLINE int
+__pyx_add_acquisition_count_locked(__pyx_atomic_int_type *acquisition_count,
+                                   PyThread_type_lock lock)
+{
+    int result;
+    PyThread_acquire_lock(lock, 1);
+    result = (*acquisition_count)++;
+    PyThread_release_lock(lock);
+    return result;
+}
+static CYTHON_INLINE int
+__pyx_sub_acquisition_count_locked(__pyx_atomic_int_type *acquisition_count,
+                                   PyThread_type_lock lock)
+{
+    int result;
+    PyThread_acquire_lock(lock, 1);
+    result = (*acquisition_count)--;
+    PyThread_release_lock(lock);
+    return result;
+}
+static CYTHON_INLINE void
+__Pyx_INC_MEMVIEW(__Pyx_memviewslice *memslice, int have_gil, int lineno)
+{
+    __pyx_nonatomic_int_type old_acquisition_count;
+    struct __pyx_memoryview_obj *memview = memslice->memview;
+    if (unlikely(!memview || (PyObject *) memview == Py_None)) {
+        return;
+    }
+    old_acquisition_count = __pyx_add_acquisition_count(memview);
+    if (unlikely(old_acquisition_count <= 0)) {
+        if (likely(old_acquisition_count == 0)) {
+            if (have_gil) {
+                Py_INCREF((PyObject *) memview);
+            } else {
+                PyGILState_STATE _gilstate = PyGILState_Ensure();
+                Py_INCREF((PyObject *) memview);
+                PyGILState_Release(_gilstate);
+            }
+        } else {
+            __pyx_fatalerror("Acquisition count is %d (line %d)",
+                             old_acquisition_count+1, lineno);
+        }
+    }
+}
+static CYTHON_INLINE void __Pyx_XCLEAR_MEMVIEW(__Pyx_memviewslice *memslice,
+                                             int have_gil, int lineno) {
+    __pyx_nonatomic_int_type old_acquisition_count;
+    struct __pyx_memoryview_obj *memview = memslice->memview;
+    if (unlikely(!memview || (PyObject *) memview == Py_None)) {
+        memslice->memview = NULL;
+        return;
+    }
+    old_acquisition_count = __pyx_sub_acquisition_count(memview);
+    memslice->data = NULL;
+    if (likely(old_acquisition_count > 1)) {
+        memslice->memview = NULL;
+    } else if (likely(old_acquisition_count == 1)) {
+        if (have_gil) {
+            Py_CLEAR(memslice->memview);
+        } else {
+            PyGILState_STATE _gilstate = PyGILState_Ensure();
+            Py_CLEAR(memslice->memview);
+            PyGILState_Release(_gilstate);
+        }
+    } else {
+        __pyx_fatalerror("Acquisition count is %d (line %d)",
+                         old_acquisition_count-1, lineno);
     }
 }
 
